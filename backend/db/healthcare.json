@@ -1,0 +1,170 @@
+{
+  "patients": [
+    {
+      "id": "P-9812",
+      "name": "Ramesh Kumar",
+      "age": 42,
+      "gender": "Male",
+      "village": "Rampur Kalan",
+      "phone": "+91 98765 43210",
+      "abhaId": "91-4820-1928-44",
+      "pmjayEligible": 1,
+      "activeToken": "B-35",
+      "queuePosition": 4,
+      "estimatedWaitMins": 14,
+      "priorityLevel": "Medium"
+    }
+  ],
+  "appointments": [
+    {
+      "id": 1,
+      "token": "B-35",
+      "doctorName": "Dr. Ananya Sharma",
+      "slotTime": "11:15 AM",
+      "facility": "PHC Rampur Hub",
+      "patientName": "Ramesh Kumar",
+      "status": "confirmed",
+      "createdAt": "2026-09-05T05:49:22.542Z"
+    }
+  ],
+  "queue": [
+    {
+      "id": 1,
+      "token": "B-11",
+      "patientName": "Ganga Ram",
+      "priorityLevel": "High",
+      "status": "serving",
+      "waitTime": "0 min",
+      "createdAt": "2026-09-05T05:47:57.501Z"
+    },
+    {
+      "id": 2,
+      "token": "B-12",
+      "patientName": "Anita Sharma",
+      "priorityLevel": "High",
+      "status": "waiting",
+      "waitTime": "4 min",
+      "createdAt": "2026-09-05T05:47:57.505Z"
+    },
+    {
+      "id": 3,
+      "token": "B-13",
+      "patientName": "Suresh Patel",
+      "priorityLevel": "Medium",
+      "status": "waiting",
+      "waitTime": "9 min",
+      "createdAt": "2026-09-05T05:47:57.505Z"
+    },
+    {
+      "id": 4,
+      "token": "B-14",
+      "patientName": "Ramesh Kumar",
+      "priorityLevel": "Medium",
+      "status": "waiting",
+      "waitTime": "14 min",
+      "createdAt": "2026-09-05T05:47:57.505Z"
+    },
+    {
+      "id": 5,
+      "token": "B-15",
+      "patientName": "Pooja Devi",
+      "priorityLevel": "Low",
+      "status": "waiting",
+      "waitTime": "20 min",
+      "createdAt": "2026-09-05T05:47:57.505Z"
+    },
+    {
+      "id": 6,
+      "token": "B-16",
+      "patientName": "Mohan Lal",
+      "priorityLevel": "Low",
+      "status": "waiting",
+      "waitTime": "26 min",
+      "createdAt": "2026-09-05T05:47:57.505Z"
+    },
+    {
+      "id": 7,
+      "token": "B-35",
+      "patientName": "Ramesh Kumar",
+      "priorityLevel": "Medium",
+      "status": "waiting",
+      "waitTime": "10 min",
+      "createdAt": "2026-09-05T05:49:22.554Z"
+    },
+    {
+      "id": 8,
+      "token": "B-77",
+      "patientName": "Devi Lal",
+      "priorityLevel": "High",
+      "status": "waiting",
+      "waitTime": "3 min",
+      "createdAt": "2026-09-05T05:49:22.563Z"
+    }
+  ],
+  "care_journey": [
+    {
+      "id": "STEP-1",
+      "title": "Digital Symptom Triage",
+      "provider": "AI Decision Support Assistant",
+      "facility": "GraminArogya App",
+      "date": "Today, 09:15 AM",
+      "status": "completed",
+      "summary": "Assessed fever (102.2°F), dry cough for 3 days. Classified as Medium Priority.",
+      "createdAt": "2026-09-05T04:00:00.000Z"
+    },
+    {
+      "id": "STEP-2",
+      "title": "Teleconsultation Appointment",
+      "provider": "Dr. Ananya Sharma (General Medicine)",
+      "facility": "PHC Rampur Tele-Hub",
+      "date": "Today, 10:30 AM",
+      "status": "active",
+      "summary": "Network-adaptive consultation scheduled. Token #B-14 generated.",
+      "createdAt": "2026-09-05T04:10:00.000Z"
+    },
+    {
+      "id": "STEP-3",
+      "title": "Prescription & Diagnostic Order",
+      "provider": "Dr. Ananya Sharma",
+      "facility": "PHC Rampur Lab",
+      "date": "Pending Consult",
+      "status": "upcoming",
+      "summary": "Complete Blood Count (CBC) and Paracetamol 650mg + Azithromycin.",
+      "createdAt": "2026-09-05T04:20:00.000Z"
+    },
+    {
+      "id": "STEP-4",
+      "title": "ASHA Home Follow-up Visit",
+      "provider": "Sunita Devi (ASHA Worker)",
+      "facility": "Rampur Village Sub-centre",
+      "date": "Tomorrow, 11:00 AM",
+      "status": "upcoming",
+      "summary": "Field health worker vitals check & medication adherence review.",
+      "createdAt": "2026-09-05T04:30:00.000Z"
+    },
+    {
+      "id": "STEP-1788587362544",
+      "title": "Teleconsultation Booked (Dr. Ananya Sharma)",
+      "provider": "Dr. Ananya Sharma",
+      "facility": "PHC Rampur Hub",
+      "date": "Today, 11:15 AM",
+      "status": "active",
+      "summary": "Confirmed slot at 11:15 AM. Token #B-35 generated.",
+      "createdAt": "2026-09-05T05:49:22.553Z"
+    },
+    {
+      "id": "STEP-1788587362572",
+      "title": "Prescription Dispensed: Paracetamol 650mg",
+      "provider": "PHC Rampur Pharmacy",
+      "facility": "PHC Rampur Hub",
+      "date": "Today, Just now",
+      "status": "active",
+      "summary": "Medications collected at pharmacy counter.",
+      "createdAt": "2026-09-05T05:49:22.572Z"
+    }
+  ],
+  "_counters": {
+    "appointments": 1,
+    "queue": 8
+  }
+}

@@ -44,9 +44,9 @@ app.use((req, res) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
-  console.log(`🏥 GraminArogya Server running at: http://localhost:${PORT}/`);
-  console.log(`📡 REST API active on: http://localhost:${PORT}/api/`);
+  console.log(`🏥 GraminArogya Server running at: http://0.0.0.0:${PORT}/`);
+  console.log(`📡 REST API active on: http://0.0.0.0:${PORT}/api/`);
   console.log(`====================================================`);
 });

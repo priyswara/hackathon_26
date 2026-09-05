@@ -1,12 +1,12 @@
 /**
  * Frontend API Service Layer
- * Connects GraminArogya frontend to Express + SQLite backend
+ * Connects GraminArogya frontend to Express backend
  */
 
-// Base API URL configuration (defaults to same-origin /api or localhost:8080/api)
+// Same-origin API URL (automatically works on Render, localhost, or any custom domain)
 export const API_BASE_URL = typeof window !== 'undefined' && window.location.origin 
   ? `${window.location.origin}/api` 
-  : 'http://localhost:8080/api';
+  : '/api';
 
 /**
  * 1. Fetch current patient profile from backend
