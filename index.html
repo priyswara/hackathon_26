@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GraminArogya — Rural Healthcare Access Prototype</title>
-  <meta name="description" content="Interactive rural healthcare access solution bridging care gaps via network-adaptive teleconsultation, smart triage, unified health journey, and frontline ASHA support." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GraminArogya — Rural Healthcare Access Platform</title>
+  <meta name="description" content="Modern rural healthcare web application bridging care gaps via network-adaptive teleconsultation, digital triage, unified health journey, and frontline ASHA coordination." />
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,49 +19,9 @@
 </head>
 <body>
 
-  <div class="presentation-container">
-    <!-- Desktop Demo Toolbar -->
-    <div class="demo-toolbar">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <span class="demo-badge">RURAL HEALTH PLATFORM</span>
-        <span style="font-weight: 600; font-size: 12px; color: rgba(255, 255, 255, 0.9);">
-          Rural Healthcare Access Demo
-        </span>
-      </div>
-
-      <div class="demo-controls">
-        <!-- Quick Role Switcher -->
-        <span style="font-size: 11px; opacity: 0.7;">Role:</span>
-        <button class="demo-btn active" data-demo-role="patient">Patient</button>
-        <button class="demo-btn" data-demo-role="health_worker">ASHA Worker</button>
-        <button class="demo-btn" data-demo-role="doctor">Doctor</button>
-        <button class="demo-btn" data-demo-role="facility">PHC Admin</button>
-
-        <!-- Quick Network Simulator -->
-        <span style="font-size: 11px; opacity: 0.7; margin-left: 6px;">Bandwidth:</span>
-        <button class="demo-btn" data-demo-net="good" title="4G HD Video">4G</button>
-        <button class="demo-btn" data-demo-net="moderate" title="2G/3G Audio Only">2G Voice</button>
-        <button class="demo-btn" data-demo-net="low" title="Edge / Offline SMS">SMS Text</button>
-
-        <button class="demo-btn" id="btn-reset-demo" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #FFA0A0;">
-          ↺ Reset
-        </button>
-      </div>
-    </div>
-
-    <!-- Phone Hardware Frame -->
-    <div class="phone-frame">
-      <!-- Hardware Notch & Speaker -->
-      <div class="phone-notch">
-        <div class="phone-speaker"></div>
-        <div class="phone-camera"></div>
-      </div>
-
-      <!-- App Root Container -->
-      <div id="phone-app-root" style="display: flex; flex-direction: column; height: 100%;">
-        <!-- Rendered by JavaScript -->
-      </div>
-    </div>
+  <!-- Web Application Root -->
+  <div id="phone-app-root" class="app-root-container">
+    <!-- Rendered dynamically by JavaScript AppRouter & AppShell -->
   </div>
 
   <!-- Application Entry Point -->

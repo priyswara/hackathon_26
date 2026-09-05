@@ -18,54 +18,52 @@ export function renderLanguageModal(currentLang) {
 
   return `
     <div class="modal-overlay" id="language-modal-overlay">
-      <div class="bottom-sheet" id="language-bottom-sheet">
-        <div class="sheet-drag-handle"></div>
-        
-        <div class="flex-between" style="margin-bottom: 16px;">
+      <div class="modal-dialog" id="language-modal-dialog">
+        <div class="flex-between" style="margin-bottom: 20px;">
           <div>
-            <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 700;">${t.selectLanguage}</h3>
-            <p style="font-size: 12px; color: var(--color-text-secondary);">${t.selectLanguageSub}</p>
+            <h3 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary);">${t.selectLanguage}</h3>
+            <p style="font-size: 13px; color: var(--color-text-secondary); margin-top: 2px;">${t.selectLanguageSub}</p>
           </div>
-          <button class="header-btn" id="btn-close-lang" style="width: 32px; height: 32px;" title="${t.close}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <button class="header-btn" id="btn-close-lang" style="width: 36px; height: 36px;" title="${t.close}">
+            <i data-lucide="x"></i>
           </button>
         </div>
 
         <!-- Voice Assistant Mock -->
-        <div class="card" style="background: linear-gradient(135deg, #F3EEFF 0%, #EBE3FC 100%); border-color: rgba(108, 60, 233, 0.2); margin-bottom: 20px; text-align: center;">
+        <div class="card" style="background: linear-gradient(135deg, #F3EEFF 0%, #EBE3FC 100%); border: 1px solid rgba(108, 60, 233, 0.2); margin-bottom: 20px; text-align: center; padding: 20px;">
           <div class="voice-mic-container">
             <button class="voice-mic-button" id="btn-voice-mic" title="${t.tapToSpeak}">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              <i data-lucide="mic" style="width: 28px; height: 28px;"></i>
             </button>
             <div>
-              <h4 id="voice-status-heading" style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--color-primary-dark);">${t.tapToSpeak}</h4>
-              <p id="voice-status-sub" style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">${t.voiceHelperSub}</p>
+              <h4 id="voice-status-heading" style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-primary-dark);">${t.tapToSpeak}</h4>
+              <p id="voice-status-sub" style="font-size: 12.5px; color: var(--color-text-secondary); margin-top: 2px;">${t.voiceHelperSub}</p>
             </div>
           </div>
         </div>
 
-        <!-- Language List -->
-        <div style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Language List Grid -->
+        <div style="display: flex; flex-direction: column; gap: 10px;">
           ${languages.map(lang => `
             <div class="card card-clickable flex-between lang-option-card ${lang.code === currentLang ? 'selected-lang' : ''}" 
                  data-lang="${lang.code}" 
-                 style="padding: 12px 16px; border: 1.5px solid ${lang.code === currentLang ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${lang.code === currentLang ? 'var(--color-primary-light)' : 'var(--color-surface)'};">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 38px; height: 38px; border-radius: 50%; background: ${lang.code === currentLang ? 'var(--color-primary)' : '#ECEAF3'}; color: ${lang.code === currentLang ? '#FFFFFF' : 'var(--color-text-primary)'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 700; font-size: 14px;">
+                 style="padding: 14px 18px; border: 1.5px solid ${lang.code === currentLang ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${lang.code === currentLang ? 'var(--color-primary-light)' : 'var(--color-surface)'};">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 42px; height: 42px; border-radius: var(--radius-sm); background: ${lang.code === currentLang ? 'var(--color-primary)' : '#ECEAF3'}; color: ${lang.code === currentLang ? '#FFFFFF' : 'var(--color-text-primary)'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 800; font-size: 15px;">
                   ${lang.code.toUpperCase()}
                 </div>
                 <div>
-                  <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--color-text-primary);">${lang.native} <span style="font-size: 13px; font-weight: 500; color: var(--color-text-secondary);">(${lang.name})</span></div>
-                  <div style="font-size: 11px; color: var(--color-text-muted);">${lang.region}</div>
+                  <div style="font-family: var(--font-heading); font-size: 15.5px; font-weight: 700; color: var(--color-text-primary);">${lang.native} <span style="font-size: 13px; font-weight: 500; color: var(--color-text-secondary);">(${lang.name})</span></div>
+                  <div style="font-size: 11.5px; color: var(--color-text-muted); margin-top: 1px;">${lang.region}</div>
                 </div>
               </div>
               
               ${lang.code === currentLang ? `
-                <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--color-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <div style="width: 26px; height: 26px; border-radius: 50%; background: var(--color-primary); color: #FFFFFF; display: flex; align-items: center; justify-content: center;">
+                  <i data-lucide="check" style="width: 16px; height: 16px;"></i>
                 </div>
               ` : `
-                <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid #D9D6E8;"></div>
+                <div style="width: 22px; height: 22px; border-radius: 50%; border: 2px solid #D9D6E8;"></div>
               `}
             </div>
           `).join('')}

@@ -1,5 +1,6 @@
 /**
  * Screen 12: PHC / Facility Admin Operations Dashboard
+ * Professional Responsive Web Layout with 4 Stat Cards, Resource Health, and Side-by-Side Analytics Charts
  */
 
 import { locales } from '../data/locales.js';
@@ -14,85 +15,96 @@ export function renderFacilityScreen(state) {
       <!-- Screen Header -->
       <div class="flex-between">
         <div>
-          <h2 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary);">${t.facilityDashboard}</h2>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${facility.name}</span>
+          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary);">${t.facilityDashboard}</h2>
+          <span style="font-size: 12px; color: var(--color-text-secondary);">${facility.name} • Block Primary Health Centre Operations</span>
         </div>
-        <span class="status-badge badge-success" style="font-size: 9px;">${t.operationalBadge}</span>
+        <span class="status-badge badge-success" style="font-size: 11px; padding: 4px 12px;">● ${t.operationalBadge}</span>
       </div>
 
-      <!-- High-Level Key Performance Indicators -->
-      <div class="grid-3">
-        <div class="card" style="padding: 10px 8px; text-align: center;">
-          <div class="stat-number" style="font-size: 24px; color: var(--color-primary);">${facility.todayFootfall}</div>
-          <div class="stat-label" style="font-size: 9px;">${t.statTodayFootfall}</div>
+      <!-- 4 Stat Metric Cards Grid on Desktop -->
+      <div class="grid-4">
+        <div class="stat-card" style="border-bottom: 4px solid var(--color-primary);">
+          <div class="stat-number" style="color: var(--color-primary);">${facility.todayFootfall}</div>
+          <div class="stat-label">${t.statTodayFootfall}</div>
         </div>
 
-        <div class="card" style="padding: 10px 8px; text-align: center;">
-          <div class="stat-number" style="font-size: 24px; color: var(--color-warning);">${facility.avgWaitMins}m</div>
-          <div class="stat-label" style="font-size: 9px;">${t.statAvgOpdWait}</div>
+        <div class="stat-card" style="border-bottom: 4px solid var(--color-warning);">
+          <div class="stat-number" style="color: var(--color-warning);">${facility.avgWaitMins}m</div>
+          <div class="stat-label">${t.statAvgOpdWait}</div>
         </div>
 
-        <div class="card" style="padding: 10px 8px; text-align: center;">
-          <div class="stat-number" style="font-size: 24px; color: var(--color-success);">${facility.medicinesAvailableRate}</div>
-          <div class="stat-label" style="font-size: 9px;">${t.statDrugInStock}</div>
-        </div>
-      </div>
-
-      <!-- Bed & Critical Care Capacity Progress -->
-      <div class="card" style="padding: 14px;">
-        <div class="flex-between" style="margin-bottom: 6px;">
-          <span style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-text-primary);">
-            ${t.bedCapacityTitle}
-          </span>
-          <span style="font-size: 11px; font-weight: 600; color: var(--color-primary);">${facility.bedsOccupied} / ${facility.bedsTotal} ${t.bedsInUseFormat}</span>
+        <div class="stat-card" style="border-bottom: 4px solid var(--color-success);">
+          <div class="stat-number" style="color: var(--color-success);">${facility.medicinesAvailableRate}</div>
+          <div class="stat-label">${t.statDrugInStock}</div>
         </div>
 
-        <!-- Progress Bar -->
-        <div style="width: 100%; height: 10px; background: #ECEAF3; border-radius: 6px; overflow: hidden; margin-bottom: 8px;">
-          <div style="width: ${(facility.bedsOccupied / facility.bedsTotal) * 100}%; height: 100%; background: linear-gradient(90deg, var(--color-primary), #8B5CF6); border-radius: 6px;"></div>
-        </div>
-
-        <div class="flex-between" style="font-size: 11px; color: var(--color-text-secondary);">
-          <span>${t.generalWardAvailable}</span>
-          <span style="color: var(--color-success); font-weight: 700;">${t.icuOxygenBedsFree}</span>
+        <div class="stat-card" style="border-bottom: 4px solid #8B5CF6;">
+          <div class="stat-number" style="color: #8B5CF6;">${facility.bedsOccupied}/${facility.bedsTotal}</div>
+          <div class="stat-label">Bed Occupancy</div>
         </div>
       </div>
 
-      <!-- Hourly Patient Footfall Trend Chart -->
-      <div class="card" style="padding: 14px;">
-        <div class="flex-between">
-          <span style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-text-primary);">
-            ${t.footfallTrendTitle}
-          </span>
-          <span class="status-badge badge-primary" style="font-size: 9px;">${t.realTimeBadge}</span>
+      <!-- Capacity & Alert Row: 2-Column Split -->
+      <div class="split-1-1">
+        <!-- Bed & Critical Care Capacity Progress -->
+        <div class="card" style="padding: 20px 24px;">
+          <div class="flex-between" style="margin-bottom: 8px;">
+            <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--color-text-primary);">
+              ${t.bedCapacityTitle}
+            </span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--color-primary);">${facility.bedsOccupied} / ${facility.bedsTotal} ${t.bedsInUseFormat}</span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div style="width: 100%; height: 12px; background: #ECEAF3; border-radius: 6px; overflow: hidden; margin-bottom: 12px;">
+            <div style="width: ${(facility.bedsOccupied / facility.bedsTotal) * 100}%; height: 100%; background: linear-gradient(90deg, var(--color-primary), #8B5CF6); border-radius: 6px;"></div>
+          </div>
+
+          <div class="flex-between" style="font-size: 12px; color: var(--color-text-secondary);">
+            <span>${t.generalWardAvailable}</span>
+            <span style="color: var(--color-success); font-weight: 700;">${t.icuOxygenBedsFree}</span>
+          </div>
         </div>
-        ${renderFootfallChart(t)}
+
+        <!-- Low Stock Alerts -->
+        <div class="card" style="border-left: 5px solid var(--color-danger); padding: 20px 24px;">
+          <div class="flex-between" style="margin-bottom: 6px;">
+            <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--color-danger);">
+              ${t.criticalRestockAlertTitle}
+            </span>
+            <span class="status-badge badge-danger" style="font-size: 10px;">${t.restockReqBadge}</span>
+          </div>
+          <p style="font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.5;">
+            ${t.amoxRestockDesc}
+          </p>
+        </div>
       </div>
 
-      <!-- Inter-Facility Referral Analytics -->
-      <div class="card" style="padding: 14px;">
-        <div class="flex-between">
-          <span style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-text-primary);">
-            ${t.referralAnalyticsTitle}
-          </span>
+      <!-- Side-by-Side Analytics Charts Row: 2-Column Split -->
+      <div class="split-1-1">
+        <!-- Hourly Patient Footfall Trend Chart -->
+        <div class="card" style="padding: 22px;">
+          <div class="flex-between" style="margin-bottom: 12px;">
+            <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--color-text-primary);">
+              ${t.footfallTrendTitle}
+            </span>
+            <span class="status-badge badge-primary" style="font-size: 10px;">${t.realTimeBadge}</span>
+          </div>
+          ${renderFootfallChart(t)}
         </div>
-        ${renderReferralDonut(t)}
+
+        <!-- Inter-Facility Referral Analytics -->
+        <div class="card" style="padding: 22px;">
+          <div class="flex-between" style="margin-bottom: 12px;">
+            <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--color-text-primary);">
+              ${t.referralAnalyticsTitle}
+            </span>
+          </div>
+          ${renderReferralDonut(t)}
+        </div>
       </div>
 
-      <!-- Low Stock Alerts -->
-      <div class="card" style="border-left: 4px solid var(--color-danger); padding: 12px 14px;">
-        <div class="flex-between" style="margin-bottom: 4px;">
-          <span style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-danger);">
-            ${t.criticalRestockAlertTitle}
-          </span>
-          <span class="status-badge badge-danger" style="font-size: 9px;">${t.restockReqBadge}</span>
-        </div>
-        <p style="font-size: 11px; color: var(--color-text-secondary);">
-          ${t.amoxRestockDesc}
-        </p>
-      </div>
-
-      <div class="compliance-disclaimer">
+      <div class="compliance-disclaimer" style="margin-top: 10px;">
         ${t.nhmDashboardDisclaimer}
       </div>
     </div>

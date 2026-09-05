@@ -375,7 +375,7 @@ export const initialMockDB = {
 };
 
 // Global Store holding application state
-class MockStore {
+export class MockStore {
   constructor() {
     this.state = JSON.parse(JSON.stringify(initialMockDB));
     this.listeners = [];

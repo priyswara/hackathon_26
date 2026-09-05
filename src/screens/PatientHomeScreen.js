@@ -1,5 +1,6 @@
 /**
- * Screen 2: Patient Home
+ * Screen 2: Patient / Citizen Home Dashboard
+ * Multi-column responsive dashboard with Live Token tracker, 4-col Quick Actions, and Care Contacts
  */
 
 import { locales } from '../data/locales.js';
@@ -10,59 +11,64 @@ export function renderPatientHomeScreen(state) {
 
   return `
     <div class="screen" id="screen-patient-home">
-      <!-- Patient Profile Summary -->
-      <div class="flex-between">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #8B5CF6); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 700; font-size: 16px; box-shadow: 0 4px 10px rgba(108, 60, 233, 0.25);">
-            RK
+      <!-- Top Row: 2-Column Split (Profile Summary + Live Token Banner) -->
+      <div class="split-1-1" style="align-items: stretch;">
+        <!-- Patient Profile Summary Card -->
+        <div class="card flex-between" style="padding: 24px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #8B5CF6); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 800; font-size: 20px; box-shadow: 0 4px 14px rgba(108, 60, 233, 0.3); flex-shrink: 0;">
+              RK
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--color-text-secondary); font-weight: 600;">Citizen Health Portal</div>
+              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary); line-height: 1.2;">${t.welcomeBack}</h2>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
+                <span>${t.abhaId}</span>
+                <span class="status-badge badge-success" style="padding: 2px 8px; font-size: 10px;">${t.abhaLinked}</span>
+              </div>
+            </div>
           </div>
-          <div>
-            <h2 style="font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2;">${t.welcomeBack}</h2>
-            <div style="display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); margin-top: 2px;">
-              <span>${t.abhaId}</span>
-              <span class="status-badge badge-success" style="padding: 1px 6px; font-size: 9px;">${t.abhaLinked}</span>
+
+          <button class="header-btn" id="btn-quick-voice" style="width: 44px; height: 44px;" title="${t.tapToSpeak}">
+            <i data-lucide="mic" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
+          </button>
+        </div>
+
+        <!-- Live Active Token Banner -->
+        <div class="token-card card-clickable" id="card-active-token" title="Tap to view live queue">
+          <div class="flex-between" style="margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-badge badge-warning" style="background: rgba(232, 140, 31, 0.25); color: #FFB356; border: 1px solid rgba(232, 140, 31, 0.4);">
+                <span class="badge-dot-indicator" style="background: #FFB356;"></span> ${t.liveQueueBadge}
+              </span>
+              <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8);">${t.phcLocation}</span>
+            </div>
+            <i data-lucide="arrow-right" style="color: rgba(255, 255, 255, 0.8); width: 18px; height: 18px;"></i>
+          </div>
+
+          <div class="flex-between" style="align-items: flex-end;">
+            <div>
+              <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${t.yourTokenNumber}</span>
+              <div class="token-digits">${p.activeToken}</div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 14px; font-weight: 700; color: #FFFFFF;">${t.servingNow}</div>
+              <div style="font-size: 12px; color: var(--color-accent); font-weight: 700; margin-top: 3px;">${t.estWait}</div>
             </div>
           </div>
         </div>
-
-        <button class="header-btn" id="btn-quick-voice" title="${t.tapToSpeak}">
-          <i data-lucide="mic" style="color: var(--color-primary);"></i>
-        </button>
       </div>
 
-      <!-- Live Active Token Banner -->
-      <div class="token-card card-clickable" id="card-active-token" title="Tap to view live queue">
-        <div class="flex-between" style="margin-bottom: 8px;">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <span class="status-badge badge-warning" style="background: rgba(232, 140, 31, 0.2); color: #FFB356; border: 1px solid rgba(232, 140, 31, 0.4);">
-              <span class="badge-dot-indicator" style="background: #FFB356;"></span> ${t.liveQueueBadge}
-            </span>
-            <span style="font-size: 11px; color: rgba(255, 255, 255, 0.7);">${t.phcLocation}</span>
-          </div>
-          <i data-lucide="arrow-right" style="color: rgba(255, 255, 255, 0.6); width: 16px; height: 16px;"></i>
-        </div>
-
-        <div class="flex-between" style="align-items: flex-end;">
-          <div>
-            <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; font-weight: 600;">${t.yourTokenNumber}</span>
-            <div class="token-digits">${p.activeToken}</div>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 13px; font-weight: 700; color: #FFFFFF;">${t.servingNow}</div>
-            <div style="font-size: 11px; color: var(--color-accent); font-weight: 600; margin-top: 2px;">${t.estWait}</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Actions Grid -->
+      <!-- Quick Actions Section -->
       <div class="section-header">
         <h3 class="section-title">
-          <i data-lucide="grid" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
+          <i data-lucide="grid" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
           ${t.quickActions}
         </h3>
       </div>
 
-      <div class="grid-2">
+      <!-- 4-Column Quick Actions Grid on Desktop -->
+      <div class="grid-4">
         <!-- 1: Book OPD Slot -->
         <div class="action-tile" id="action-book-opd">
           <div class="action-icon-circle" style="background: #F3EEFF; color: var(--color-primary);">
@@ -136,18 +142,35 @@ export function renderPatientHomeScreen(state) {
         </div>
       </div>
 
-      <!-- ASHA Contact Quick Card -->
-      <div class="card card-clickable flex-between" id="card-asha-contact" style="background: #FAF9FD; border-left: 4px solid var(--color-primary);">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
-            <i data-lucide="phone-call" style="width: 18px; height: 18px;"></i>
+      <!-- Bottom Row: 2-Column Split (Assigned ASHA Worker + Active Health Reminder) -->
+      <div class="split-1-1">
+        <!-- ASHA Contact Card -->
+        <div class="card card-clickable flex-between" id="card-asha-contact" style="background: #FAF9FD; border-left: 4px solid var(--color-primary); padding: 18px 20px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="phone-call" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div>
+              <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: var(--color-text-primary);">${t.assignedAsha}</div>
+              <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">${t.nextHomeVisitTomorrow}</div>
+            </div>
           </div>
-          <div>
-            <div style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-text-primary);">${t.assignedAsha}</div>
-            <div style="font-size: 11px; color: var(--color-text-secondary);">${t.nextHomeVisitTomorrow}</div>
-          </div>
+          <button class="btn btn-sm btn-primary" style="padding: 7px 14px; font-size: 12px;">${t.callBtn}</button>
         </div>
-        <button class="btn btn-sm btn-primary" style="padding: 6px 12px; font-size: 11px;">${t.callBtn}</button>
+
+        <!-- Active Prescriptions / Care Alert -->
+        <div class="card flex-between" style="background: #FAF9FD; border-left: 4px solid var(--color-success); padding: 18px 20px;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--color-success-light); color: var(--color-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="clipboard-check" style="width: 20px; height: 20px;"></i>
+            </div>
+            <div>
+              <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: var(--color-text-primary);">Active Care Episode</div>
+              <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">Dr. Ananya Sharma • 2 Meds Active</div>
+            </div>
+          </div>
+          <span class="status-badge badge-success">${t.activeCareEpisodeBadge || 'In Progress'}</span>
+        </div>
       </div>
     </div>
   `;

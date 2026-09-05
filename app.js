@@ -1,6 +1,6 @@
 /**
  * Main Application Controller & State Router
- * Rural Healthcare Access Platform
+ * Rural Healthcare Access Platform — Responsive Web Application
  */
 
 import { appStore } from './src/data/mockData.js';
@@ -30,6 +30,7 @@ class AppRouter {
     this.activeMedDiagTab = 'medicines';
     this.selectedSlot = '10:30 AM';
     this.isLanguageModalOpen = false;
+    this.isSidebarOpen = false;
     
     // Subscribe to global store
     appStore.subscribe((state) => {
@@ -45,11 +46,33 @@ class AppRouter {
 
   navigateTo(screenId) {
     this.currentScreen = screenId;
+    this.closeSidebarDrawer();
     this.render();
     
     // Scroll content to top
     const content = document.getElementById('app-screen-outlet');
     if (content) content.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  toggleSidebarDrawer() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+    const sidebar = document.getElementById('app-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) {
+      sidebar.classList.toggle('drawer-open', this.isSidebarOpen);
+    }
+    if (overlay) {
+      overlay.classList.toggle('active', this.isSidebarOpen);
+    }
+  }
+
+  closeSidebarDrawer() {
+    this.isSidebarOpen = false;
+    const sidebar = document.getElementById('app-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar) sidebar.classList.remove('drawer-open');
+    if (overlay) overlay.classList.remove('active');
   }
 
   showToast(message, type = 'success') {
@@ -58,7 +81,7 @@ class AppRouter {
       container = document.createElement('div');
       container.id = 'toast-container';
       container.className = 'toast-container';
-      document.querySelector('.phone-frame').appendChild(container);
+      document.body.appendChild(container);
     }
 
     const toast = document.createElement('div');
@@ -79,12 +102,12 @@ class AppRouter {
 
   render() {
     const state = appStore.getState();
-    const phoneContainer = document.getElementById('phone-app-root');
-    if (!phoneContainer) return;
+    const appContainer = document.getElementById('phone-app-root') || document.querySelector('.app-root-container');
+    if (!appContainer) return;
 
     // Render Shell structure
-    phoneContainer.innerHTML = renderAppShell(
-      phoneContainer,
+    appContainer.innerHTML = renderAppShell(
+      appContainer,
       state,
       (screen) => this.navigateTo(screen),
       () => this.openLanguageModal(),
@@ -101,7 +124,7 @@ class AppRouter {
     if (this.isLanguageModalOpen) {
       const modalWrapper = document.createElement('div');
       modalWrapper.innerHTML = renderLanguageModal(state.currentLanguage);
-      phoneContainer.appendChild(modalWrapper.firstElementChild);
+      appContainer.appendChild(modalWrapper.firstElementChild);
       setTimeout(() => {
         const overlay = document.getElementById('language-modal-overlay');
         if (overlay) overlay.classList.add('active');
@@ -109,7 +132,7 @@ class AppRouter {
     }
 
     // Update active nav button
-    const navButtons = document.querySelectorAll('.nav-item');
+    const navButtons = document.querySelectorAll('.sidebar-nav-item, .nav-item');
     navButtons.forEach(btn => {
       if (btn.dataset.nav === this.currentScreen) {
         btn.classList.add('active');
@@ -173,11 +196,24 @@ class AppRouter {
   }
 
   attachGlobalListeners() {
-    // Navigation bar click delegation
+    // Click delegation for navigation and actions
     document.addEventListener('click', (e) => {
       const state = appStore.getState();
       const t = locales[state.currentLanguage] || locales.en;
 
+      // Sidebar mobile drawer toggle
+      if (e.target.closest('#btn-toggle-sidebar')) {
+        this.toggleSidebarDrawer();
+        return;
+      }
+
+      // Sidebar mobile overlay click -> close drawer
+      if (e.target.closest('#sidebar-overlay')) {
+        this.closeSidebarDrawer();
+        return;
+      }
+
+      // Navigation bar / item click delegation
       const navBtn = e.target.closest('[data-nav]');
       if (navBtn) {
         const targetScreen = navBtn.dataset.nav;
@@ -186,14 +222,25 @@ class AppRouter {
       }
 
       // Brand click -> Return to welcome or home
-      if (e.target.closest('#btn-brand-home')) {
+      if (e.target.closest('#btn-brand-home') || e.target.closest('#btn-brand-text')) {
         this.navigateTo('welcome');
         return;
       }
 
       // Role change badge click
-      if (e.target.closest('#btn-change-role')) {
+      if (e.target.closest('#btn-change-role') || e.target.closest('#btn-header-role')) {
         this.navigateTo('welcome');
+        return;
+      }
+
+      // Network indicator pill click -> Cycle network mode
+      if (e.target.closest('#header-network-pill')) {
+        const modes = ['good', 'moderate', 'low'];
+        const currentIdx = modes.indexOf(state.networkMode);
+        const nextMode = modes[(currentIdx + 1) % modes.length];
+        appStore.setNetworkMode(nextMode);
+        const newT = locales[state.currentLanguage] || locales.en;
+        this.showToast(`${newT.networkSwitchedToast || 'Network Mode:'} ${nextMode.toUpperCase()}`, 'warning');
         return;
       }
 
@@ -204,7 +251,7 @@ class AppRouter {
       }
 
       // Close language modal
-      if (e.target.closest('#btn-close-lang')) {
+      if (e.target.closest('#btn-close-lang') || (e.target.id === 'language-modal-overlay' && !e.target.closest('#language-modal-dialog'))) {
         this.closeLanguageModal();
         return;
       }
@@ -239,7 +286,7 @@ class AppRouter {
       }
     });
 
-    // Toolbar controls for judge demo
+    // Toolbar controls (if present)
     document.querySelectorAll('[data-demo-role]').forEach(btn => {
       btn.addEventListener('click', () => {
         const role = btn.dataset.demoRole;
@@ -391,7 +438,7 @@ class AppRouter {
             const actionsDiv = document.getElementById('triage-result-actions');
             if (actionsDiv) {
               actionsDiv.innerHTML = `
-                <button class="btn btn-sm btn-danger btn-full" id="btn-triage-goto-emergency">
+                <button class="btn btn-danger btn-full" id="btn-triage-goto-emergency" style="padding: 11px;">
                   <i data-lucide="phone-call"></i> ${t.triggerSosBtn}
                 </button>
               `;

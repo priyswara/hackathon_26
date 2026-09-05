@@ -161,6 +161,16 @@
       "status": "active",
       "summary": "Medications collected at pharmacy counter.",
       "createdAt": "2026-09-05T05:49:22.572Z"
+    },
+    {
+      "id": "STEP-1788603761286",
+      "title": "Digital Smart Triage Completed",
+      "provider": "AI Decision Engine",
+      "facility": "GraminArogya App",
+      "date": "Just now",
+      "status": "completed",
+      "summary": "Symptoms: High Fever > 102°F, Shortness of Breath, Dry Cough > 3 Days. Urgency Score: High Priority.",
+      "createdAt": "2026-09-05T10:22:42.645Z"
     }
   ],
   "_counters": {
