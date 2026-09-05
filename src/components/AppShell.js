@@ -3,6 +3,7 @@
  * Features Desktop Sidebar (strictly role-isolated for verified sessions),
  * Clean Landing & Verification Header, Web Top Header with Network Simulation,
  * Language Switcher, User Menu with Switch Portal & Logout, and Mobile Drawer.
+ * 100% Mobile & Desktop Responsive.
  */
 
 import { locales } from '../data/locales.js';
@@ -38,15 +39,15 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
     return `
       <div class="app-shell app-shell-landing">
         <!-- Clean Landing Top Web Header -->
-        <header class="app-header" style="max-width: 1200px; margin: 0 auto; width: 100%; border-radius: var(--radius-md); margin-top: 12px; margin-bottom: 16px;">
+        <header class="app-header" style="max-width: 1200px; margin: 8px auto 14px auto; width: 100%;">
           <div class="header-left">
-            <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" id="btn-brand-home">
-              <div class="sidebar-brand-icon" style="width: 38px; height: 38px;">
-                <i data-lucide="cross"></i>
+            <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" id="btn-brand-home">
+              <div class="sidebar-brand-icon" style="width: 36px; height: 36px;">
+                <i data-lucide="cross" style="width: 20px; height: 20px;"></i>
               </div>
               <div style="display: flex; flex-direction: column;">
-                <span style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-primary); letter-spacing: -0.3px;">${t.appTitle}</span>
-                <span style="font-size: 11px; color: var(--color-text-secondary); font-weight: 600;">${t.landingTagline}</span>
+                <span style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--color-primary); letter-spacing: -0.3px;">${t.appTitle}</span>
+                <span class="hide-on-mobile" style="font-size: 11px; color: var(--color-text-secondary); font-weight: 600;">${t.landingTagline}</span>
               </div>
             </div>
           </div>
@@ -72,7 +73,7 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
         </header>
 
         <!-- Main Screen Outlet for Landing / OTP -->
-        <main class="app-content-landing" id="app-screen-outlet" style="max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 16px 40px 16px;">
+        <main class="app-content-landing" id="app-screen-outlet" style="max-width: 1200px; margin: 0 auto; width: 100%; padding: 0 14px 40px 14px;">
           <!-- Screen HTML injected dynamically here -->
         </main>
       </div>
@@ -138,7 +139,7 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
           </div>
           <div class="sidebar-brand-text" id="btn-brand-text">
             <span class="sidebar-brand-name">${t.appTitle}</span>
-            <span class="sidebar-brand-tag" style="color: var(--color-primary); font-weight: 700;">${roleNameMap[state.currentRole]}</span>
+            <span class="sidebar-brand-tag">${roleNameMap[state.currentRole]}</span>
           </div>
         </div>
 
@@ -156,30 +157,30 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
         </ul>
 
         <!-- Sidebar Footer with Profile, Switch Portal & Logout -->
-        <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="sidebar-footer">
           <!-- User Profile & Verified ID -->
-          <div class="sidebar-role-card" style="padding: 10px 12px; cursor: default;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">
+          <div class="sidebar-role-card" style="cursor: default;">
+            <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0;">
                 ${state.currentRole === 'doctor' ? 'DR' : (state.currentRole === 'health_worker' ? 'HW' : (state.currentRole === 'facility' ? 'PH' : 'PT'))}
               </div>
-              <div>
-                <div style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2;">
+              <div style="min-width: 0; overflow: hidden;">
+                <div style="font-family: var(--font-heading); font-size: 13px; font-weight: 700; color: var(--color-text-primary); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                   ${state.currentRole === 'doctor' ? 'Dr. Ananya Sharma' : (state.currentRole === 'health_worker' ? 'Sunita Devi (ASHA)' : (state.currentRole === 'facility' ? 'PHC Rampur Hub' : (state.patient.name || 'Ramesh Kumar')))}
                 </div>
-                <div style="font-size: 11px; color: var(--color-text-muted);">${state.userMobile || '+91 98765 43210'}</div>
+                <div style="font-size: 11px; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${state.userMobile || '+91 98765 43210'}</div>
               </div>
             </div>
           </div>
 
           <!-- Switch Portal Button -->
-          <button class="btn btn-outline btn-full" id="btn-switch-portal-sidebar" style="padding: 7px 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <button class="btn btn-outline btn-full" id="btn-switch-portal-sidebar" style="padding: 8px 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
             <i data-lucide="refresh-cw" style="width: 14px; height: 14px;"></i>
             <span>${t.switchPortal}</span>
           </button>
 
           <!-- Logout Button -->
-          <button class="btn btn-outline btn-full" id="btn-logout-sidebar" style="padding: 7px 12px; font-size: 12px; font-weight: 700; color: var(--color-danger); border-color: rgba(229, 57, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 6px;">
+          <button class="btn btn-outline btn-full" id="btn-logout-sidebar" style="padding: 8px 12px; font-size: 12px; font-weight: 700; color: var(--color-danger); border-color: rgba(229, 57, 53, 0.3); display: flex; align-items: center; justify-content: center; gap: 6px;">
             <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
             <span>${t.logout}</span>
           </button>
@@ -196,9 +197,9 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
             </button>
             
             <div class="header-breadcrumb">
-              <span class="portal-badge">${t.appTitle}</span>
-              <span style="color: var(--color-border); font-size: 18px;">/</span>
-              <span style="color: var(--color-text-primary); font-size: 14px; font-weight: 700;">${roleNameMap[state.currentRole]}</span>
+              <span class="portal-badge">${roleNameMap[state.currentRole]}</span>
+              <span class="hide-on-mobile" style="color: var(--color-border); font-size: 18px;">/</span>
+              <span class="hide-on-mobile" style="color: var(--color-text-primary); font-size: 14px; font-weight: 700;">${t.appTitle}</span>
             </div>
           </div>
 
@@ -217,13 +218,13 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
 
             <!-- User Menu / Controls in Header -->
             <div style="display: flex; align-items: center; gap: 6px;">
-              <button class="btn btn-outline" id="btn-header-switch-portal" title="${t.switchPortal}" style="padding: 6px 10px; font-size: 12px; display: flex; align-items: center; gap: 6px;">
-                <i data-lucide="grid" style="width: 14px; height: 14px;"></i>
+              <button class="btn btn-outline" id="btn-header-switch-portal" title="${t.switchPortal}" style="padding: 6px 10px; font-size: 12px; display: flex; align-items: center; gap: 6px; min-height: 38px;">
+                <i data-lucide="grid" style="width: 15px; height: 15px;"></i>
                 <span class="hide-on-mobile">${t.switchPortal}</span>
               </button>
 
-              <button class="btn btn-outline" id="btn-header-logout" title="${t.logout}" style="padding: 6px 10px; font-size: 12px; color: var(--color-danger); border-color: rgba(229, 57, 53, 0.3); display: flex; align-items: center; gap: 6px;">
-                <i data-lucide="log-out" style="width: 14px; height: 14px;"></i>
+              <button class="btn btn-outline" id="btn-header-logout" title="${t.logout}" style="padding: 6px 10px; font-size: 12px; color: var(--color-danger); border-color: rgba(229, 57, 53, 0.3); display: flex; align-items: center; gap: 6px; min-height: 38px;">
+                <i data-lucide="log-out" style="width: 15px; height: 15px;"></i>
                 <span class="hide-on-mobile">${t.logout}</span>
               </button>
             </div>
@@ -240,7 +241,7 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
       <nav class="app-bottom-nav">
         ${navItems.slice(0, 5).map(item => `
           <button class="nav-item ${item.isSOS ? 'nav-sos-btn' : ''}" data-nav="${item.id}" id="mobile-nav-${item.id}">
-            <i data-lucide="${item.icon}"></i>
+            <i data-lucide="${item.icon}" style="width: 18px; height: 18px;"></i>
             <span>${item.label}</span>
           </button>
         `).join('')}

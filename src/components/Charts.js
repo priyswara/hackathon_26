@@ -50,8 +50,8 @@ export function renderReferralDonut(t) {
   const legend3 = (t && t.legendDistrictHospital) ? t.legendDistrictHospital : '10% District Hospital';
 
   return `
-    <div style="display: flex; align-items: center; justify-content: space-around; gap: 12px; margin-top: 8px;">
-      <div style="width: 90px; height: 90px; position: relative;">
+    <div style="display: flex; align-items: center; justify-content: space-around; gap: 12px; margin-top: 8px; flex-wrap: wrap;">
+      <div style="width: 90px; height: 90px; position: relative; flex-shrink: 0;">
         <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
           <!-- Background circle -->
           <circle cx="18" cy="18" r="14" fill="none" stroke="#ECEAF3" stroke-width="5" />

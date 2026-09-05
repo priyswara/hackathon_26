@@ -41,7 +41,7 @@ export function renderWelcomeScreen(state) {
         </div>
 
         <!-- 2x2 Responsive Portal Cards Grid (Desktop 2x2, Mobile Stacked) -->
-        <div class="portal-selection-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+        <div class="portal-selection-grid">
           
           <!-- Card 1: Patient Portal -->
           <div class="card card-clickable portal-card" data-portal="patient" style="padding: 24px; border-top: 5px solid var(--color-primary); display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s ease;">
