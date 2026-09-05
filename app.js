@@ -1,6 +1,7 @@
 /**
  * Main Application Controller & State Router
  * Rural Healthcare Access Platform — Responsive Web Application
+ * Features Multi-Role Portal Architecture & Mock OTP Verification Flow
  */
 
 import { appStore } from './src/data/mockData.js';
@@ -10,6 +11,7 @@ import { renderLanguageModal } from './src/components/LanguageModal.js';
 
 // Screen Renderers
 import { renderWelcomeScreen } from './src/screens/WelcomeScreen.js';
+import { renderOTPVerificationScreen } from './src/screens/OTPVerificationScreen.js';
 import { renderPatientHomeScreen } from './src/screens/PatientHomeScreen.js';
 import { renderAppointmentQueueScreen } from './src/screens/AppointmentQueueScreen.js';
 import { renderTriageScreen } from './src/screens/TriageScreen.js';
@@ -31,6 +33,11 @@ class AppRouter {
     this.selectedSlot = '10:30 AM';
     this.isLanguageModalOpen = false;
     this.isSidebarOpen = false;
+
+    // Mock OTP flow state
+    this.otpStep = 'mobile'; // 'mobile' | 'otp'
+    this.currentOtpValue = '';
+    this.otpErrorMessage = '';
     
     // Subscribe to global store
     appStore.subscribe((state) => {
@@ -109,6 +116,7 @@ class AppRouter {
     appContainer.innerHTML = renderAppShell(
       appContainer,
       state,
+      this.currentScreen,
       (screen) => this.navigateTo(screen),
       () => this.openLanguageModal(),
       () => this.navigateTo('emergency_sos')
@@ -154,6 +162,8 @@ class AppRouter {
     switch (screenId) {
       case 'welcome':
         return renderWelcomeScreen(state);
+      case 'otp_verification':
+        return renderOTPVerificationScreen(state, this.otpStep, this.currentOtpValue, this.otpErrorMessage);
       case 'patient_home':
         return renderPatientHomeScreen(state);
       case 'appointment_queue':
@@ -221,15 +231,25 @@ class AppRouter {
         return;
       }
 
-      // Brand click -> Return to welcome or home
+      // Brand click -> Return to welcome landing
       if (e.target.closest('#btn-brand-home') || e.target.closest('#btn-brand-text')) {
         this.navigateTo('welcome');
         return;
       }
 
-      // Role change badge click
-      if (e.target.closest('#btn-change-role') || e.target.closest('#btn-header-role')) {
+      // Switch Portal button click in Header or Sidebar
+      if (e.target.closest('#btn-header-switch-portal') || e.target.closest('#btn-switch-portal-sidebar')) {
+        appStore.switchPortal();
         this.navigateTo('welcome');
+        this.showToast(t.choosePortalTitle || 'Choose your portal', 'info');
+        return;
+      }
+
+      // Logout button click in Header or Sidebar
+      if (e.target.closest('#btn-header-logout') || e.target.closest('#btn-logout-sidebar')) {
+        appStore.logout();
+        this.navigateTo('welcome');
+        this.showToast(t.logout || 'Logged out', 'warning');
         return;
       }
 
@@ -337,17 +357,124 @@ class AppRouter {
       };
     }
 
-    // Role selection cards on Welcome Screen
-    document.querySelectorAll('.role-select-card').forEach(card => {
-      card.onclick = () => {
-        const role = card.dataset.setRole;
-        appStore.setRole(role);
-        if (role === 'patient') this.navigateTo('patient_home');
-        else if (role === 'health_worker') this.navigateTo('health_worker');
-        else if (role === 'doctor') this.navigateTo('doctor');
-        else if (role === 'facility') this.navigateTo('facility');
+    // Portal selection cards & Enter buttons on Landing Page
+    document.querySelectorAll('.portal-card, .btn-enter-portal').forEach(el => {
+      el.onclick = (e) => {
+        e.stopPropagation();
+        const portal = el.dataset.portal || el.closest('.portal-card')?.dataset.portal;
+        if (portal) {
+          appStore.selectPortal(portal);
+          this.otpStep = 'mobile';
+          this.currentOtpValue = '';
+          this.otpErrorMessage = '';
+          this.navigateTo('otp_verification');
+        }
       };
     });
+
+    // OTP Verification Screen Listeners
+    const btnOtpBack = document.getElementById('btn-otp-back-portal');
+    if (btnOtpBack) {
+      btnOtpBack.onclick = () => {
+        this.navigateTo('welcome');
+      };
+    }
+
+    // Step 1: Send OTP Form
+    const sendOtpForm = document.getElementById('form-send-otp');
+    if (sendOtpForm) {
+      sendOtpForm.onsubmit = (e) => {
+        e.preventDefault();
+        const mobileInput = document.getElementById('input-mobile-number');
+        const num = mobileInput && mobileInput.value.trim() ? mobileInput.value.trim() : '9876543210';
+        appStore.setMobileNumber('+91 ' + num);
+        this.otpStep = 'otp';
+        this.currentOtpValue = '';
+        this.otpErrorMessage = '';
+        this.render();
+      };
+    }
+
+    // Auto-fill OTP button
+    const autoFillBtn = document.getElementById('btn-autofill-otp');
+    if (autoFillBtn) {
+      autoFillBtn.onclick = () => {
+        const otpInput = document.getElementById('input-otp-code');
+        if (otpInput) {
+          otpInput.value = '123456';
+          this.currentOtpValue = '123456';
+          otpInput.focus();
+        }
+      };
+    }
+
+    // OTP input live change
+    const otpInput = document.getElementById('input-otp-code');
+    if (otpInput) {
+      otpInput.oninput = (e) => {
+        this.currentOtpValue = e.target.value.trim();
+        if (this.otpErrorMessage) {
+          this.otpErrorMessage = '';
+          const alertEl = document.getElementById('otp-error-alert');
+          if (alertEl) alertEl.remove();
+        }
+      };
+    }
+
+    // Step 2: Verify OTP Form
+    const verifyOtpForm = document.getElementById('form-verify-otp');
+    if (verifyOtpForm) {
+      verifyOtpForm.onsubmit = (e) => {
+        e.preventDefault();
+        const codeInput = document.getElementById('input-otp-code');
+        const enteredCode = codeInput ? codeInput.value.trim() : this.currentOtpValue;
+
+        if (!enteredCode || enteredCode.length < 6) {
+          this.otpErrorMessage = t.incompleteOtpMsg || 'Please enter the 6-digit OTP.';
+          this.render();
+          return;
+        }
+
+        if (enteredCode === '123456') {
+          this.otpErrorMessage = '';
+          appStore.verifyOTP('123456');
+          this.showToast(t.verificationSuccessMsg || 'Verification successful', 'success');
+          
+          // Navigate to category dashboard
+          const selected = state.selectedPortal || 'patient';
+          if (selected === 'health_worker') {
+            this.navigateTo('health_worker');
+          } else if (selected === 'doctor') {
+            this.navigateTo('doctor');
+          } else if (selected === 'facility') {
+            this.navigateTo('facility');
+          } else {
+            this.navigateTo('patient_home');
+          }
+        } else {
+          this.otpErrorMessage = t.incorrectOtpMsg || 'Incorrect OTP. Please try again.';
+          this.render();
+        }
+      };
+    }
+
+    // Change mobile number button
+    const changeMobileBtn = document.getElementById('btn-change-mobile');
+    if (changeMobileBtn) {
+      changeMobileBtn.onclick = () => {
+        this.otpStep = 'mobile';
+        this.otpErrorMessage = '';
+        this.render();
+      };
+    }
+
+    // Resend Demo OTP button
+    const resendOtpBtn = document.getElementById('btn-resend-demo-otp');
+    if (resendOtpBtn) {
+      resendOtpBtn.onclick = () => {
+        this.showToast('Demo OTP: 123456', 'info');
+      };
+    }
 
     // Patient Home Quick Action Tiles
     const mapAction = (id, screen) => {

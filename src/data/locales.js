@@ -435,7 +435,44 @@ export const locales = {
     docAdmitToast: 'Admitting Token to consultation',
     ambulanceDispatchedToast: '108 Emergency Ambulance Dispatched! ETA 8 Mins.',
     ashaSosAlertedToast: 'High-Priority SMS & Ring sent to ASHA Sunita Devi',
-    appointmentConfirmedToast: 'Token confirmed for slot!'
+    appointmentConfirmedToast: 'Token confirmed for slot!',
+
+    // Landing & Portal Selection
+    landingTagline: 'Healthcare access, closer to home.',
+    landingHeroSub: 'Bridging gaps in rural healthcare access through network-aware tele-OPD, intelligent triage, and integrated care journeys.',
+    choosePortalTitle: 'Choose your portal',
+    choosePortalSub: 'Select your role category to access customized clinical tools and services.',
+    portalPatientTitle: 'Patient Portal',
+    portalPatientDesc: 'Access appointments, triage, consultation, medicines, diagnostics and health journey.',
+    portalHealthWorkerTitle: 'Health Worker Portal',
+    portalHealthWorkerDesc: 'Manage patients, alerts, referrals and follow-ups.',
+    portalDoctorTitle: 'Doctor Portal',
+    portalDoctorDesc: 'View priority patients, appointments and consultation information.',
+    portalFacilityTitle: 'Facility Portal',
+    portalFacilityDesc: 'Manage queues, diagnostics, medicines and facility-level information.',
+    enterPortalBtn: 'Enter Portal',
+    continueBtn: 'Continue',
+
+    // Mock OTP Verification
+    otpVerifyTitle: 'Verify Mobile Number',
+    otpVerifySubtitle: 'Verify your mobile number to continue',
+    mobileNumberLabel: 'Mobile Number',
+    sendOtpBtn: 'Send OTP',
+    enterOtpLabel: 'Enter the 6-digit OTP',
+    demoOtpHelper: 'Demo OTP: 123456',
+    demoVerificationTag: 'Demo verification',
+    verifyContinueBtn: 'Verify & Continue',
+    changeMobileBtn: 'Change mobile number',
+    incorrectOtpMsg: 'Incorrect OTP. Please try again.',
+    incompleteOtpMsg: 'Please enter the 6-digit OTP.',
+    verificationSuccessMsg: 'Verification successful',
+    resendOtpBtn: 'Resend OTP',
+
+    // Session & User Controls
+    switchPortal: 'Switch Portal',
+    logout: 'Logout',
+    userProfile: 'User Profile',
+    prototypeNotice: 'Prototype only. Uses fictional demo data. OTP verification is simulated and does not send a real message.'
   },
 
   hi: {
@@ -847,7 +884,44 @@ export const locales = {
     docAdmitToast: 'मरीज को परामर्श में शामिल किया गया',
     ambulanceDispatchedToast: '108 आपातकालीन एम्बुलेंस रवाना! समय: 8 मिनट।',
     ashaSosAlertedToast: 'आशा सुनीता देवी को उच्च-प्राथमिकता अलर्ट भेजा गया',
-    appointmentConfirmedToast: 'समय स्लॉट के लिए टोकन कन्फर्म हुआ!'
+    appointmentConfirmedToast: 'समय स्लॉट के लिए टोकन कन्फर्म हुआ!',
+
+    // Landing & Portal Selection
+    landingTagline: 'स्वास्थ्य सेवा, आपके घर के करीब।',
+    landingHeroSub: 'नेटवर्क-अनुकूल टेली-ओपीडी, स्मार्ट ट्राइएज और एकीकृत स्वास्थ्य यात्रा के माध्यम से ग्रामीण स्वास्थ्य सेवा को सुलभ बनाना।',
+    choosePortalTitle: 'अपना पोर्टल चुनें',
+    choosePortalSub: 'अनुकूलित स्वास्थ्य सेवाओं और उपकरणों तक पहुँचने के लिए अपनी श्रेणी चुनें।',
+    portalPatientTitle: 'नागरिक / रोगी पोर्टल',
+    portalPatientDesc: 'अपॉइंटमेंट, ट्राइएज, परामर्श, दवाएं, परीक्षण और स्वास्थ्य यात्रा का उपयोग करें।',
+    portalHealthWorkerTitle: 'स्वास्थ्य कार्यकर्ता (आशा) पोर्टल',
+    portalHealthWorkerDesc: 'मरीजों, प्राथमिक अलर्ट, रेफरल और फॉलो-अप का प्रबंधन करें।',
+    portalDoctorTitle: 'डॉक्टर पोर्टल',
+    portalDoctorDesc: 'प्राथमिकता वाले मरीजों, अपॉइंटमेंट और टेली-परामर्श की जानकारी देखें।',
+    portalFacilityTitle: 'स्वास्थ्य केंद्र (PHC) पोर्टल',
+    portalFacilityDesc: 'कतार, परीक्षण, दवा स्टॉक और केंद्र-स्तरीय जानकारी का प्रबंधन करें।',
+    enterPortalBtn: 'पोर्टल में प्रवेश करें',
+    continueBtn: 'आगे बढ़ें',
+
+    // Mock OTP Verification
+    otpVerifyTitle: 'मोबाइल नंबर सत्यापित करें',
+    otpVerifySubtitle: 'आगे बढ़ने के लिए अपना मोबाइल नंबर सत्यापित करें',
+    mobileNumberLabel: 'मोबाइल नंबर',
+    sendOtpBtn: 'ओटीपी भेजें',
+    enterOtpLabel: '6-अंकों का ओटीपी दर्ज करें',
+    demoOtpHelper: 'डेमो ओटीपी: 123456',
+    demoVerificationTag: 'डेमो सत्यापन',
+    verifyContinueBtn: 'सत्यापित करें और आगे बढ़ें',
+    changeMobileBtn: 'मोबाइल नंबर बदलें',
+    incorrectOtpMsg: 'गलत ओटीपी। कृपया पुनः प्रयास करें।',
+    incompleteOtpMsg: 'कृपया 6-अंकों का ओटीपी दर्ज करें।',
+    verificationSuccessMsg: 'सत्यापन सफल रहा',
+    resendOtpBtn: 'ओटीपी पुनः भेजें',
+
+    // Session & User Controls
+    switchPortal: 'पोर्टल बदलें',
+    logout: 'लॉग आउट',
+    userProfile: 'उपयोगकर्ता प्रोफ़ाइल',
+    prototypeNotice: 'केवल प्रोटोटाइप। काल्पनिक डेमो डेटा का उपयोग। ओटीपी सत्यापन सिम्युलेटेड है और वास्तविक संदेश नहीं भेजता।'
   },
 
   ta: {
@@ -1259,7 +1333,44 @@ export const locales = {
     docAdmitToast: 'நோயாளி ஆலோசனைக்கு இணைக்கப்பட்டார்',
     ambulanceDispatchedToast: '108 அவசர ஆம்புலன்ஸ் புறப்பட்டது! நேரம்: 8 நிமிடம்.',
     ashaSosAlertedToast: 'ஆஷா சுனிதா தேவிக்கு அவசர எச்சரிக்கை அனுப்பப்பட்டது',
-    appointmentConfirmedToast: 'டோக்கன் முன்பதிவு உறுதி செய்யப்பட்டது!'
+    appointmentConfirmedToast: 'டோக்கன் முன்பதிவு உறுதி செய்யப்பட்டது!',
+
+    // Landing & Portal Selection
+    landingTagline: 'சுகாதார சேவை, உங்கள் இல்லத்திற்கு அருகில்.',
+    landingHeroSub: 'நெட்வொர்க் ஆதரவுடைய தொலை-மருத்துவம், ஸ்மார்ட் பரிசோதனை மற்றும் ஒருங்கிணைந்த பராமரிப்பு மூலம் கிராமப்புற மருத்துவத்தை மேம்படுத்துகிறது.',
+    choosePortalTitle: 'உங்கள் போர்ட்டலைத் தேர்ந்தெடுக்கவும்',
+    choosePortalSub: 'உரிய மருத்துவக் கருவிகள் மற்றும் சேவைகளைப் பெற உங்கள் பிரிவைத் தேர்வுசெய்க.',
+    portalPatientTitle: 'நோயாளி போர்டல்',
+    portalPatientDesc: 'முன்பதிவுகள், ட்ரையாஜ், மருத்துவர் ஆலோசனை, மருந்துகள், பரிசோதனைகள் மற்றும் சுகாதாரப் பதிவுகள்.',
+    portalHealthWorkerTitle: 'சுகாதாரப் பணியாளர் (ஆஷா) போர்டல்',
+    portalHealthWorkerDesc: 'நோயாளிகள், முன்னுரிமை எச்சரிக்கைகள், பரிந்துரைகள் மற்றும் பின்தொடர்தல்களை நிர்வகிக்கவும்.',
+    portalDoctorTitle: 'மருத்துவர் போர்டல்',
+    portalDoctorDesc: 'முன்னுரிமை நோயாளிகள், முன்பதிவுகள் மற்றும் ஆலோசனைத் தகவல்களைப் பார்க்கவும்.',
+    portalFacilityTitle: 'சுகாதார நிலைய போர்டல்',
+    portalFacilityDesc: 'வரிசைகள், பரிசோதனைகள், மருந்து இருப்பு மற்றும் நிலையத் தகவல்களை நிர்வகிக்கவும்.',
+    enterPortalBtn: 'போர்ட்டலுக்குள் நுழையவும்',
+    continueBtn: 'தொடரவும்',
+
+    // Mock OTP Verification
+    otpVerifyTitle: 'கைப்பேசி எண்ணைச் சரிபார்க்கவும்',
+    otpVerifySubtitle: 'தொடர உங்கள் கைப்பேசி எண்ணைச் சரிபார்க்கவும்',
+    mobileNumberLabel: 'கைப்பேசி எண்',
+    sendOtpBtn: 'OTP அனுப்பவும்',
+    enterOtpLabel: '6-இலக்க OTP-ஐ உள்ளிடவும்',
+    demoOtpHelper: 'டெமோ OTP: 123456',
+    demoVerificationTag: 'டெமோ சரிபார்ப்பு',
+    verifyContinueBtn: 'சரிபார்த்துத் தொடரவும்',
+    changeMobileBtn: 'கைப்பேசி எண்ணை மாற்றவும்',
+    incorrectOtpMsg: 'தவறான OTP. மீண்டும் முயற்சிக்கவும்.',
+    incompleteOtpMsg: 'தயவுசெய்து 6-இலக்க OTP-ஐ உள்ளிடவும்.',
+    verificationSuccessMsg: 'சரிபார்ப்பு வெற்றிகரமானது',
+    resendOtpBtn: 'OTP மீண்டும் அனுப்புக',
+
+    // Session & User Controls
+    switchPortal: 'போர்ட்டலை மாற்றவும்',
+    logout: 'வெளியேறு',
+    userProfile: 'பயனர் சுயவிவரம்',
+    prototypeNotice: 'மாதிரி வடிவம் மட்டுமே. கற்பனையான டெமோ தரவு. OTP சரிபார்ப்பு மாதிரி மட்டுமே, உண்மையான செய்தி அனுப்பப்படாது.'
   },
 
   te: {
@@ -1671,7 +1782,44 @@ export const locales = {
     docAdmitToast: 'రోగిని సంప్రదింపుకు చేర్చుకున్నారు',
     ambulanceDispatchedToast: '108 అత్యవసర అంబులెన్స్ బయలుదేరింది! సమయం: 8 నిమిషాలు.',
     ashaSosAlertedToast: 'ఆశా సునీతా దేవికి అత్యవసర హెచ్చరిక పంపబడింది',
-    appointmentConfirmedToast: 'టోకెన్ బుకింగ్ ఖరారైంది!'
+    appointmentConfirmedToast: 'టోకెన్ బుకింగ్ ఖరారైంది!',
+
+    // Landing & Portal Selection
+    landingTagline: 'ఆరోగ్య సేవలు, మీ ఇంటి వద్దకే.',
+    landingHeroSub: 'నెట్‌వర్క్-అనుకూల టెలి-ఓపీడీ, స్మార్ట్ ట్రయేజ్ మరియు సమగ్ర సంరక్షణ ప్రయాణం ద్వారా గ్రామీణ ఆరోగ్య సేవలను సులభతరం చేస్తుంది.',
+    choosePortalTitle: 'మీ పోర్టల్‌ను ఎంచుకోండి',
+    choosePortalSub: 'అనుకూలీకరించిన వైద్య సేవలు మరియు సాధనాలను పొందడానికి మీ విభాగాన్ని ఎంచుకోండి.',
+    portalPatientTitle: 'రోగి పోర్టల్',
+    portalPatientDesc: 'అపాయింట్‌మెంట్లు, ట్రయేజ్, సంప్రదింపులు, మందులు, రోగ నిర్ధారణ మరియు ఆరోగ్య ప్రయాణాన్ని పొందండి.',
+    portalHealthWorkerTitle: 'ఆరోగ్య కార్యకర్త (ఆశా) పోర్టల్',
+    portalHealthWorkerDesc: 'రోగులు, ప్రాధాన్య హెచ్చరికలు, రిఫరల్స్ మరియు ఫాలో-అప్‌లను నిర్వహించండి.',
+    portalDoctorTitle: 'వైద్యుల పోర్టల్',
+    portalDoctorDesc: 'ప్రాధాన్యత కలిగిన రోగులు, అపాయింట్‌మెంట్లు మరియు సంప్రదింపుల సమాచారాన్ని వీక్షించండి.',
+    portalFacilityTitle: 'ఆరోగ్య కేంద్ర (PHC) పోర్టల్',
+    portalFacilityDesc: 'క్యూలు, రోగ నిర్ధారణ, మందుల నిల్వలు మరియు కేంద్ర స్థాయి సమాచారాన్ని నిర్వహించండి.',
+    enterPortalBtn: 'పోర్టల్‌లోకి ప్రవేశించండి',
+    continueBtn: 'కొనసాగించండి',
+
+    // Mock OTP Verification
+    otpVerifyTitle: 'మొబైల్ నంబర్‌ను ధృవీకరించండి',
+    otpVerifySubtitle: 'కొనసాగడానికి మీ మొబైల్ నంబర్‌ను ధృవీకరించండి',
+    mobileNumberLabel: 'మొబైల్ నంబర్',
+    sendOtpBtn: 'OTP పంపండి',
+    enterOtpLabel: '6-అంకెల OTPని నమోదు చేయండి',
+    demoOtpHelper: 'డెమో OTP: 123456',
+    demoVerificationTag: 'డెమో ధృవీకరణ',
+    verifyContinueBtn: 'ధృవీకరించి కొనసాగించండి',
+    changeMobileBtn: 'మొబైల్ నంబర్ మార్చండి',
+    incorrectOtpMsg: 'తప్పుడు OTP. దయచేసి మళ్లీ ప్రయత్నించండి.',
+    incompleteOtpMsg: 'దయచేసి 6-అంకెల OTPని నమోదు చేయండి.',
+    verificationSuccessMsg: 'ధృవీకరణ విజయవంతమైంది',
+    resendOtpBtn: 'OTP మళ్లీ పంపండి',
+
+    // Session & User Controls
+    switchPortal: 'పోర్టల్ మార్చండి',
+    logout: 'లాగ్ అవుట్',
+    userProfile: 'వినియోగదారు ప్రొఫైల్',
+    prototypeNotice: 'ప్రోటోటైప్ మాత్రమే. కల్పిత డెమో డేటా ఉపయోగించబడింది. OTP ధృవీకరణ అనుకరణ మాత్రమే, అసలు సందేశం పంపబడదు.'
   },
 
   ml: {
@@ -2083,6 +2231,43 @@ export const locales = {
     docAdmitToast: 'രോഗിയെ പരിശോധനയിലേക്ക് ചേർത്തു',
     ambulanceDispatchedToast: '108 അടിയന്തര ആംബുലൻസ് പുറപ്പെട്ടു! സമയം: 8 മിനിറ്റ്.',
     ashaSosAlertedToast: 'ആശ സുനിത ദേവിക്ക് അടിയന്തര മുന്നറിയിപ്പ് അയച്ചു',
-    appointmentConfirmedToast: 'ടോക്കൺ ബുക്കിംഗ് സ്ഥിരീകരിച്ചു!'
+    appointmentConfirmedToast: 'ടോക്കൺ ബുക്കിംഗ് സ്ഥിരീകരിച്ചു!',
+
+    // Landing & Portal Selection
+    landingTagline: 'ആരോഗ്യ സംരക്ഷണം, നിങ്ങളുടെ വീടിനരികിൽ.',
+    landingHeroSub: 'നെറ്റ്‌വർക്ക്-അധിഷ്ഠിത ടെലി-ഒപിഡി, സ്മാർട്ട് ട്രയാജ്, സംയോജിത ആരോഗ്യ യാത്ര എന്നിവയിലൂടെ ഗ്രാമീണ ആരോഗ്യ സേവനങ്ങൾ മെച്ചപ്പെടുത്തുന്നു.',
+    choosePortalTitle: 'നിങ്ങളുടെ പോർട്ടൽ തിരഞ്ഞെടുക്കുക',
+    choosePortalSub: 'നിങ്ങൾക്ക് ആവശ്യമായ ആരോഗ്യ സേവനങ്ങളും ടൂളുകളും ലഭ്യമാക്കാൻ നിങ്ങളുടെ വിഭാഗം തിരഞ്ഞെടുക്കുക.',
+    portalPatientTitle: 'രോഗി പോർട്ടൽ',
+    portalPatientDesc: 'അപ്പോയിന്റ്മെന്റുകൾ, ട്രയാജ്, കൺസൾട്ടേഷൻ, മരുന്നുകൾ, ലാബ് പരിശോധനകൾ, ആരോഗ്യ യാത്ര എന്നിവ ലഭ്യമാക്കുക.',
+    portalHealthWorkerTitle: 'ആശാ / ആരോഗ്യ പ്രവർത്തക പോർട്ടൽ',
+    portalHealthWorkerDesc: 'രോഗികൾ, മുൻഗണനാ മുന്നറിയിപ്പുകൾ, റഫറലുകൾ, തുടർപരിചരണങ്ങൾ എന്നിവ കൈകാര്യം ചെയ്യുക.',
+    portalDoctorTitle: 'ഡോക്ടർ പോർട്ടൽ',
+    portalDoctorDesc: 'മുൻഗണനാ രോഗികൾ, അപ്പോയിന്റ്മെന്റുകൾ, കൺസൾട്ടേഷൻ വിവരങ്ങൾ എന്നിവ കാണുക.',
+    portalFacilityTitle: 'ആരോഗ്യ കേന്ദ്രം (PHC) പോർട്ടൽ',
+    portalFacilityDesc: 'ക്യൂ, ലാബ് ടെസ്റ്റുകൾ, മരുന്ന് സ്റ്റോക്ക്, കേന്ദ്ര തല വിവരങ്ങൾ എന്നിവ കൈകാര്യം ചെയ്യുക.',
+    enterPortalBtn: 'പോർട്ടലിൽ പ്രവേശിക്കുക',
+    continueBtn: 'തുടരുക',
+
+    // Mock OTP Verification
+    otpVerifyTitle: 'മൊബൈൽ നമ്പർ സ്ഥിരീകരിക്കുക',
+    otpVerifySubtitle: 'തുടരുന്നതിന് നിങ്ങളുടെ മൊബൈൽ നമ്പർ സ്ഥിരീകരിക്കുക',
+    mobileNumberLabel: 'മൊബൈൽ നമ്പർ',
+    sendOtpBtn: 'OTP അയയ്ക്കുക',
+    enterOtpLabel: '6-അക്ക OTP നൽകുക',
+    demoOtpHelper: 'ഡെമോ OTP: 123456',
+    demoVerificationTag: 'ഡെമോ പരിശോധന',
+    verifyContinueBtn: 'സ്ഥിരീകരിച്ച് തുടരുക',
+    changeMobileBtn: 'മൊബൈൽ നമ്പർ മാറ്റുക',
+    incorrectOtpMsg: 'തെറ്റായ OTP. വീണ്ടും ശ്രമിക്കുക.',
+    incompleteOtpMsg: 'ദയവായി 6-അക്ക OTP നൽകുക.',
+    verificationSuccessMsg: 'സ്ഥിരീകരണം വിജയകരമായി പൂർത്തിയായി',
+    resendOtpBtn: 'OTP വീണ്ടും അയയ്ക്കുക',
+
+    // Session & User Controls
+    switchPortal: 'പോർട്ടൽ മാറ്റുക',
+    logout: 'ലോഗ് ഔട്ട്',
+    userProfile: 'ഉപയോക്തൃ പ്രൊഫൈൽ',
+    prototypeNotice: 'പ്രോട്ടോടൈപ്പ് മാത്രം. സാങ്കൽപ്പിക ഡെമോ വിവരങ്ങൾ. OTP പരിശോധന ഡെമോ ആവശ്യങ്ങൾക്ക് മാത്രമാണ്, യഥാർത്ഥ സന്ദേശം അയയ്ക്കില്ല.'
   }
 };

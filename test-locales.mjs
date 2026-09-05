@@ -5,6 +5,7 @@ import { renderLanguageModal } from './src/components/LanguageModal.js';
 import { renderFootfallChart, renderReferralDonut } from './src/components/Charts.js';
 
 import { renderWelcomeScreen } from './src/screens/WelcomeScreen.js';
+import { renderOTPVerificationScreen } from './src/screens/OTPVerificationScreen.js';
 import { renderPatientHomeScreen } from './src/screens/PatientHomeScreen.js';
 import { renderAppointmentQueueScreen } from './src/screens/AppointmentQueueScreen.js';
 import { renderTriageScreen } from './src/screens/TriageScreen.js';
@@ -44,6 +45,9 @@ langs.forEach(lang => {
 console.log('\n=== 2. CHECKING SCREEN RENDERING FOR ALL 5 LANGUAGES ===');
 const screens = [
   { name: 'WelcomeScreen', fn: renderWelcomeScreen },
+  { name: 'OTPVerificationScreen (Mobile Step)', fn: (state) => renderOTPVerificationScreen(state, 'mobile') },
+  { name: 'OTPVerificationScreen (OTP Step)', fn: (state) => renderOTPVerificationScreen(state, 'otp', '123456') },
+  { name: 'OTPVerificationScreen (Error State)', fn: (state) => renderOTPVerificationScreen(state, 'otp', '000000', 'Incorrect OTP') },
   { name: 'PatientHomeScreen', fn: renderPatientHomeScreen },
   { name: 'AppointmentQueueScreen', fn: renderAppointmentQueueScreen },
   { name: 'TriageScreen', fn: renderTriageScreen },

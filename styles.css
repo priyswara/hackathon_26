@@ -1512,4 +1512,46 @@ html, body {
   .modal-dialog {
     padding: 20px;
   }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
 }
+
+/* ==========================================================================
+   Portal Selection & OTP Verification Styles
+   ========================================================================== */
+.portal-card {
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.portal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.portal-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 767px) {
+  .portal-selection-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.app-shell-landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+}
+
+.app-content-landing {
+  flex: 1;
+}
+

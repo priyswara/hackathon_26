@@ -7,6 +7,9 @@ import { fetchPatient, fetchQueue, fetchCareJourney, bookAppointment, addCareJou
 
 export const initialMockDB = {
   currentRole: 'patient', // 'patient' | 'health_worker' | 'doctor' | 'facility'
+  selectedPortal: 'patient', // 'patient' | 'health_worker' | 'doctor' | 'facility'
+  isVerified: false,
+  userMobile: '+91 98765 43210',
   currentLanguage: 'en',
   networkMode: 'good', // 'good' | 'moderate' | 'low'
   
@@ -398,6 +401,37 @@ export class MockStore {
   
   setRole(role) {
     this.state.currentRole = role;
+    this.state.selectedPortal = role;
+    this.notify();
+  }
+  
+  selectPortal(portalId) {
+    this.state.selectedPortal = portalId;
+    this.notify();
+  }
+
+  setMobileNumber(mobile) {
+    this.state.userMobile = mobile;
+    this.notify();
+  }
+
+  verifyOTP(code) {
+    if (code === '123456') {
+      this.state.isVerified = true;
+      this.state.currentRole = this.state.selectedPortal;
+      this.notify();
+      return true;
+    }
+    return false;
+  }
+
+  logout() {
+    this.state.isVerified = false;
+    this.notify();
+  }
+
+  switchPortal() {
+    this.state.isVerified = false;
     this.notify();
   }
   
