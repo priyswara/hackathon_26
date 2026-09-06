@@ -7,10 +7,23 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Environment loader (loads .env locally if present, fallback for Render / Cloud envs)
+import fs from 'fs';
+if (typeof process.loadEnvFile === 'function') {
+  try {
+    if (fs.existsSync(path.join(process.cwd(), '.env'))) {
+      process.loadEnvFile();
+    }
+  } catch (e) {
+    // Ignore if already loaded or in production
+  }
+}
+
 // Database initializer
 import { initDatabase } from './backend/database.js';
 
 // API Routes
+import authRoutes from './backend/routes/authRoutes.js';
 import patientRoutes from './backend/routes/patientRoutes.js';
 import queueRoutes from './backend/routes/queueRoutes.js';
 import appointmentRoutes from './backend/routes/appointmentRoutes.js';
@@ -33,6 +46,7 @@ app.use(express.static(__dirname));
 initDatabase();
 
 // REST API Endpoints
+app.use('/api/auth', authRoutes);
 app.use('/api/patient', patientRoutes);
 app.use('/api/queue', queueRoutes);
 app.use('/api/appointments', appointmentRoutes);

@@ -8,6 +8,7 @@ import { appStore } from './src/data/mockData.js';
 import { locales } from './src/data/locales.js';
 import { renderAppShell } from './src/components/AppShell.js';
 import { renderLanguageModal } from './src/components/LanguageModal.js';
+import { sendEmailOtp, verifyEmailOtp } from './src/services/api.js';
 
 // Screen Renderers
 import { renderWelcomeScreen } from './src/screens/WelcomeScreen.js';
@@ -34,10 +35,13 @@ class AppRouter {
     this.isLanguageModalOpen = false;
     this.isSidebarOpen = false;
 
-    // Mock OTP flow state
-    this.otpStep = 'mobile'; // 'mobile' | 'otp'
+    // Real Email OTP Authentication state
+    this.otpStep = 'email'; // 'email' | 'otp'
     this.currentOtpValue = '';
     this.otpErrorMessage = '';
+    this.otpCooldown = 0;
+    this.otpLoading = false;
+    this.cooldownTimer = null;
     
     // Subscribe to global store
     appStore.subscribe((state) => {
@@ -107,6 +111,41 @@ class AppRouter {
     }, 2800);
   }
 
+  startOtpCooldown(seconds = 60) {
+    if (this.cooldownTimer) {
+      clearInterval(this.cooldownTimer);
+    }
+    this.otpCooldown = seconds;
+    this.cooldownTimer = setInterval(() => {
+      this.otpCooldown -= 1;
+      if (this.otpCooldown <= 0) {
+        this.otpCooldown = 0;
+        clearInterval(this.cooldownTimer);
+        this.cooldownTimer = null;
+      }
+      // If currently on OTP verification screen, update the UI
+      if (this.currentScreen === 'otp_verification') {
+        const resendBtn = document.getElementById('btn-resend-otp');
+        if (resendBtn) {
+          const state = appStore.getState();
+          const t = locales[state.currentLanguage] || locales.en;
+          if (this.otpCooldown > 0) {
+            resendBtn.disabled = true;
+            resendBtn.style.color = 'var(--color-text-muted)';
+            resendBtn.style.cursor = 'not-allowed';
+            resendBtn.innerHTML = `<i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i><span>${t.resendOtpIn || 'Resend in'} ${this.otpCooldown}s</span>`;
+          } else {
+            resendBtn.disabled = false;
+            resendBtn.style.color = 'var(--color-primary)';
+            resendBtn.style.cursor = 'pointer';
+            resendBtn.innerHTML = `<i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i><span>${t.resendOtpBtn || 'Resend OTP'}</span>`;
+          }
+          if (window.lucide) window.lucide.createIcons();
+        }
+      }
+    }, 1000);
+  }
+
   render() {
     const state = appStore.getState();
     const appContainer = document.getElementById('phone-app-root') || document.querySelector('.app-root-container');
@@ -163,7 +202,14 @@ class AppRouter {
       case 'welcome':
         return renderWelcomeScreen(state);
       case 'otp_verification':
-        return renderOTPVerificationScreen(state, this.otpStep, this.currentOtpValue, this.otpErrorMessage);
+        return renderOTPVerificationScreen(
+          state, 
+          this.otpStep, 
+          this.currentOtpValue, 
+          this.otpErrorMessage, 
+          this.otpCooldown, 
+          this.otpLoading
+        );
       case 'patient_home':
         return renderPatientHomeScreen(state);
       case 'appointment_queue':
@@ -364,9 +410,10 @@ class AppRouter {
         const portal = el.dataset.portal || el.closest('.portal-card')?.dataset.portal;
         if (portal) {
           appStore.selectPortal(portal);
-          this.otpStep = 'mobile';
+          this.otpStep = 'email';
           this.currentOtpValue = '';
           this.otpErrorMessage = '';
+          this.otpLoading = false;
           this.navigateTo('otp_verification');
         }
       };
@@ -380,30 +427,42 @@ class AppRouter {
       };
     }
 
-    // Step 1: Send OTP Form
+    // Step 1: Send Real Email OTP Form
     const sendOtpForm = document.getElementById('form-send-otp');
     if (sendOtpForm) {
-      sendOtpForm.onsubmit = (e) => {
+      sendOtpForm.onsubmit = async (e) => {
         e.preventDefault();
-        const mobileInput = document.getElementById('input-mobile-number');
-        const num = mobileInput && mobileInput.value.trim() ? mobileInput.value.trim() : '9876543210';
-        appStore.setMobileNumber('+91 ' + num);
-        this.otpStep = 'otp';
-        this.currentOtpValue = '';
+        const emailInput = document.getElementById('input-email-address');
+        const rawEmail = emailInput ? emailInput.value.trim() : '';
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!rawEmail || !emailRegex.test(rawEmail)) {
+          this.otpErrorMessage = t.invalidEmailMsg || 'Please enter a valid email address.';
+          this.render();
+          return;
+        }
+
+        this.otpLoading = true;
         this.otpErrorMessage = '';
         this.render();
-      };
-    }
 
-    // Auto-fill OTP button
-    const autoFillBtn = document.getElementById('btn-autofill-otp');
-    if (autoFillBtn) {
-      autoFillBtn.onclick = () => {
-        const otpInput = document.getElementById('input-otp-code');
-        if (otpInput) {
-          otpInput.value = '123456';
-          this.currentOtpValue = '123456';
-          otpInput.focus();
+        try {
+          const selectedPortal = state.selectedPortal || state.currentRole || 'patient';
+          const result = await sendEmailOtp(rawEmail, selectedPortal);
+
+          appStore.setEmail(rawEmail);
+          this.otpStep = 'otp';
+          this.currentOtpValue = '';
+          this.otpErrorMessage = '';
+          this.otpLoading = false;
+          
+          this.startOtpCooldown(result.cooldownSeconds || 60);
+          this.showToast(result.message || 'Verification code sent to your email!', 'info');
+          this.render();
+        } catch (err) {
+          this.otpLoading = false;
+          this.otpErrorMessage = err.message || 'Failed to send verification code. Please check your network or API key.';
+          this.render();
         }
       };
     }
@@ -412,7 +471,11 @@ class AppRouter {
     const otpInput = document.getElementById('input-otp-code');
     if (otpInput) {
       otpInput.oninput = (e) => {
-        this.currentOtpValue = e.target.value.trim();
+        // Keep only alphanumeric/numeric characters, limit to 6
+        this.currentOtpValue = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
+        if (otpInput.value !== this.currentOtpValue) {
+          otpInput.value = this.currentOtpValue;
+        }
         if (this.otpErrorMessage) {
           this.otpErrorMessage = '';
           const alertEl = document.getElementById('otp-error-alert');
@@ -421,58 +484,96 @@ class AppRouter {
       };
     }
 
-    // Step 2: Verify OTP Form
+    // Step 2: Verify Real Email OTP Form
     const verifyOtpForm = document.getElementById('form-verify-otp');
     if (verifyOtpForm) {
-      verifyOtpForm.onsubmit = (e) => {
+      verifyOtpForm.onsubmit = async (e) => {
         e.preventDefault();
         const codeInput = document.getElementById('input-otp-code');
         const enteredCode = codeInput ? codeInput.value.trim() : this.currentOtpValue;
 
         if (!enteredCode || enteredCode.length < 6) {
-          this.otpErrorMessage = t.incompleteOtpMsg || 'Please enter the 6-digit OTP.';
+          this.otpErrorMessage = t.incompleteOtpMsg || 'Please enter the complete 6-digit verification code.';
           this.render();
           return;
         }
 
-        if (enteredCode === '123456') {
+        this.otpLoading = true;
+        this.otpErrorMessage = '';
+        this.render();
+
+        try {
+          const email = state.userEmail || (document.getElementById('input-email-address')?.value.trim());
+          const selectedPortal = state.selectedPortal || state.currentRole || 'patient';
+          const result = await verifyEmailOtp(email, enteredCode, selectedPortal);
+
+          this.otpLoading = false;
           this.otpErrorMessage = '';
-          appStore.verifyOTP('123456');
-          this.showToast(t.verificationSuccessMsg || 'Verification successful', 'success');
-          
-          // Navigate to category dashboard
-          const selected = state.selectedPortal || 'patient';
-          if (selected === 'health_worker') {
+          this.currentOtpValue = '';
+
+          // Save session in appStore
+          appStore.setAuthenticatedSession(result.token, result.user || { email, role: selectedPortal });
+          this.showToast(t.verificationSuccessMsg || 'Verification successful!', 'success');
+
+          // Navigate to role-specific dashboard
+          if (selectedPortal === 'health_worker') {
             this.navigateTo('health_worker');
-          } else if (selected === 'doctor') {
+          } else if (selectedPortal === 'doctor') {
             this.navigateTo('doctor');
-          } else if (selected === 'facility') {
+          } else if (selectedPortal === 'facility') {
             this.navigateTo('facility');
           } else {
             this.navigateTo('patient_home');
           }
-        } else {
-          this.otpErrorMessage = t.incorrectOtpMsg || 'Incorrect OTP. Please try again.';
+        } catch (err) {
+          this.otpLoading = false;
+          this.otpErrorMessage = err.message || t.incorrectOtpMsg || 'Verification failed. Please try again.';
           this.render();
         }
       };
     }
 
-    // Change mobile number button
-    const changeMobileBtn = document.getElementById('btn-change-mobile');
-    if (changeMobileBtn) {
-      changeMobileBtn.onclick = () => {
-        this.otpStep = 'mobile';
+    // Change Email button
+    const changeEmailBtn = document.getElementById('btn-change-email');
+    if (changeEmailBtn) {
+      changeEmailBtn.onclick = () => {
+        this.otpStep = 'email';
         this.otpErrorMessage = '';
+        this.otpLoading = false;
         this.render();
       };
     }
 
-    // Resend Demo OTP button
-    const resendOtpBtn = document.getElementById('btn-resend-demo-otp');
+    // Resend Email OTP button
+    const resendOtpBtn = document.getElementById('btn-resend-otp');
     if (resendOtpBtn) {
-      resendOtpBtn.onclick = () => {
-        this.showToast('Demo OTP: 123456', 'info');
+      resendOtpBtn.onclick = async () => {
+        if (this.otpCooldown > 0 || this.otpLoading) return;
+
+        const email = state.userEmail;
+        if (!email) {
+          this.otpStep = 'email';
+          this.render();
+          return;
+        }
+
+        this.otpLoading = true;
+        this.render();
+
+        try {
+          const selectedPortal = state.selectedPortal || state.currentRole || 'patient';
+          const result = await sendEmailOtp(email, selectedPortal);
+
+          this.otpLoading = false;
+          this.otpErrorMessage = '';
+          this.startOtpCooldown(result.cooldownSeconds || 60);
+          this.showToast(result.message || 'New verification code sent!', 'info');
+          this.render();
+        } catch (err) {
+          this.otpLoading = false;
+          this.otpErrorMessage = err.message || 'Could not resend OTP. Please try again.';
+          this.render();
+        }
       };
     }
 

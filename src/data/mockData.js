@@ -9,7 +9,9 @@ export const initialMockDB = {
   currentRole: 'patient', // 'patient' | 'health_worker' | 'doctor' | 'facility'
   selectedPortal: 'patient', // 'patient' | 'health_worker' | 'doctor' | 'facility'
   isVerified: false,
+  userEmail: '',
   userMobile: '+91 98765 43210',
+  authToken: null,
   currentLanguage: 'en',
   networkMode: 'good', // 'good' | 'moderate' | 'low'
   
@@ -415,6 +417,19 @@ export class MockStore {
     this.notify();
   }
 
+  setEmail(email) {
+    this.state.userEmail = email;
+    this.notify();
+  }
+
+  setAuthenticatedSession(token, user = {}) {
+    this.state.isVerified = true;
+    this.state.authToken = token;
+    if (user.email) this.state.userEmail = user.email;
+    this.state.currentRole = this.state.selectedPortal;
+    this.notify();
+  }
+
   verifyOTP(code) {
     if (code === '123456') {
       this.state.isVerified = true;
@@ -427,11 +442,13 @@ export class MockStore {
 
   logout() {
     this.state.isVerified = false;
+    this.state.authToken = null;
     this.notify();
   }
 
   switchPortal() {
     this.state.isVerified = false;
+    this.state.authToken = null;
     this.notify();
   }
   

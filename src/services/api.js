@@ -139,3 +139,53 @@ export async function addCareJourneyEvent(eventData) {
     throw error;
   }
 }
+
+/**
+ * 7. Send Real Email OTP via backend Resend service
+ */
+export async function sendEmailOtp(email, portal = 'patient') {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, portal })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || `Failed to send OTP (HTTP ${response.status})`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('❌ [API] Error sending email OTP:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * 8. Verify Email OTP via backend
+ */
+export async function verifyEmailOtp(email, otp, portal = 'patient') {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, otp, portal })
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || `Verification failed (HTTP ${response.status})`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('❌ [API] Error verifying email OTP:', error.message);
+    throw error;
+  }
+}

@@ -453,26 +453,31 @@ export const locales = {
     enterPortalBtn: 'Enter Portal',
     continueBtn: 'Continue',
 
-    // Mock OTP Verification
-    otpVerifyTitle: 'Verify Mobile Number',
-    otpVerifySubtitle: 'Verify your mobile number to continue',
-    mobileNumberLabel: 'Mobile Number',
+    // Real Email OTP Authentication
+    otpVerifyTitle: 'Email Verification',
+    otpVerifySubtitle: 'Enter your email address to receive a secure 6-digit OTP code for',
+    emailAddressLabel: 'Email Address',
+    emailPlaceholder: 'you@example.com',
     sendOtpBtn: 'Send OTP',
-    enterOtpLabel: 'Enter the 6-digit OTP',
-    demoOtpHelper: 'Demo OTP: 123456',
-    demoVerificationTag: 'Demo verification',
+    checkEmailTitle: 'Check your email',
+    enterOtpLabel: 'Enter 6-digit verification code',
+    otpSentToEmail: 'We sent a verification code to',
+    emailOtpNotice: 'Check your inbox (and spam folder) for the 6-digit code.',
+    secureAuthTag: 'Email OTP Verification',
     verifyContinueBtn: 'Verify & Continue',
-    changeMobileBtn: 'Change mobile number',
-    incorrectOtpMsg: 'Incorrect OTP. Please try again.',
-    incompleteOtpMsg: 'Please enter the 6-digit OTP.',
-    verificationSuccessMsg: 'Verification successful',
+    changeEmailBtn: 'Change email address',
+    incorrectOtpMsg: 'Incorrect OTP code. Please try again.',
+    incompleteOtpMsg: 'Please enter the complete 6-digit verification code.',
+    invalidEmailMsg: 'Please enter a valid email address.',
+    verificationSuccessMsg: 'Verification successful! Logging in...',
     resendOtpBtn: 'Resend OTP',
+    resendOtpIn: 'Resend in',
 
     // Session & User Controls
     switchPortal: 'Switch Portal',
     logout: 'Logout',
     userProfile: 'User Profile',
-    prototypeNotice: 'Prototype only. Uses fictional demo data. OTP verification is simulated and does not send a real message.'
+    prototypeNotice: 'Prototype Healthcare Application. Secured with 5-minute time-based OTP delivery via Resend.'
   },
 
   hi: {
@@ -902,26 +907,31 @@ export const locales = {
     enterPortalBtn: 'पोर्टल में प्रवेश करें',
     continueBtn: 'आगे बढ़ें',
 
-    // Mock OTP Verification
-    otpVerifyTitle: 'मोबाइल नंबर सत्यापित करें',
-    otpVerifySubtitle: 'आगे बढ़ने के लिए अपना मोबाइल नंबर सत्यापित करें',
-    mobileNumberLabel: 'मोबाइल नंबर',
+    // Real Email OTP Authentication
+    otpVerifyTitle: 'ईमेल सत्यापन',
+    otpVerifySubtitle: 'सुरक्षित 6-अंकों का ओटीपी प्राप्त करने के लिए अपना ईमेल दर्ज करें:',
+    emailAddressLabel: 'ईमेल पता',
+    emailPlaceholder: 'you@example.com',
     sendOtpBtn: 'ओटीपी भेजें',
-    enterOtpLabel: '6-अंकों का ओटीपी दर्ज करें',
-    demoOtpHelper: 'डेमो ओटीपी: 123456',
-    demoVerificationTag: 'डेमो सत्यापन',
+    checkEmailTitle: 'अपना ईमेल जांचें',
+    enterOtpLabel: '6-अंकों का सत्यापन कोड दर्ज करें',
+    otpSentToEmail: 'हमने सत्यापन कोड भेजा है:',
+    emailOtpNotice: 'कोड के लिए अपना इनबॉक्स (और स्पैम फ़ोल्डर) जांचें।',
+    secureAuthTag: 'ईमेल ओटीपी सत्यापन',
     verifyContinueBtn: 'सत्यापित करें और आगे बढ़ें',
-    changeMobileBtn: 'मोबाइल नंबर बदलें',
-    incorrectOtpMsg: 'गलत ओटीपी। कृपया पुनः प्रयास करें।',
-    incompleteOtpMsg: 'कृपया 6-अंकों का ओटीपी दर्ज करें।',
-    verificationSuccessMsg: 'सत्यापन सफल रहा',
+    changeEmailBtn: 'ईमेल पता बदलें',
+    incorrectOtpMsg: 'गलत ओटीपी कोड। कृपया पुनः प्रयास करें।',
+    incompleteOtpMsg: 'कृपया पूरा 6-अंकों का सत्यापन कोड दर्ज करें।',
+    invalidEmailMsg: 'कृपया एक मान्य ईमेल पता दर्ज करें।',
+    verificationSuccessMsg: 'सत्यापन सफल रहा! लॉगिन हो रहा है...',
     resendOtpBtn: 'ओटीपी पुनः भेजें',
+    resendOtpIn: 'पुनः भेजें',
 
     // Session & User Controls
     switchPortal: 'पोर्टल बदलें',
     logout: 'लॉग आउट',
     userProfile: 'उपयोगकर्ता प्रोफ़ाइल',
-    prototypeNotice: 'केवल प्रोटोटाइप। काल्पनिक डेमो डेटा का उपयोग। ओटीपी सत्यापन सिम्युलेटेड है और वास्तविक संदेश नहीं भेजता।'
+    prototypeNotice: 'प्रोटोटाइप स्वास्थ्य सेवा एप्लिकेशन। Resend के माध्यम से 5 मिनट के ओटीपी से सुरक्षित।'
   },
 
   ta: {
@@ -1351,26 +1361,31 @@ export const locales = {
     enterPortalBtn: 'போர்ட்டலுக்குள் நுழையவும்',
     continueBtn: 'தொடரவும்',
 
-    // Mock OTP Verification
-    otpVerifyTitle: 'கைப்பேசி எண்ணைச் சரிபார்க்கவும்',
-    otpVerifySubtitle: 'தொடர உங்கள் கைப்பேசி எண்ணைச் சரிபார்க்கவும்',
-    mobileNumberLabel: 'கைப்பேசி எண்',
+    // Real Email OTP Authentication
+    otpVerifyTitle: 'மின்னஞ்சல் சரிபார்ப்பு',
+    otpVerifySubtitle: 'பாதுகாப்பான 6-இலக்க OTP பெற உங்கள் மின்னஞ்சலை உள்ளிடவும்:',
+    emailAddressLabel: 'மின்னஞ்சல் முகவரி',
+    emailPlaceholder: 'you@example.com',
     sendOtpBtn: 'OTP அனுப்பவும்',
-    enterOtpLabel: '6-இலக்க OTP-ஐ உள்ளிடவும்',
-    demoOtpHelper: 'டெமோ OTP: 123456',
-    demoVerificationTag: 'டெமோ சரிபார்ப்பு',
+    checkEmailTitle: 'உங்கள் மின்னஞ்சலை சரிபார்க்கவும்',
+    enterOtpLabel: '6-இலக்க சரிபார்ப்புக் குறியீட்டை உள்ளிடவும்',
+    otpSentToEmail: 'சரிபார்ப்புக் குறியீடு அனுப்பப்பட்டது:',
+    emailOtpNotice: 'குறியீட்டிற்கு உங்கள் இன்பாக்ஸைச் சரிபார்க்கவும்.',
+    secureAuthTag: 'மின்னஞ்சல் OTP சரிபார்ப்பு',
     verifyContinueBtn: 'சரிபார்த்துத் தொடரவும்',
-    changeMobileBtn: 'கைப்பேசி எண்ணை மாற்றவும்',
-    incorrectOtpMsg: 'தவறான OTP. மீண்டும் முயற்சிக்கவும்.',
-    incompleteOtpMsg: 'தயவுசெய்து 6-இலக்க OTP-ஐ உள்ளிடவும்.',
-    verificationSuccessMsg: 'சரிபார்ப்பு வெற்றிகரமானது',
+    changeEmailBtn: 'மின்னஞ்சல் முகவரியை மாற்றவும்',
+    incorrectOtpMsg: 'தவறான OTP குறியீடு. மீண்டும் முயற்சிக்கவும்.',
+    incompleteOtpMsg: 'முழுமையான 6-இலக்க OTP குறியீட்டை உள்ளிடவும்.',
+    invalidEmailMsg: 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.',
+    verificationSuccessMsg: 'சரிபார்ப்பு வெற்றிகரமானது! உள்நுழைகிறது...',
     resendOtpBtn: 'OTP மீண்டும் அனுப்புக',
+    resendOtpIn: 'மீண்டும் அனுப்ப',
 
     // Session & User Controls
     switchPortal: 'போர்ட்டலை மாற்றவும்',
     logout: 'வெளியேறு',
     userProfile: 'பயனர் சுயவிவரம்',
-    prototypeNotice: 'மாதிரி வடிவம் மட்டுமே. கற்பனையான டெமோ தரவு. OTP சரிபார்ப்பு மாதிரி மட்டுமே, உண்மையான செய்தி அனுப்பப்படாது.'
+    prototypeNotice: 'மாதிரி சுகாதாரப் பயன்பாடு. Resend வழியாக 5 நிமிட OTP பாதுகாப்புடன் இயங்குகிறது.'
   },
 
   te: {
@@ -1800,26 +1815,31 @@ export const locales = {
     enterPortalBtn: 'పోర్టల్‌లోకి ప్రవేశించండి',
     continueBtn: 'కొనసాగించండి',
 
-    // Mock OTP Verification
-    otpVerifyTitle: 'మొబైల్ నంబర్‌ను ధృవీకరించండి',
-    otpVerifySubtitle: 'కొనసాగడానికి మీ మొబైల్ నంబర్‌ను ధృవీకరించండి',
-    mobileNumberLabel: 'మొబైల్ నంబర్',
+    // Real Email OTP Authentication
+    otpVerifyTitle: 'ఈమెయిల్ ధృవీకరణ',
+    otpVerifySubtitle: 'సురక్షితమైన 6-అంకెల OTPని అందుకోవడానికి మీ ఈమెయిల్‌ను నమోదు చేయండి:',
+    emailAddressLabel: 'ఈమెయిల్ చిరునామా',
+    emailPlaceholder: 'you@example.com',
     sendOtpBtn: 'OTP పంపండి',
-    enterOtpLabel: '6-అంకెల OTPని నమోదు చేయండి',
-    demoOtpHelper: 'డెమో OTP: 123456',
-    demoVerificationTag: 'డెమో ధృవీకరణ',
+    checkEmailTitle: 'మీ ఈమెయిల్‌ను తనిఖీ చేయండి',
+    enterOtpLabel: '6-అంకెల ధృవీకరణ కోడ్‌ను నమోదు చేయండి',
+    otpSentToEmail: 'ధృవీకరణ కోడ్ పంపబడింది:',
+    emailOtpNotice: 'కోడ్ కోసం మీ ఇన్‌బాక్స్ లేదా స్పామ్ ఫోల్డర్‌ని తనిఖీ చేయండి.',
+    secureAuthTag: 'ఈమెయిల్ OTP ధృవీకరణ',
     verifyContinueBtn: 'ధృవీకరించి కొనసాగించండి',
-    changeMobileBtn: 'మొబైల్ నంబర్ మార్చండి',
-    incorrectOtpMsg: 'తప్పుడు OTP. దయచేసి మళ్లీ ప్రయత్నించండి.',
-    incompleteOtpMsg: 'దయచేసి 6-అంకెల OTPని నమోదు చేయండి.',
-    verificationSuccessMsg: 'ధృవీకరణ విజయవంతమైంది',
+    changeEmailBtn: 'ఈమెయిల్ మార్చండి',
+    incorrectOtpMsg: 'తప్పుడు OTP కోడ్. దయచేసి మళ్లీ ప్రయత్నించండి.',
+    incompleteOtpMsg: 'దయచేసి పూర్తి 6-అంకెల కోడ్‌ను నమోదు చేయండి.',
+    invalidEmailMsg: 'దయచేసి సరైన ఈమెయిల్ చిరునామాను నమోదు చేయండి.',
+    verificationSuccessMsg: 'ధృవీకరణ విజయవంతమైంది! లాగిన్ అవుతోంది...',
     resendOtpBtn: 'OTP మళ్లీ పంపండి',
+    resendOtpIn: 'మళ్లీ పంపడానికి',
 
     // Session & User Controls
     switchPortal: 'పోర్టల్ మార్చండి',
     logout: 'లాగ్ అవుట్',
     userProfile: 'వినియోగదారు ప్రొఫైల్',
-    prototypeNotice: 'ప్రోటోటైప్ మాత్రమే. కల్పిత డెమో డేటా ఉపయోగించబడింది. OTP ధృవీకరణ అనుకరణ మాత్రమే, అసలు సందేశం పంపబడదు.'
+    prototypeNotice: 'ప్రోటోటైప్ హెల్త్‌కేర్ అప్లికేషన్. Resend ద్వారా 5 నిమిషాల OTP రక్షణ.'
   },
 
   ml: {
@@ -2249,25 +2269,30 @@ export const locales = {
     enterPortalBtn: 'പോർട്ടലിൽ പ്രവേശിക്കുക',
     continueBtn: 'തുടരുക',
 
-    // Mock OTP Verification
-    otpVerifyTitle: 'മൊബൈൽ നമ്പർ സ്ഥിരീകരിക്കുക',
-    otpVerifySubtitle: 'തുടരുന്നതിന് നിങ്ങളുടെ മൊബൈൽ നമ്പർ സ്ഥിരീകരിക്കുക',
-    mobileNumberLabel: 'മൊബൈൽ നമ്പർ',
+    // Real Email OTP Authentication
+    otpVerifyTitle: 'ഇമെയിൽ സ്ഥിരീകരണം',
+    otpVerifySubtitle: 'സുരക്ഷിതമായ 6-അക്ക OTP ലഭിക്കുന്നതിന് നിങ്ങളുടെ ഇമെയിൽ വിലാസം നൽകുക:',
+    emailAddressLabel: 'ഇമെയിൽ വിലാസം',
+    emailPlaceholder: 'you@example.com',
     sendOtpBtn: 'OTP അയയ്ക്കുക',
-    enterOtpLabel: '6-അക്ക OTP നൽകുക',
-    demoOtpHelper: 'ഡെമോ OTP: 123456',
-    demoVerificationTag: 'ഡെമോ പരിശോധന',
+    checkEmailTitle: 'നിങ്ങളുടെ ഇമെയിൽ പരിശോധിക്കുക',
+    enterOtpLabel: '6-അക്ക വെരിഫിക്കേഷൻ കോഡ് നൽകുക',
+    otpSentToEmail: 'സ്ഥിരീകരണ കോഡ് അയച്ചിരിക്കുന്നു:',
+    emailOtpNotice: 'കോഡിനായി നിങ്ങളുടെ ഇൻബോക്സ് പരിശോധിക്കുക.',
+    secureAuthTag: 'ഇമെയിൽ OTP സ്ഥിരീകരണം',
     verifyContinueBtn: 'സ്ഥിരീകരിച്ച് തുടരുക',
-    changeMobileBtn: 'മൊബൈൽ നമ്പർ മാറ്റുക',
-    incorrectOtpMsg: 'തെറ്റായ OTP. വീണ്ടും ശ്രമിക്കുക.',
-    incompleteOtpMsg: 'ദയവായി 6-അക്ക OTP നൽകുക.',
-    verificationSuccessMsg: 'സ്ഥിരീകരണം വിജയകരമായി പൂർത്തിയായി',
+    changeEmailBtn: 'ഇമെയിൽ മാറ്റുക',
+    incorrectOtpMsg: 'തെറ്റായ OTP കോഡ്. വീണ്ടും ശ്രമിക്കുക.',
+    incompleteOtpMsg: 'ദയവായി പൂർണ്ണമായ 6-അക്ക കോഡ് നൽകുക.',
+    invalidEmailMsg: 'ദയവായി സാധുവായ ഇമെയിൽ വിലാസം നൽകുക.',
+    verificationSuccessMsg: 'സ്ഥിരീകരണം വിജയകരമായി പൂർത്തിയായി! ലോഗിൻ ചെയ്യുന്നു...',
     resendOtpBtn: 'OTP വീണ്ടും അയയ്ക്കുക',
+    resendOtpIn: 'വീണ്ടും അയയ്ക്കാൻ',
 
     // Session & User Controls
     switchPortal: 'പോർട്ടൽ മാറ്റുക',
     logout: 'ലോഗ് ഔട്ട്',
     userProfile: 'ഉപയോക്തൃ പ്രൊഫൈൽ',
-    prototypeNotice: 'പ്രോട്ടോടൈപ്പ് മാത്രം. സാങ്കൽപ്പിക ഡെമോ വിവരങ്ങൾ. OTP പരിശോധന ഡെമോ ആവശ്യങ്ങൾക്ക് മാത്രമാണ്, യഥാർത്ഥ സന്ദേശം അയയ്ക്കില്ല.'
+    prototypeNotice: 'പ്രോട്ടോടൈപ്പ് ഹെൽത്ത്‌കെയർ ആപ്ലിക്കേഷൻ. Resend വഴി 5 മിനിറ്റ് സാധുതയുള്ള OTP സുരക്ഷ.'
   }
 };
