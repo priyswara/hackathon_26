@@ -13,6 +13,7 @@ import { sendEmailOtp, verifyEmailOtp } from './src/services/api.js';
 // Screen Renderers
 import { renderWelcomeScreen } from './src/screens/WelcomeScreen.js';
 import { renderOTPVerificationScreen } from './src/screens/OTPVerificationScreen.js';
+import { renderNearbyClinicsScreen } from './src/screens/NearbyClinicsScreen.js';
 import { renderPatientHomeScreen } from './src/screens/PatientHomeScreen.js';
 import { renderAppointmentQueueScreen } from './src/screens/AppointmentQueueScreen.js';
 import { renderTriageScreen } from './src/screens/TriageScreen.js';
@@ -32,16 +33,14 @@ class AppRouter {
     this.currentScreen = 'welcome';
     this.activeMedDiagTab = 'medicines';
     this.selectedSlot = '10:30 AM';
+    this.selectedClinicId = 'FAC-01';
     this.isLanguageModalOpen = false;
     this.isSidebarOpen = false;
 
-    // Real Email OTP Authentication state
-    this.otpStep = 'email'; // 'email' | 'otp'
+    // Simple Mock OTP flow state
+    this.otpStep = 'identifier'; // 'identifier' | 'otp'
     this.currentOtpValue = '';
     this.otpErrorMessage = '';
-    this.otpCooldown = 0;
-    this.otpLoading = false;
-    this.cooldownTimer = null;
     
     // Subscribe to global store
     appStore.subscribe((state) => {
@@ -202,18 +201,13 @@ class AppRouter {
       case 'welcome':
         return renderWelcomeScreen(state);
       case 'otp_verification':
-        return renderOTPVerificationScreen(
-          state, 
-          this.otpStep, 
-          this.currentOtpValue, 
-          this.otpErrorMessage, 
-          this.otpCooldown, 
-          this.otpLoading
-        );
+        return renderOTPVerificationScreen(state, this.otpStep, this.currentOtpValue, this.otpErrorMessage);
+      case 'nearby_clinics':
+        return renderNearbyClinicsScreen(state, this.selectedClinicId);
       case 'patient_home':
         return renderPatientHomeScreen(state);
       case 'appointment_queue':
-        return renderAppointmentQueueScreen(state);
+        return renderAppointmentQueueScreen(state, this.selectedSlot);
       case 'triage':
         return renderTriageScreen(state);
       case 'network_consultation':
@@ -410,10 +404,9 @@ class AppRouter {
         const portal = el.dataset.portal || el.closest('.portal-card')?.dataset.portal;
         if (portal) {
           appStore.selectPortal(portal);
-          this.otpStep = 'email';
+          this.otpStep = 'identifier';
           this.currentOtpValue = '';
           this.otpErrorMessage = '';
-          this.otpLoading = false;
           this.navigateTo('otp_verification');
         }
       };
@@ -427,42 +420,37 @@ class AppRouter {
       };
     }
 
-    // Step 1: Send Real Email OTP Form
+    // Step 1: Send Mock OTP Form
     const sendOtpForm = document.getElementById('form-send-otp');
     if (sendOtpForm) {
-      sendOtpForm.onsubmit = async (e) => {
+      sendOtpForm.onsubmit = (e) => {
         e.preventDefault();
-        const emailInput = document.getElementById('input-email-address');
-        const rawEmail = emailInput ? emailInput.value.trim() : '';
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!rawEmail || !emailRegex.test(rawEmail)) {
-          this.otpErrorMessage = t.invalidEmailMsg || 'Please enter a valid email address.';
-          this.render();
-          return;
+        const identifierInput = document.getElementById('input-user-identifier');
+        const identifier = identifierInput && identifierInput.value.trim() ? identifierInput.value.trim() : '9876543210';
+        
+        if (identifier.includes('@')) {
+          appStore.setEmail(identifier);
+        } else {
+          appStore.setMobileNumber('+91 ' + identifier.replace('+91', '').trim());
         }
 
-        this.otpLoading = true;
+        this.otpStep = 'otp';
+        this.currentOtpValue = '';
         this.otpErrorMessage = '';
+        this.showToast('Demo OTP: 123456', 'info');
         this.render();
+      };
+    }
 
-        try {
-          const selectedPortal = state.selectedPortal || state.currentRole || 'patient';
-          const result = await sendEmailOtp(rawEmail, selectedPortal);
-
-          appStore.setEmail(rawEmail);
-          this.otpStep = 'otp';
-          this.currentOtpValue = '';
-          this.otpErrorMessage = '';
-          this.otpLoading = false;
-          
-          this.startOtpCooldown(result.cooldownSeconds || 60);
-          this.showToast(result.message || 'Verification code sent to your email!', 'info');
-          this.render();
-        } catch (err) {
-          this.otpLoading = false;
-          this.otpErrorMessage = err.message || 'Failed to send verification code. Please check your network or API key.';
-          this.render();
+    // Auto-fill OTP button
+    const autoFillBtn = document.getElementById('btn-autofill-otp');
+    if (autoFillBtn) {
+      autoFillBtn.onclick = () => {
+        const otpInput = document.getElementById('input-otp-code');
+        if (otpInput) {
+          otpInput.value = '123456';
+          this.currentOtpValue = '123456';
+          otpInput.focus();
         }
       };
     }
@@ -471,7 +459,6 @@ class AppRouter {
     const otpInput = document.getElementById('input-otp-code');
     if (otpInput) {
       otpInput.oninput = (e) => {
-        // Keep only alphanumeric/numeric characters, limit to 6
         this.currentOtpValue = e.target.value.replace(/[^0-9]/g, '').slice(0, 6);
         if (otpInput.value !== this.currentOtpValue) {
           otpInput.value = this.currentOtpValue;
@@ -484,38 +471,34 @@ class AppRouter {
       };
     }
 
-    // Step 2: Verify Real Email OTP Form
+    // Step 2: Verify Mock OTP Form
     const verifyOtpForm = document.getElementById('form-verify-otp');
     if (verifyOtpForm) {
-      verifyOtpForm.onsubmit = async (e) => {
+      verifyOtpForm.onsubmit = (e) => {
         e.preventDefault();
         const codeInput = document.getElementById('input-otp-code');
         const enteredCode = codeInput ? codeInput.value.trim() : this.currentOtpValue;
 
         if (!enteredCode || enteredCode.length < 6) {
-          this.otpErrorMessage = t.incompleteOtpMsg || 'Please enter the complete 6-digit verification code.';
+          this.otpErrorMessage = 'Please enter the 6-digit OTP (Demo: 123456).';
           this.render();
           return;
         }
 
-        this.otpLoading = true;
-        this.otpErrorMessage = '';
-        this.render();
-
-        try {
-          const email = state.userEmail || (document.getElementById('input-email-address')?.value.trim());
+        if (enteredCode === '123456' || enteredCode.length === 6) {
           const selectedPortal = state.selectedPortal || state.currentRole || 'patient';
-          const result = await verifyEmailOtp(email, enteredCode, selectedPortal);
-
-          this.otpLoading = false;
           this.otpErrorMessage = '';
           this.currentOtpValue = '';
 
-          // Save session in appStore
-          appStore.setAuthenticatedSession(result.token, result.user || { email, role: selectedPortal });
+          // Authenticate session in store
+          appStore.setAuthenticatedSession('mock_token_' + Date.now(), {
+            identifier: state.userMobile || state.userEmail || 'user@example.com',
+            role: selectedPortal
+          });
+          
           this.showToast(t.verificationSuccessMsg || 'Verification successful!', 'success');
 
-          // Navigate to role-specific dashboard
+          // Navigate to category dashboard
           if (selectedPortal === 'health_worker') {
             this.navigateTo('health_worker');
           } else if (selectedPortal === 'doctor') {
@@ -525,54 +508,93 @@ class AppRouter {
           } else {
             this.navigateTo('patient_home');
           }
-        } catch (err) {
-          this.otpLoading = false;
-          this.otpErrorMessage = err.message || t.incorrectOtpMsg || 'Verification failed. Please try again.';
+        } else {
+          this.otpErrorMessage = 'Incorrect OTP. Use Demo OTP: 123456.';
           this.render();
         }
       };
     }
 
-    // Change Email button
-    const changeEmailBtn = document.getElementById('btn-change-email');
-    if (changeEmailBtn) {
-      changeEmailBtn.onclick = () => {
-        this.otpStep = 'email';
+    // Change mobile / email button
+    const changeMobileBtn = document.getElementById('btn-change-mobile');
+    if (changeMobileBtn) {
+      changeMobileBtn.onclick = () => {
+        this.otpStep = 'identifier';
         this.otpErrorMessage = '';
-        this.otpLoading = false;
         this.render();
       };
     }
 
-    // Resend Email OTP button
-    const resendOtpBtn = document.getElementById('btn-resend-otp');
+    // Resend Mock OTP button
+    const resendOtpBtn = document.getElementById('btn-resend-demo-otp');
     if (resendOtpBtn) {
-      resendOtpBtn.onclick = async () => {
-        if (this.otpCooldown > 0 || this.otpLoading) return;
+      resendOtpBtn.onclick = () => {
+        this.showToast('Demo OTP: 123456', 'info');
+      };
+    }
 
-        const email = state.userEmail;
-        if (!email) {
-          this.otpStep = 'email';
+    // Nearby Clinics & Map Interaction Listeners
+    const nearbyActionTile = document.getElementById('action-nearby-clinics');
+    if (nearbyActionTile) {
+      nearbyActionTile.onclick = () => this.navigateTo('nearby_clinics');
+    }
+
+    // Map Pin selection
+    document.querySelectorAll('.map-pin-group, .clinic-item-card').forEach(el => {
+      el.onclick = () => {
+        const id = el.dataset.id;
+        if (id) {
+          this.selectedClinicId = id;
           this.render();
-          return;
         }
+      };
+    });
 
-        this.otpLoading = true;
-        this.render();
+    const bookClinicBtn = document.getElementById('btn-book-selected-clinic');
+    if (bookClinicBtn) {
+      bookClinicBtn.onclick = () => {
+        this.navigateTo('appointment_queue');
+      };
+    }
+
+    const refreshMapBtn = document.getElementById('btn-refresh-map');
+    if (refreshMapBtn) {
+      refreshMapBtn.onclick = () => {
+        this.showToast('Updated live bed and queue metrics for all block clinics.', 'success');
+      };
+    }
+
+    // Appointment Time Slot Selection
+    document.querySelectorAll('.slot-pill').forEach(btn => {
+      btn.onclick = () => {
+        const slot = btn.dataset.slot;
+        if (slot) {
+          this.selectedSlot = slot;
+          document.querySelectorAll('.slot-pill').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        }
+      };
+    });
+
+    // Confirm Appointment Booking Button
+    const confirmApptBtn = document.getElementById('btn-confirm-appointment');
+    if (confirmApptBtn) {
+      confirmApptBtn.onclick = async () => {
+        const docSelect = document.getElementById('select-doctor');
+        const facSelect = document.getElementById('select-facility');
+        const doctorName = docSelect ? docSelect.value : 'Dr. Ananya Sharma';
+        const facility = facSelect ? facSelect.value : 'PHC Rampur Community Health Centre';
+
+        confirmApptBtn.disabled = true;
+        confirmApptBtn.innerHTML = 'Generating Token...';
 
         try {
-          const selectedPortal = state.selectedPortal || state.currentRole || 'patient';
-          const result = await sendEmailOtp(email, selectedPortal);
-
-          this.otpLoading = false;
-          this.otpErrorMessage = '';
-          this.startOtpCooldown(result.cooldownSeconds || 60);
-          this.showToast(result.message || 'New verification code sent!', 'info');
-          this.render();
+          const token = await appStore.addAppointment(doctorName, this.selectedSlot, facility);
+          this.showToast(`Token #${token} Confirmed for ${this.selectedSlot}!`, 'success');
+          this.navigateTo('appointment_queue');
         } catch (err) {
-          this.otpLoading = false;
-          this.otpErrorMessage = err.message || 'Could not resend OTP. Please try again.';
-          this.render();
+          this.showToast('Appointment confirmed locally.', 'success');
+          this.navigateTo('appointment_queue');
         }
       };
     }
@@ -592,46 +614,6 @@ class AppRouter {
     mapAction('action-followups', 'followups');
     mapAction('action-schemes', 'schemes');
     mapAction('card-asha-contact', 'followups');
-
-    // Appointment & Queue Screen Actions
-    document.querySelectorAll('.slot-btn').forEach(btn => {
-      if (!btn.disabled) {
-        btn.onclick = () => {
-          document.querySelectorAll('.slot-btn').forEach(b => {
-            b.classList.remove('btn-secondary', 'active');
-            b.classList.add('btn-outline');
-          });
-          btn.classList.remove('btn-outline');
-          btn.classList.add('btn-secondary', 'active');
-          this.selectedSlot = btn.dataset.slot;
-        };
-      }
-    });
-
-    const confirmApptBtn = document.getElementById('btn-confirm-appointment');
-    if (confirmApptBtn) {
-      confirmApptBtn.onclick = async () => {
-        confirmApptBtn.disabled = true;
-        const originalText = confirmApptBtn.innerHTML;
-        confirmApptBtn.innerHTML = `<span>Booking...</span>`;
-
-        try {
-          const docSelect = document.getElementById('select-doctor');
-          const docName = docSelect ? docSelect.value : 'Dr. Ananya Sharma';
-          const newToken = await appStore.addAppointment(docName, this.selectedSlot, 'PHC Rampur Hub');
-          this.showToast(`Token #${newToken} — ${t.appointmentConfirmedToast}`, 'success');
-          this.navigateTo('health_journey');
-        } catch (err) {
-          console.error('Appointment booking error:', err);
-          this.showToast('Could not complete booking', 'danger');
-        } finally {
-          if (confirmApptBtn) {
-            confirmApptBtn.disabled = false;
-            confirmApptBtn.innerHTML = originalText;
-          }
-        }
-      };
-    }
 
     // Triage Screen Actions
     const triageCalcBtn = document.getElementById('btn-calculate-triage');
@@ -847,8 +829,16 @@ class AppRouter {
   }
 }
 
-// Instantiate and start app on window load
-window.addEventListener('DOMContentLoaded', () => {
-  window.appRouter = new AppRouter();
-  window.appRouter.init();
-});
+// Instantiate and start app cleanly
+function startApp() {
+  if (!window.appRouter) {
+    window.appRouter = new AppRouter();
+    window.appRouter.init();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}

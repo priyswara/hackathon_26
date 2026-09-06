@@ -87,7 +87,11 @@ export const initialMockDB = {
       icuAvailable: 2,
       todayFootfall: 68,
       avgWaitMins: 18,
-      medicinesAvailableRate: '88%'
+      medicinesAvailableRate: '88%',
+      status: 'Open • Normal Queue',
+      lat: 25.432,
+      lng: 78.567,
+      phone: '+91 751 245 8891'
     },
     {
       id: 'FAC-02',
@@ -100,10 +104,31 @@ export const initialMockDB = {
       icuAvailable: 4,
       todayFootfall: 142,
       avgWaitMins: 32,
-      medicinesAvailableRate: '92%'
+      medicinesAvailableRate: '92%',
+      status: 'Open • 24/7 Emergency',
+      lat: 25.489,
+      lng: 78.612,
+      phone: '+91 751 288 3341'
     },
     {
       id: 'FAC-03',
+      name: 'Ayushman Arogya Mandir (Rampur Sub-Centre)',
+      type: 'Health & Wellness Centre',
+      distance: '0.8 km',
+      doctorsCount: 1,
+      bedsTotal: 4,
+      bedsOccupied: 1,
+      icuAvailable: 0,
+      todayFootfall: 26,
+      avgWaitMins: 8,
+      medicinesAvailableRate: '95%',
+      status: 'Open • Low Wait Time',
+      lat: 25.418,
+      lng: 78.552,
+      phone: '+91 751 211 4452'
+    },
+    {
+      id: 'FAC-04',
       name: 'Shivpuri District Hospital',
       type: 'Tertiary Referral Centre',
       distance: '38 km',
@@ -113,7 +138,11 @@ export const initialMockDB = {
       icuAvailable: 12,
       todayFootfall: 480,
       avgWaitMins: 45,
-      medicinesAvailableRate: '96%'
+      medicinesAvailableRate: '96%',
+      status: 'Open • High Footfall',
+      lat: 25.612,
+      lng: 78.789,
+      phone: '+91 751 290 0011'
     }
   ],
   

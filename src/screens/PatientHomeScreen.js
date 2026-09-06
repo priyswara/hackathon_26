@@ -1,6 +1,6 @@
 /**
- * Screen 2: Patient / Citizen Home Dashboard
- * Multi-column responsive dashboard with Live Token tracker, 4-col Quick Actions, and Care Contacts
+ * Screen: Patient / Citizen Home Dashboard (Palette 3)
+ * Clean, modern rural health home with OPD token tracker, Nearby Clinics Map tile, and quick clinical actions.
  */
 
 import { locales } from '../data/locales.js';
@@ -10,168 +10,195 @@ export function renderPatientHomeScreen(state) {
   const p = state.patient;
 
   return `
-    <div class="screen" id="screen-patient-home">
-      <!-- Top Row: 2-Column Split (Profile Summary + Live Token Banner) -->
-      <div class="split-1-1" style="align-items: stretch;">
+    <div class="screen" id="screen-patient-home" style="width: 100%;">
+      
+      <!-- Top Row: Welcome Banner + Live Token Card -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 22px;">
+        
         <!-- Patient Profile Summary Card -->
-        <div class="card flex-between" style="padding: 24px;">
-          <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), #8B5CF6); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 800; font-size: 20px; box-shadow: 0 4px 14px rgba(108, 60, 233, 0.3); flex-shrink: 0;">
-              RK
+        <div class="card" style="padding: 20px 22px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 800; font-size: 18px; flex-shrink: 0; border: 2px solid var(--color-secondary);">
+              ${p.name ? p.name.split(' ').map(n => n[0]).join('') : 'RK'}
             </div>
             <div>
-              <div style="font-size: 12px; color: var(--color-text-secondary); font-weight: 600;">Citizen Health Portal</div>
-              <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary); line-height: 1.2;">${t.welcomeBack}</h2>
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
-                <span>${t.abhaId}</span>
-                <span class="status-badge badge-success" style="padding: 2px 8px; font-size: 10px;">${t.abhaLinked}</span>
+              <div style="font-size: 11.5px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">
+                ${t.patientRole || 'Citizen Portal'}
+              </div>
+              <h2 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--color-text-primary); line-height: 1.2;">
+                ${p.name || 'Ramesh Kumar'}
+              </h2>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--color-text-secondary); margin-top: 3px;">
+                <span>ABHA: ${p.abhaId || '91-4820-1928-44'}</span>
+                <span class="status-badge badge-primary" style="padding: 1px 6px; font-size: 9.5px;">Linked</span>
               </div>
             </div>
           </div>
 
-          <button class="header-btn" id="btn-quick-voice" style="width: 44px; height: 44px;" title="${t.tapToSpeak}">
-            <i data-lucide="mic" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
+          <button class="btn btn-outline" id="btn-quick-voice" style="padding: 8px; border-radius: 50%; width: 40px; height: 40px; min-height: 40px;" title="${t.tapToSpeak || 'Voice'}">
+            <i data-lucide="mic" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
           </button>
         </div>
 
-        <!-- Live Active Token Banner -->
-        <div class="token-card card-clickable" id="card-active-token" title="Tap to view live queue">
-          <div class="flex-between" style="margin-bottom: 12px;">
+        <!-- Live OPD Token Banner (Forest Green Hero Card) -->
+        <div class="card card-hero card-clickable" id="card-active-token" style="padding: 20px 22px; cursor: pointer;" title="Tap to view live queue">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="status-badge badge-warning" style="background: rgba(232, 140, 31, 0.25); color: #FFB356; border: 1px solid rgba(232, 140, 31, 0.4);">
-                <span class="badge-dot-indicator" style="background: #FFB356;"></span> ${t.liveQueueBadge}
+              <span class="status-badge" style="background: rgba(255,255,255,0.22); color: #FFFFFF; font-size: 11px;">
+                ● Live Token
               </span>
-              <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8);">${t.phcLocation}</span>
+              <span style="font-size: 12px; opacity: 0.9;">PHC Rampur</span>
             </div>
-            <i data-lucide="arrow-right" style="color: rgba(255, 255, 255, 0.8); width: 18px; height: 18px;"></i>
+            <i data-lucide="arrow-right" style="width: 16px; height: 16px; opacity: 0.9;"></i>
           </div>
 
-          <div class="flex-between" style="align-items: flex-end;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
             <div>
-              <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">${t.yourTokenNumber}</span>
-              <div class="token-digits">${p.activeToken}</div>
+              <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">Your Active Token</span>
+              <div style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; line-height: 1;">
+                ${p.activeToken || 'B-14'}
+              </div>
             </div>
             <div style="text-align: right;">
-              <div style="font-size: 14px; font-weight: 700; color: #FFFFFF;">${t.servingNow}</div>
-              <div style="font-size: 12px; color: var(--color-accent); font-weight: 700; margin-top: 3px;">${t.estWait}</div>
+              <div style="font-size: 13px; font-weight: 700;">Serving #B-11</div>
+              <div style="font-size: 11.5px; color: #FFFFFF; opacity: 0.9; margin-top: 2px;">
+                ~${p.estimatedWaitMins || 14} min wait
+              </div>
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- Quick Actions Section -->
-      <div class="section-header">
-        <h3 class="section-title">
-          <i data-lucide="grid" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
-          ${t.quickActions}
+      <!-- Quick Actions Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="layout-grid" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
+          ${t.quickActions || 'Healthcare Services'}
         </h3>
       </div>
 
-      <!-- 4-Column Quick Actions Grid on Desktop -->
-      <div class="grid-4">
-        <!-- 1: Book OPD Slot -->
+      <!-- 8 Responsive Action Tiles -->
+      <div class="action-tiles-grid">
+        
+        <!-- Tile 1: Nearby Clinics / Map (NEW PROMINENT FEATURE) -->
+        <div class="action-tile" id="action-nearby-clinics" style="border: 1.5px solid var(--color-secondary); background: var(--color-surface);">
+          <div class="action-tile-icon" style="background: var(--color-primary); color: #FFFFFF;">
+            <i data-lucide="map-pin"></i>
+          </div>
+          <div class="action-tile-title" style="color: var(--color-primary);">Nearby Clinics & Map</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">Find PHCs & Sub-Centres</span>
+        </div>
+
+        <!-- Tile 2: Book OPD Appointment -->
         <div class="action-tile" id="action-book-opd">
-          <div class="action-icon-circle" style="background: #F3EEFF; color: var(--color-primary);">
+          <div class="action-tile-icon">
             <i data-lucide="calendar-plus"></i>
           </div>
-          <div class="action-tile-title">${t.bookAppointment}</div>
-          <div class="action-tile-desc">${t.phcDoctorsDesc}</div>
+          <div class="action-tile-title">${t.bookAppointment || 'Book Appointment'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.phcDoctorsDesc || 'PHC Doctors & Tokens'}</span>
         </div>
 
-        <!-- 2: Digital Triage -->
+        <!-- Tile 3: Digital Smart Triage -->
         <div class="action-tile" id="action-triage">
-          <div class="action-icon-circle" style="background: #E8F7EE; color: var(--color-success);">
+          <div class="action-tile-icon">
             <i data-lucide="activity"></i>
           </div>
-          <div class="action-tile-title">${t.digitalTriage}</div>
-          <div class="action-tile-desc">${t.triageDesc}</div>
+          <div class="action-tile-title">${t.digitalTriage || 'Symptom Triage'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.triageDesc || 'AI Symptom Checker'}</span>
         </div>
 
-        <!-- 3: Network Teleconsult (Hero) -->
-        <div class="action-tile" id="action-teleconsult" style="border: 1.5px solid rgba(108, 60, 233, 0.3); background: #FAF9FD;">
-          <div class="action-icon-circle" style="background: var(--color-primary); color: #FFFFFF;">
+        <!-- Tile 4: Network-Adaptive Teleconsult -->
+        <div class="action-tile" id="action-teleconsult">
+          <div class="action-tile-icon">
             <i data-lucide="video"></i>
           </div>
-          <div class="action-tile-title" style="color: var(--color-primary);">${t.consultDoctor}</div>
-          <div class="action-tile-desc">${t.adaptiveTeleconsultDesc}</div>
+          <div class="action-tile-title">${t.consultDoctor || 'Teleconsultation'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.adaptiveTeleconsultDesc || 'Video / Low-Bandwidth'}</span>
         </div>
 
-        <!-- 4: Connected Health Journey -->
+        <!-- Tile 5: Health Journey Timeline -->
         <div class="action-tile" id="action-health-journey">
-          <div class="action-icon-circle" style="background: #FEF6EC; color: var(--color-warning);">
+          <div class="action-tile-icon">
             <i data-lucide="git-commit"></i>
           </div>
-          <div class="action-tile-title">${t.careJourney}</div>
-          <div class="action-tile-desc">${t.unifiedJourneyDesc}</div>
+          <div class="action-tile-title">${t.careJourney || 'Health Journey'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.unifiedJourneyDesc || 'Synchronized History'}</span>
         </div>
 
-        <!-- 5: Medicine Stock -->
+        <!-- Tile 6: Pharmacy & Medicines -->
         <div class="action-tile" id="action-medicines">
-          <div class="action-icon-circle" style="background: #E6FAF5; color: #00A37D;">
+          <div class="action-tile-icon">
             <i data-lucide="pill"></i>
           </div>
-          <div class="action-tile-title">${t.medicineStock}</div>
-          <div class="action-tile-desc">${t.livePharmacyDesc}</div>
+          <div class="action-tile-title">${t.medicineStock || 'Medicine Stock'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.livePharmacyDesc || 'PHC Pharmacy Stock'}</span>
         </div>
 
-        <!-- 6: Diagnostics & Lab -->
-        <div class="action-tile" id="action-diagnostics">
-          <div class="action-icon-circle" style="background: #F4F0FF; color: #7C3AED;">
-            <i data-lucide="flask-conical"></i>
-          </div>
-          <div class="action-tile-title">${t.diagnostics}</div>
-          <div class="action-tile-desc">${t.freeDiagnosticsDesc}</div>
-        </div>
-
-        <!-- 7: Follow-ups & ASHA -->
+        <!-- Tile 7: Follow-ups & ASHA -->
         <div class="action-tile" id="action-followups">
-          <div class="action-icon-circle" style="background: #FDF2F8; color: #DB2777;">
+          <div class="action-tile-icon">
             <i data-lucide="heart-handshake"></i>
           </div>
-          <div class="action-tile-title">${t.followUps}</div>
-          <div class="action-tile-desc">${t.homeVisitsDesc}</div>
+          <div class="action-tile-title">${t.followUps || 'Follow-ups'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.homeVisitsDesc || 'ASHA Home Care'}</span>
         </div>
 
-        <!-- 8: Government Schemes -->
+        <!-- Tile 8: Health Schemes (PM-JAY) -->
         <div class="action-tile" id="action-schemes">
-          <div class="action-icon-circle" style="background: #EFF6FF; color: #2563EB;">
+          <div class="action-tile-icon">
             <i data-lucide="shield"></i>
           </div>
-          <div class="action-tile-title">${t.schemes}</div>
-          <div class="action-tile-desc">${t.pmjayDesc}</div>
+          <div class="action-tile-title">${t.schemes || 'Schemes & PM-JAY'}</div>
+          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.pmjayDesc || '₹5 Lakh Free Cover'}</span>
         </div>
+
       </div>
 
-      <!-- Bottom Row: 2-Column Split (Assigned ASHA Worker + Active Health Reminder) -->
-      <div class="split-1-1">
+      <!-- Bottom Row: Assigned ASHA & Active Episode -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+        
         <!-- ASHA Contact Card -->
-        <div class="card card-clickable flex-between" id="card-asha-contact" style="background: #FAF9FD; border-left: 4px solid var(--color-primary); padding: 18px 20px;">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-              <i data-lucide="phone-call" style="width: 20px; height: 20px;"></i>
+        <div class="card" style="padding: 16px 18px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="user-check" style="width: 20px; height: 20px;"></i>
             </div>
             <div>
-              <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: var(--color-text-primary);">${t.assignedAsha}</div>
-              <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">${t.nextHomeVisitTomorrow}</div>
+              <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--color-text-primary);">
+                ${t.assignedAsha || 'Assigned ASHA: Sunita Devi'}
+              </div>
+              <div style="font-size: 12px; color: var(--color-text-secondary);">
+                ${t.nextHomeVisitTomorrow || 'Next Home Visit: Tomorrow 11 AM'}
+              </div>
             </div>
           </div>
-          <button class="btn btn-sm btn-primary" style="padding: 7px 14px; font-size: 12px;">${t.callBtn}</button>
+          <button class="btn btn-outline" id="btn-call-asha" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">
+            <i data-lucide="phone" style="width: 13px; height: 13px;"></i>
+            <span>${t.callBtn || 'Call'}</span>
+          </button>
         </div>
 
-        <!-- Active Prescriptions / Care Alert -->
-        <div class="card flex-between" style="background: #FAF9FD; border-left: 4px solid var(--color-success); padding: 18px 20px;">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--color-success-light); color: var(--color-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-              <i data-lucide="clipboard-check" style="width: 20px; height: 20px;"></i>
+        <!-- Active Care Episode Alert -->
+        <div class="card" style="padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--color-primary);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="stethoscope" style="width: 20px; height: 20px;"></i>
             </div>
             <div>
-              <div style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: var(--color-text-primary);">Active Care Episode</div>
-              <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 2px;">Dr. Ananya Sharma • 2 Meds Active</div>
+              <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--color-text-primary);">
+                Active Tele-Consult Episode
+              </div>
+              <div style="font-size: 12px; color: var(--color-text-secondary);">
+                Dr. Ananya Sharma • Paracetamol 650mg Active
+              </div>
             </div>
           </div>
-          <span class="status-badge badge-success">${t.activeCareEpisodeBadge || 'In Progress'}</span>
+          <span class="status-badge badge-primary" style="font-size: 10.5px;">Active</span>
         </div>
+
       </div>
+
     </div>
   `;
 }

@@ -1,162 +1,175 @@
 /**
- * Screen 3: Appointment & Live Priority Queue
- * 2-Column Responsive Web Layout for Booking and Queue Tracking
+ * Screen: Appointment Slot Booking & Live Priority Queue (Palette 3)
+ * Responsive layout with clean doctor selection, time slot pills, and real-time OPD token status.
  */
 
 import { locales } from '../data/locales.js';
 
-export function renderAppointmentQueueScreen(state) {
+export function renderAppointmentQueueScreen(state, selectedSlot = '10:30 AM') {
   const t = locales[state.currentLanguage] || locales.en;
   const p = state.patient;
-  const docs = state.doctors;
-  const queue = state.queue;
-
-  const docSpecialtyMap = {
-    'General Medicine': t.docSpecialtyGenMed,
-    'Pediatrics / Child Specialist': t.docSpecialtyPediatrics,
-    'Obstetrics & Gynecology (Maternal)': t.docSpecialtyGyn
-  };
-
-  const priorityLabelMap = {
-    High: t.highPriorityBadge,
-    Medium: t.mediumPriorityBadge,
-    Low: t.lowPriorityBadge
-  };
-
-  const statusLabelMap = {
-    waiting: t.waitingStatus,
-    serving: t.servingStatus,
-    done: t.doneStatus
-  };
+  const docs = state.doctors || [];
+  const queue = state.queue || [];
 
   return `
-    <div class="screen" id="screen-appointment-queue">
-      <!-- Screen Breadcrumb & Header -->
-      <div class="flex-between">
+    <div class="screen" id="screen-appointment-queue" style="width: 100%;">
+      
+      <!-- Screen Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
         <div style="display: flex; align-items: center; gap: 12px;">
-          <button class="header-btn" id="btn-back-home" title="${t.back}">
-            <i data-lucide="arrow-left"></i>
+          <button class="btn btn-outline" id="btn-back-home" style="padding: 6px 12px; min-height: 36px;" title="${t.back || 'Back'}">
+            <i data-lucide="arrow-left" style="width: 15px; height: 15px;"></i>
+            <span class="hide-on-mobile">${t.back || 'Back'}</span>
           </button>
           <div>
-            <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary);">${t.bookAppointment}</h2>
-            <div style="font-size: 12px; color: var(--color-text-secondary);">${t.phcLocation} • Live OPD Token System</div>
+            <h1 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary);">
+              ${t.bookAppointment || 'Book Appointment & Live Token'}
+            </h1>
+            <span style="font-size: 12px; color: var(--color-text-secondary);">
+              PHC Rampur Community Health Centre • Network-Adaptive Tele-OPD
+            </span>
           </div>
         </div>
+
+        <span class="status-badge badge-primary">
+          <i data-lucide="clock" style="width: 12px; height: 12px;"></i>
+          Live Token System Active
+        </span>
       </div>
 
-      <!-- 2-Column Responsive Layout -->
-      <div class="split-1-1" style="align-items: start; gap: 24px;">
+      <!-- 2-Column Responsive Split on Desktop, Stacked on Mobile -->
+      <div class="clinic-directory-layout" style="align-items: start;">
         
-        <!-- Left Column: Book New Appointment Form -->
-        <div class="card" style="border-top: 4px solid var(--color-primary); padding: 24px;">
-          <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-            <i data-lucide="calendar" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
-            ${t.bookNewConsultation}
-          </h3>
+        <!-- Left: Slot Booking Form -->
+        <div class="card" style="border-top: 4px solid var(--color-primary); padding: 22px;">
+          
+          <h2 style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="calendar-plus" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
+            ${t.bookNewConsultation || 'Select Doctor & Time Slot'}
+          </h2>
 
-          <!-- Doctor Select -->
-          <div class="input-group" style="margin-bottom: 16px;">
-            <label class="input-label">${t.selectDoctor}</label>
-            <select class="input-field" id="select-doctor" style="cursor: pointer; padding: 12px 14px;">
-              ${docs.map(doc => {
-                const spec = docSpecialtyMap[doc.specialty] || doc.specialty;
-                return `<option value="${doc.name}">${doc.name} — ${spec} (${doc.location})</option>`;
-              }).join('')}
+          <!-- Select Doctor -->
+          <div class="form-group">
+            <label class="form-label" for="select-doctor">${t.selectDoctor || 'Choose Doctor'}</label>
+            <select class="form-select" id="select-doctor">
+              ${docs.map(doc => `
+                <option value="${doc.name}">${doc.name} — ${doc.specialty} (${doc.location})</option>
+              `).join('')}
             </select>
           </div>
 
-          <!-- Time Slots -->
-          <div class="input-group" style="margin-bottom: 20px;">
-            <label class="input-label">${t.availableSlots}</label>
-            <div class="grid-3" id="slot-picker-grid">
-              <button class="btn btn-sm btn-secondary slot-btn active" data-slot="10:30 AM">10:30 AM</button>
-              <button class="btn btn-sm btn-outline slot-btn" data-slot="11:15 AM">11:15 AM</button>
-              <button class="btn btn-sm btn-outline slot-btn" data-slot="02:00 PM">02:00 PM</button>
-              <button class="btn btn-sm btn-outline slot-btn" data-slot="03:30 PM">03:30 PM</button>
-              <button class="btn btn-sm btn-outline slot-btn" style="opacity: 0.4; cursor: not-allowed;" disabled title="${t.bookedSlotTag}">04:15 PM ${t.bookedSlotTag}</button>
-              <button class="btn btn-sm btn-outline slot-btn" data-slot="04:45 PM">04:45 PM</button>
+          <!-- Select Health Centre Facility -->
+          <div class="form-group">
+            <label class="form-label" for="select-facility">Healthcare Facility</label>
+            <select class="form-select" id="select-facility">
+              <option value="PHC Rampur Community Health Centre">PHC Rampur Community Health Centre (2.4 km)</option>
+              <option value="Ayushman Arogya Mandir (Rampur Sub-Centre)">Ayushman Arogya Mandir (0.8 km)</option>
+              <option value="CHC Kotra Block Hospital">CHC Kotra Block Hospital (14 km)</option>
+            </select>
+          </div>
+
+          <!-- Time Slots Picker -->
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label class="form-label">${t.availableSlots || 'Available Slots for Today'}</label>
+            <div class="slots-grid" id="slot-picker-grid">
+              ${['10:30 AM', '11:15 AM', '02:00 PM', '03:30 PM', '04:45 PM'].map(slot => `
+                <button type="button" class="slot-pill ${slot === selectedSlot ? 'selected' : ''}" data-slot="${slot}">
+                  ${slot}
+                </button>
+              `).join('')}
             </div>
           </div>
 
-          <button class="btn btn-primary btn-full" id="btn-confirm-appointment" style="padding: 13px;">
-            <i data-lucide="check-circle-2"></i>
-            ${t.confirmBooking}
+          <!-- Confirm Booking Button -->
+          <button type="button" class="btn btn-primary btn-full" id="btn-confirm-appointment" style="padding: 12px; font-size: 14.5px;">
+            <i data-lucide="check-circle" style="width: 17px; height: 17px;"></i>
+            <span>${t.confirmBooking || 'Generate Token & Confirm'}</span>
           </button>
         </div>
 
-        <!-- Right Column: Live Token Status Banner & Priority Queue Table -->
+        <!-- Right: Current Active Token & Live Priority Queue -->
         <div style="display: flex; flex-direction: column; gap: 16px;">
-          <!-- Current Token Status Banner -->
-          <div class="token-card">
-            <div class="flex-between" style="margin-bottom: 8px;">
-              <span style="font-size: 12px; color: rgba(255, 255, 255, 0.8); text-transform: uppercase; font-weight: 700;">${t.activeTokenLabel}</span>
-              <span class="status-badge badge-warning" style="background: rgba(232, 140, 31, 0.25); color: #FFB356;">
-                <span class="badge-dot-indicator" style="background: #FFB356;"></span> ${t.servingNow}
+          
+          <!-- Active Token Highlight Banner (Forest Green Card) -->
+          <div class="card card-hero" style="padding: 20px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.9;">
+                ${t.activeTokenLabel || 'Your Active OPD Token'}
+              </span>
+              <span class="status-badge" style="background: rgba(255,255,255,0.22); color: #FFFFFF; font-size: 11px;">
+                ● Serving Now: B-11
               </span>
             </div>
-            <div class="flex-between" style="align-items: flex-end;">
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
               <div>
-                <div class="token-digits">${p.activeToken}</div>
-                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.85); margin-top: 4px;">${t.phcLocation}</div>
+                <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; line-height: 1; letter-spacing: 1px;">
+                  ${p.activeToken || 'B-14'}
+                </div>
+                <div style="font-size: 12px; opacity: 0.9; margin-top: 6px;">
+                  Rampur Tele-OPD Consultation
+                </div>
               </div>
+
               <div style="text-align: right;">
-                <div style="font-size: 24px; font-weight: 800; color: var(--color-accent);">${p.queuePosition}</div>
-                <div style="font-size: 11px; color: rgba(255, 255, 255, 0.8);">${t.peopleAhead}</div>
+                <div style="font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: #FFFFFF;">
+                  #${p.queuePosition || '3'}
+                </div>
+                <div style="font-size: 11px; opacity: 0.85;">
+                  ${t.peopleAhead || 'Ahead in queue'} (~${p.estimatedWaitMins || 10}m)
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Live Priority Queue List Header -->
-          <div class="section-header">
-            <h3 class="section-title">
-              <i data-lucide="users" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
-              ${t.triageQueue}
-            </h3>
-            <span style="font-size: 11px; color: var(--color-text-muted);">${t.sortedByUrgency}</span>
-          </div>
+          <!-- Live Priority Queue Table -->
+          <div class="card" style="padding: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-family: var(--font-heading); font-size: 14.5px; font-weight: 700; color: var(--color-text-primary); display: flex; align-items: center; gap: 6px;">
+                <i data-lucide="users" style="width: 16px; height: 16px; color: var(--color-primary);"></i>
+                ${t.triageQueue || 'Live OPD Triage Queue'}
+              </span>
+              <span style="font-size: 11px; color: var(--color-text-muted);">
+                ${t.sortedByUrgency || 'Urgency Priority'}
+              </span>
+            </div>
 
-          <!-- Queue List -->
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            ${queue.map(item => {
-              const isCurrentPatient = item.token === p.activeToken;
-              const isServing = item.status === 'serving';
-              const badgeClass = item.priorityLevel === 'High' ? 'badge-danger' : (item.priorityLevel === 'Medium' ? 'badge-warning' : 'badge-primary');
-              const priorityText = priorityLabelMap[item.priorityLevel] || item.priorityLevel;
-              const statusText = isServing ? t.nowServingBadge : (statusLabelMap[item.status] || item.status);
-              
-              return `
-                <div class="card flex-between" style="padding: 12px 16px; border-left: 4px solid ${isServing ? 'var(--color-accent)' : (isCurrentPatient ? 'var(--color-primary)' : 'var(--color-border)')}; background: ${isCurrentPatient ? 'var(--color-primary-light)' : 'var(--color-surface)'};">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: ${isCurrentPatient ? 'var(--color-primary)' : 'var(--color-text-primary)'}; width: 44px;">
-                      ${item.token}
-                    </div>
-                    <div>
-                      <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--color-text-primary);">
-                        ${item.patientName} ${isCurrentPatient ? `<span style="color: var(--color-primary); font-size: 11px; font-weight: 700;">${t.youTag}</span>` : ''}
-                      </div>
-                      <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
-                        <span class="status-badge ${badgeClass}" style="padding: 1px 6px; font-size: 9.5px;">${priorityText}</span>
-                        <span style="font-size: 11px; color: var(--color-text-muted);">• ${t.waitTimePrefix} ${item.waitTime}</span>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${queue.map(item => {
+                const isCurrent = item.token === p.activeToken;
+                const isServing = item.status === 'serving';
+                const badgeClass = item.priorityLevel === 'High' ? 'badge-danger' : (item.priorityLevel === 'Medium' ? 'badge-warning' : 'badge-primary');
+                
+                return `
+                  <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid ${isCurrent ? 'var(--color-primary)' : 'var(--color-border)'}; background: ${isCurrent ? 'var(--color-primary-light)' : (isServing ? 'var(--color-surface-hover)' : 'var(--color-surface)')};">
+                    
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                      <span style="font-family: var(--font-heading); font-weight: 800; font-size: 15px; color: ${isCurrent ? 'var(--color-primary)' : 'var(--color-text-primary)'}; width: 38px;">
+                        ${item.token}
+                      </span>
+                      <div>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--color-text-primary);">
+                          ${item.patientName} ${isCurrent ? `<span style="color: var(--color-primary); font-size: 10.5px; font-weight: 800;">(You)</span>` : ''}
+                        </div>
+                        <div style="font-size: 11px; color: var(--color-text-muted);">
+                          Wait: ${item.waitTime || '5 min'}
+                        </div>
                       </div>
                     </div>
+
+                    <span class="status-badge ${badgeClass}" style="font-size: 10px;">
+                      ${item.priorityLevel || 'Medium'}
+                    </span>
                   </div>
-
-                  ${isServing ? `
-                    <span class="status-badge badge-success" style="font-size: 10px;">${t.nowServingBadge}</span>
-                  ` : `
-                    <span style="font-size: 11.5px; font-weight: 600; color: var(--color-text-secondary); text-transform: capitalize;">${statusText}</span>
-                  `}
-                </div>
-              `;
-            }).join('')}
+                `;
+              }).join('')}
+            </div>
           </div>
+
         </div>
 
       </div>
 
-      <div class="compliance-disclaimer" style="margin-top: 12px;">
-        ${t.queueAlgorithmDisclaimer}
-      </div>
     </div>
   `;
 }

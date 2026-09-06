@@ -1,5 +1,5 @@
 /**
- * Screen 1: GraminArogya Landing & Portal Selection
+ * Screen 1: GraminArogya Landing & Portal Selection (Palette 3)
  * Professional, clean web landing page introducing the platform and 4 role categories.
  * Fully localized across English, Hindi, Tamil, Telugu, and Malayalam.
  */
@@ -10,140 +10,140 @@ export function renderWelcomeScreen(state) {
   const t = locales[state.currentLanguage] || locales.en;
 
   return `
-    <div class="screen" id="screen-welcome" style="max-width: 1080px; margin: 0 auto; padding: 10px 0;">
+    <div class="screen" id="screen-welcome" style="max-width: 1100px; margin: 0 auto; width: 100%;">
       
-      <!-- Top Hero Section -->
-      <div class="card card-hero" style="padding: 36px 32px; margin-bottom: 32px; text-align: center;">
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.18); padding: 6px 14px; border-radius: var(--radius-full); font-size: 12px; font-weight: 700; margin-bottom: 16px;">
-          <i data-lucide="cross" style="width: 15px; height: 15px; color: var(--color-accent);"></i>
-          <span>${t.appTitle} — ${t.tagline}</span>
+      <!-- Top Hero Section (Forest Green Gradient) -->
+      <div class="card card-hero" style="padding: 34px 28px; margin-bottom: 28px; text-align: center;">
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.16); padding: 5px 14px; border-radius: var(--radius-full); font-size: 11.5px; font-weight: 700; margin-bottom: 14px;">
+          <i data-lucide="plus-circle" style="width: 14px; height: 14px; color: var(--color-secondary);"></i>
+          <span>${t.appTitle} — Rural Health Link</span>
         </div>
         
-        <h1 class="hero-title" style="font-size: 34px; line-height: 1.25; margin-bottom: 12px; max-width: 820px; margin-left: auto; margin-right: auto;">
-          ${t.landingTagline}
+        <h1 style="font-size: clamp(22px, 4vw, 32px); line-height: 1.25; margin-bottom: 12px; max-width: 820px; margin-left: auto; margin-right: auto; color: #FFFFFF;">
+          ${t.landingTagline || 'Healthcare access, closer to home.'}
         </h1>
         
-        <p class="hero-subtitle" style="font-size: 15px; line-height: 1.6; max-width: 720px; margin-left: auto; margin-right: auto; opacity: 0.95;">
-          ${t.landingHeroSub}
+        <p style="font-size: 14px; line-height: 1.6; max-width: 700px; margin-left: auto; margin-right: auto; color: rgba(255, 255, 255, 0.92);">
+          ${t.landingHeroSub || 'Bridging gaps in rural healthcare access through network-aware tele-OPD, intelligent triage, and integrated care journeys.'}
         </p>
       </div>
 
       <!-- Portal Selection Section -->
       <div style="margin-bottom: 24px;">
-        <div style="text-align: center; margin-bottom: 28px;">
-          <h2 style="font-family: var(--font-heading); font-size: 24px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px; display: inline-flex; align-items: center; gap: 10px;">
-            <i data-lucide="grid" style="color: var(--color-primary); width: 22px; height: 22px;"></i>
-            ${t.choosePortalTitle}
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px; display: inline-flex; align-items: center; gap: 8px;">
+            <i data-lucide="grid" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
+            ${t.choosePortalTitle || 'Choose your portal'}
           </h2>
-          <p style="font-size: 14px; color: var(--color-text-secondary); max-width: 540px; margin: 0 auto;">
-            ${t.choosePortalSub}
+          <p style="font-size: 13.5px; color: var(--color-text-secondary); max-width: 520px; margin: 0 auto;">
+            ${t.choosePortalSub || 'Select your role category to access customized clinical tools and services.'}
           </p>
         </div>
 
-        <!-- 2x2 Responsive Portal Cards Grid (Desktop 2x2, Mobile Stacked) -->
+        <!-- 4 Responsive Portal Cards Grid -->
         <div class="portal-selection-grid">
           
           <!-- Card 1: Patient Portal -->
-          <div class="card card-clickable portal-card" data-portal="patient" style="padding: 24px; border-top: 5px solid var(--color-primary); display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s ease;">
+          <div class="card card-clickable portal-card" data-portal="patient" style="border-top: 4px solid var(--color-primary);">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="user" style="width: 24px; height: 24px;"></i>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
+                  <i data-lucide="user" style="width: 22px; height: 22px;"></i>
                 </div>
-                <span class="status-badge badge-primary" style="font-size: 11px; font-weight: 700;">
-                  ${t.roleCitizen}
+                <span class="status-badge badge-primary">
+                  ${t.roleCitizen || 'Citizen'}
                 </span>
               </div>
 
-              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 8px;">
-                ${t.portalPatientTitle}
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
+                ${t.portalPatientTitle || 'Patient Portal'}
               </h3>
-              <p style="font-size: 13.5px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                ${t.portalPatientDesc}
+              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                ${t.portalPatientDesc || 'Access appointments, triage, teleconsultation, medicine stock, and care journey.'}
               </p>
             </div>
 
-            <button class="btn btn-primary btn-full btn-enter-portal" data-portal="patient" style="padding: 11px 16px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <span>${t.enterPortalBtn}</span>
-              <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            <button class="btn btn-primary btn-full btn-enter-portal" data-portal="patient">
+              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
           <!-- Card 2: Health Worker Portal -->
-          <div class="card card-clickable portal-card" data-portal="health_worker" style="padding: 24px; border-top: 5px solid #00D2A0; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s ease;">
+          <div class="card card-clickable portal-card" data-portal="health_worker" style="border-top: 4px solid #286B4F;">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: #E6FAF5; color: #00A37D; display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
+                  <i data-lucide="users" style="width: 22px; height: 22px;"></i>
                 </div>
-                <span class="status-badge badge-success" style="font-size: 11px; font-weight: 700;">
-                  ${t.roleAsha}
+                <span class="status-badge badge-success">
+                  ${t.roleAsha || 'ASHA Worker'}
                 </span>
               </div>
 
-              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 8px;">
-                ${t.portalHealthWorkerTitle}
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
+                ${t.portalHealthWorkerTitle || 'Health Worker Portal'}
               </h3>
-              <p style="font-size: 13.5px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                ${t.portalHealthWorkerDesc}
+              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                ${t.portalHealthWorkerDesc || 'Manage village roster, high-risk maternal alerts, offline logs, and home visits.'}
               </p>
             </div>
 
-            <button class="btn btn-full btn-enter-portal" data-portal="health_worker" style="background: #00A37D; color: #FFFFFF; padding: 11px 16px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <span>${t.enterPortalBtn}</span>
-              <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            <button class="btn btn-primary btn-full btn-enter-portal" data-portal="health_worker">
+              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
           <!-- Card 3: Doctor Portal -->
-          <div class="card card-clickable portal-card" data-portal="doctor" style="padding: 24px; border-top: 5px solid #8B5CF6; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s ease;">
+          <div class="card card-clickable portal-card" data-portal="doctor" style="border-top: 4px solid var(--color-primary-dark);">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: #F4F0FF; color: #7C3AED; display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="stethoscope" style="width: 24px; height: 24px;"></i>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary-dark); display: flex; align-items: center; justify-content: center;">
+                  <i data-lucide="stethoscope" style="width: 22px; height: 22px;"></i>
                 </div>
-                <span class="status-badge" style="background: #F4F0FF; color: #7C3AED; font-size: 11px; font-weight: 700;">
-                  ${t.roleDocConsole}
+                <span class="status-badge badge-primary">
+                  ${t.roleDocConsole || 'Dr. Console'}
                 </span>
               </div>
 
-              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 8px;">
-                ${t.portalDoctorTitle}
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
+                ${t.portalDoctorTitle || 'Doctor Portal'}
               </h3>
-              <p style="font-size: 13.5px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                ${t.portalDoctorDesc}
+              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                ${t.portalDoctorDesc || 'View priority OPD queue, conduct video/audio consults, and write e-Prescriptions.'}
               </p>
             </div>
 
-            <button class="btn btn-full btn-enter-portal" data-portal="doctor" style="background: #7C3AED; color: #FFFFFF; padding: 11px 16px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <span>${t.enterPortalBtn}</span>
-              <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            <button class="btn btn-primary btn-full btn-enter-portal" data-portal="doctor">
+              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
           <!-- Card 4: Facility Portal -->
-          <div class="card card-clickable portal-card" data-portal="facility" style="padding: 24px; border-top: 5px solid var(--color-warning); display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s ease;">
+          <div class="card card-clickable portal-card" data-portal="facility" style="border-top: 4px solid var(--color-accent);">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <div style="width: 48px; height: 48px; border-radius: var(--radius-sm); background: var(--color-warning-light); color: var(--color-warning); display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="building" style="width: 24px; height: 24px;"></i>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-accent-light); color: var(--color-accent); display: flex; align-items: center; justify-content: center;">
+                  <i data-lucide="building" style="width: 22px; height: 22px;"></i>
                 </div>
-                <span class="status-badge badge-warning" style="font-size: 11px; font-weight: 700;">
-                  ${t.rolePhcAdmin}
+                <span class="status-badge badge-accent">
+                  ${t.rolePhcAdmin || 'PHC Admin'}
                 </span>
               </div>
 
-              <h3 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 8px;">
-                ${t.portalFacilityTitle}
+              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
+                ${t.portalFacilityTitle || 'Facility Portal'}
               </h3>
-              <p style="font-size: 13.5px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 20px;">
-                ${t.portalFacilityDesc}
+              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
+                ${t.portalFacilityDesc || 'Monitor live beds, critical medicine stock, footfall trends, and referral logs.'}
               </p>
             </div>
 
-            <button class="btn btn-warning btn-full btn-enter-portal" data-portal="facility" style="padding: 11px 16px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-              <span>${t.enterPortalBtn}</span>
-              <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            <button class="btn btn-accent btn-full btn-enter-portal" data-portal="facility">
+              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
@@ -151,8 +151,8 @@ export function renderWelcomeScreen(state) {
       </div>
 
       <!-- Prototype Disclaimer -->
-      <div class="compliance-disclaimer" style="margin-top: 24px; text-align: center;">
-        ${t.prototypeNotice}
+      <div style="margin-top: 20px; text-align: center; font-size: 11.5px; color: var(--color-text-muted);">
+        ${t.prototypeNotice || 'National Rural Health Mission Concept • Prototype Healthcare Access System'}
       </div>
     </div>
   `;

@@ -85,42 +85,46 @@ export function renderAppShell(container, state, currentScreen, navigateTo, open
   
   if (state.currentRole === 'patient') {
     navItems = [
-      { id: 'patient_home', label: t.navHome, icon: 'home' },
-      { id: 'appointment_queue', label: t.navOpdToken, icon: 'calendar' },
-      { id: 'triage', label: t.digitalTriage, icon: 'activity' },
-      { id: 'network_consultation', label: t.consultDoctor, icon: 'video' },
-      { id: 'health_journey', label: t.navJourney, icon: 'git-commit' },
-      { id: 'medicines_diagnostics', label: t.navMedicineLab, icon: 'package' },
-      { id: 'followups', label: t.followUps, icon: 'heart-handshake' },
-      { id: 'schemes', label: t.schemes, icon: 'shield' },
-      { id: 'emergency_sos', label: t.navSos, icon: 'alert-triangle', isSOS: true }
+      { id: 'patient_home', label: t.navHome || 'Home', icon: 'home' },
+      { id: 'nearby_clinics', label: 'Nearby Clinics', icon: 'map-pin' },
+      { id: 'appointment_queue', label: t.navOpdToken || 'OPD Token', icon: 'calendar' },
+      { id: 'triage', label: t.digitalTriage || 'Triage', icon: 'activity' },
+      { id: 'network_consultation', label: t.consultDoctor || 'Teleconsult', icon: 'video' },
+      { id: 'health_journey', label: t.navJourney || 'Journey', icon: 'git-commit' },
+      { id: 'medicines_diagnostics', label: t.navMedicineLab || 'Medicines', icon: 'package' },
+      { id: 'followups', label: t.followUps || 'Follow-ups', icon: 'heart-handshake' },
+      { id: 'schemes', label: t.schemes || 'Schemes', icon: 'shield' },
+      { id: 'emergency_sos', label: t.navSos || '108 SOS', icon: 'alert-triangle', isSOS: true }
     ];
   } else if (state.currentRole === 'health_worker') {
     navItems = [
-      { id: 'health_worker', label: t.navRoster, icon: 'users' },
-      { id: 'triage', label: t.navTriageCheck, icon: 'clipboard' },
-      { id: 'network_consultation', label: t.consultDoctor, icon: 'video' },
-      { id: 'health_journey', label: t.navRecords, icon: 'file-text' },
-      { id: 'medicines_diagnostics', label: t.navSupply, icon: 'package' },
-      { id: 'followups', label: t.followUps, icon: 'heart-handshake' },
-      { id: 'schemes', label: t.schemes, icon: 'shield' },
-      { id: 'emergency_sos', label: t.navSos, icon: 'alert-triangle', isSOS: true }
+      { id: 'health_worker', label: t.navRoster || 'Roster', icon: 'users' },
+      { id: 'nearby_clinics', label: 'Block Facilities', icon: 'map-pin' },
+      { id: 'triage', label: t.navTriageCheck || 'Triage Check', icon: 'clipboard' },
+      { id: 'network_consultation', label: t.consultDoctor || 'Teleconsult', icon: 'video' },
+      { id: 'health_journey', label: t.navRecords || 'Records', icon: 'file-text' },
+      { id: 'medicines_diagnostics', label: t.navSupply || 'Supply', icon: 'package' },
+      { id: 'followups', label: t.followUps || 'Follow-ups', icon: 'heart-handshake' },
+      { id: 'schemes', label: t.schemes || 'Schemes', icon: 'shield' },
+      { id: 'emergency_sos', label: t.navSos || '108 SOS', icon: 'alert-triangle', isSOS: true }
     ];
   } else if (state.currentRole === 'doctor') {
     navItems = [
-      { id: 'doctor', label: t.navQueue, icon: 'user-check' },
-      { id: 'network_consultation', label: t.navTeleconsult, icon: 'video' },
-      { id: 'consultation_chat', label: t.navChatRx, icon: 'message-square' },
-      { id: 'health_journey', label: t.navRecords, icon: 'file-text' },
-      { id: 'followups', label: t.followUps, icon: 'heart-handshake' }
+      { id: 'doctor', label: t.navQueue || 'Queue', icon: 'user-check' },
+      { id: 'nearby_clinics', label: 'Clinics & Beds', icon: 'map-pin' },
+      { id: 'network_consultation', label: t.navTeleconsult || 'Teleconsult', icon: 'video' },
+      { id: 'consultation_chat', label: t.navChatRx || 'Chat & Rx', icon: 'message-square' },
+      { id: 'health_journey', label: t.navRecords || 'Records', icon: 'file-text' },
+      { id: 'followups', label: t.followUps || 'Follow-ups', icon: 'heart-handshake' }
     ];
   } else if (state.currentRole === 'facility') {
     navItems = [
-      { id: 'facility', label: t.navOperations, icon: 'bar-chart-2' },
-      { id: 'appointment_queue', label: t.navOpdToken, icon: 'calendar' },
-      { id: 'medicines_diagnostics', label: t.navPharmacy, icon: 'package' },
-      { id: 'doctor', label: t.navDoctors, icon: 'user-check' },
-      { id: 'health_journey', label: t.navRecords, icon: 'file-text' }
+      { id: 'facility', label: t.navOperations || 'Operations', icon: 'bar-chart-2' },
+      { id: 'nearby_clinics', label: 'Network Units', icon: 'map-pin' },
+      { id: 'appointment_queue', label: t.navOpdToken || 'OPD Token', icon: 'calendar' },
+      { id: 'medicines_diagnostics', label: t.navPharmacy || 'Pharmacy', icon: 'package' },
+      { id: 'doctor', label: t.navDoctors || 'Doctors', icon: 'user-check' },
+      { id: 'health_journey', label: t.navRecords || 'Records', icon: 'file-text' }
     ];
   }
 
