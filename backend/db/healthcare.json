@@ -9,7 +9,7 @@
       "phone": "+91 98765 43210",
       "abhaId": "91-4820-1928-44",
       "pmjayEligible": 1,
-      "activeToken": "B-35",
+      "activeToken": "B-36",
       "queuePosition": 4,
       "estimatedWaitMins": 14,
       "priorityLevel": "Medium"
@@ -25,6 +25,26 @@
       "patientName": "Ramesh Kumar",
       "status": "confirmed",
       "createdAt": "2026-09-05T05:49:22.542Z"
+    },
+    {
+      "id": 2,
+      "token": "B-38",
+      "doctorName": "Dr. Ananya Sharma",
+      "slotTime": "11:15 AM",
+      "facility": "PHC Rampur Hub",
+      "patientName": "Ramesh Kumar",
+      "status": "confirmed",
+      "createdAt": "2026-09-06T15:22:57.687Z"
+    },
+    {
+      "id": 3,
+      "token": "B-36",
+      "doctorName": "Dr. Ananya Sharma",
+      "slotTime": "10:30 AM",
+      "facility": "PHC Rampur Community Health Centre",
+      "patientName": "Ramesh Kumar",
+      "status": "confirmed",
+      "createdAt": "2026-09-06T15:28:56.603Z"
     }
   ],
   "queue": [
@@ -99,6 +119,33 @@
       "status": "waiting",
       "waitTime": "3 min",
       "createdAt": "2026-09-05T05:49:22.563Z"
+    },
+    {
+      "id": 9,
+      "token": "B-38",
+      "patientName": "Ramesh Kumar",
+      "priorityLevel": "Medium",
+      "status": "waiting",
+      "waitTime": "10 min",
+      "createdAt": "2026-09-06T15:22:57.694Z"
+    },
+    {
+      "id": 10,
+      "token": "B-77",
+      "patientName": "Devi Lal",
+      "priorityLevel": "High",
+      "status": "waiting",
+      "waitTime": "3 min",
+      "createdAt": "2026-09-06T15:22:57.700Z"
+    },
+    {
+      "id": 11,
+      "token": "B-36",
+      "patientName": "Ramesh Kumar",
+      "priorityLevel": "Medium",
+      "status": "waiting",
+      "waitTime": "10 min",
+      "createdAt": "2026-09-06T15:28:56.605Z"
     }
   ],
   "care_journey": [
@@ -106,7 +153,7 @@
       "id": "STEP-1",
       "title": "Digital Symptom Triage",
       "provider": "AI Decision Support Assistant",
-      "facility": "GraminArogya App",
+      "facility": "HEALER App",
       "date": "Today, 09:15 AM",
       "status": "completed",
       "summary": "Assessed fever (102.2°F), dry cough for 3 days. Classified as Medium Priority.",
@@ -166,15 +213,45 @@
       "id": "STEP-1788603761286",
       "title": "Digital Smart Triage Completed",
       "provider": "AI Decision Engine",
-      "facility": "GraminArogya App",
+      "facility": "HEALER App",
       "date": "Just now",
       "status": "completed",
       "summary": "Symptoms: High Fever > 102°F, Shortness of Breath, Dry Cough > 3 Days. Urgency Score: High Priority.",
       "createdAt": "2026-09-05T10:22:42.645Z"
+    },
+    {
+      "id": "STEP-1788708177692",
+      "title": "Teleconsultation Booked (Dr. Ananya Sharma)",
+      "provider": "Dr. Ananya Sharma",
+      "facility": "PHC Rampur Hub",
+      "date": "Today, 11:15 AM",
+      "status": "active",
+      "summary": "Confirmed slot at 11:15 AM. Token #B-38 generated.",
+      "createdAt": "2026-09-06T15:22:57.692Z"
+    },
+    {
+      "id": "STEP-1788708177718",
+      "title": "Prescription Dispensed: Paracetamol 650mg",
+      "provider": "PHC Rampur Pharmacy",
+      "facility": "PHC Rampur Hub",
+      "date": "Today, Just now",
+      "status": "active",
+      "summary": "Medications collected at pharmacy counter.",
+      "createdAt": "2026-09-06T15:22:57.719Z"
+    },
+    {
+      "id": "STEP-1788708536605",
+      "title": "Teleconsultation Booked (Dr. Ananya Sharma)",
+      "provider": "Dr. Ananya Sharma",
+      "facility": "PHC Rampur Community Health Centre",
+      "date": "Today, 10:30 AM",
+      "status": "active",
+      "summary": "Confirmed slot at 10:30 AM. Token #B-36 generated.",
+      "createdAt": "2026-09-06T15:28:56.605Z"
     }
   ],
   "_counters": {
-    "appointments": 1,
-    "queue": 8
+    "appointments": 3,
+    "queue": 11
   }
 }

@@ -1,49 +1,59 @@
 /**
- * Main Application Controller & State Router
- * Rural Healthcare Access Platform — Responsive Web Application
- * Features Multi-Role Portal Architecture & Mock OTP Verification Flow
+ * HEALER — Main Application Router & State Controller
+ * Modern, Simple, Clean Healthcare Web Application
  */
 
 import { appStore } from './src/data/mockData.js';
 import { locales } from './src/data/locales.js';
 import { renderAppShell } from './src/components/AppShell.js';
 import { renderLanguageModal } from './src/components/LanguageModal.js';
-import { sendEmailOtp, verifyEmailOtp } from './src/services/api.js';
 
 // Screen Renderers
 import { renderWelcomeScreen } from './src/screens/WelcomeScreen.js';
 import { renderOTPVerificationScreen } from './src/screens/OTPVerificationScreen.js';
-import { renderNearbyClinicsScreen } from './src/screens/NearbyClinicsScreen.js';
 import { renderPatientHomeScreen } from './src/screens/PatientHomeScreen.js';
-import { renderAppointmentQueueScreen } from './src/screens/AppointmentQueueScreen.js';
-import { renderTriageScreen } from './src/screens/TriageScreen.js';
-import { renderNetworkConsultationScreen } from './src/screens/NetworkConsultationScreen.js';
-import { renderConsultationChatScreen } from './src/screens/ConsultationChatScreen.js';
+import { renderAppointmentWizardScreen } from './src/screens/AppointmentWizardScreen.js';
+import { renderAppointmentsScreen } from './src/screens/AppointmentsScreen.js';
+import { renderNearbyClinicsScreen } from './src/screens/NearbyClinicsScreen.js';
 import { renderHealthJourneyScreen } from './src/screens/HealthJourneyScreen.js';
-import { renderMedicinesDiagnosticsScreen } from './src/screens/MedicinesDiagnosticsScreen.js';
-import { renderFollowUpsScreen } from './src/screens/FollowUpsScreen.js';
+import { renderHowToUseScreen } from './src/screens/HowToUseScreen.js';
 import { renderHealthWorkerScreen } from './src/screens/HealthWorkerScreen.js';
 import { renderDoctorScreen } from './src/screens/DoctorScreen.js';
 import { renderFacilityScreen } from './src/screens/FacilityScreen.js';
-import { renderSchemesScreen } from './src/screens/SchemesScreen.js';
-import { renderEmergencyScreen } from './src/screens/EmergencyScreen.js';
+import { renderProfileScreen } from './src/screens/ProfileScreen.js';
 
 class AppRouter {
   constructor() {
     this.currentScreen = 'welcome';
-    this.activeMedDiagTab = 'medicines';
-    this.selectedSlot = '10:30 AM';
-    this.selectedClinicId = 'FAC-01';
     this.isLanguageModalOpen = false;
     this.isSidebarOpen = false;
 
-    // Simple Mock OTP flow state
+    // Login & OTP state
     this.otpStep = 'identifier'; // 'identifier' | 'otp'
     this.currentOtpValue = '';
     this.otpErrorMessage = '';
-    
-    // Subscribe to global store
-    appStore.subscribe((state) => {
+
+    // Appointment Wizard state
+    this.wizardState = {
+      step: 1,
+      facility: 'PHC Rampur Community Health Centre',
+      service: 'General OPD Consultation',
+      doctor: 'Dr. Ananya Sharma',
+      date: 'Today',
+      time: '10:30 AM',
+      confirmedToken: 'B-15'
+    };
+
+    // Appointments tab state
+    this.appointmentsTab = 'upcoming'; // 'upcoming' | 'past'
+
+    // Nearby Care state
+    this.nearbyFilter = 'all';
+    this.selectedFacilityModalId = null;
+    this.leafletMapInstance = null;
+
+    // Subscribe to store updates
+    appStore.subscribe(() => {
       this.render();
     });
   }
@@ -57,11 +67,15 @@ class AppRouter {
   navigateTo(screenId) {
     this.currentScreen = screenId;
     this.closeSidebarDrawer();
+    
+    // Reset wizard if opening fresh
+    if (screenId === 'appointment_wizard' && this.wizardState.step === 7) {
+      this.wizardState.step = 1;
+    }
+
     this.render();
     
-    // Scroll content to top
-    const content = document.getElementById('app-screen-outlet');
-    if (content) content.scrollTop = 0;
+    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -69,12 +83,8 @@ class AppRouter {
     this.isSidebarOpen = !this.isSidebarOpen;
     const sidebar = document.getElementById('app-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    if (sidebar) {
-      sidebar.classList.toggle('drawer-open', this.isSidebarOpen);
-    }
-    if (overlay) {
-      overlay.classList.toggle('active', this.isSidebarOpen);
-    }
+    if (sidebar) sidebar.classList.toggle('drawer-open', this.isSidebarOpen);
+    if (overlay) overlay.classList.toggle('active', this.isSidebarOpen);
   }
 
   closeSidebarDrawer() {
@@ -110,39 +120,14 @@ class AppRouter {
     }, 2800);
   }
 
-  startOtpCooldown(seconds = 60) {
-    if (this.cooldownTimer) {
-      clearInterval(this.cooldownTimer);
-    }
-    this.otpCooldown = seconds;
-    this.cooldownTimer = setInterval(() => {
-      this.otpCooldown -= 1;
-      if (this.otpCooldown <= 0) {
-        this.otpCooldown = 0;
-        clearInterval(this.cooldownTimer);
-        this.cooldownTimer = null;
-      }
-      // If currently on OTP verification screen, update the UI
-      if (this.currentScreen === 'otp_verification') {
-        const resendBtn = document.getElementById('btn-resend-otp');
-        if (resendBtn) {
-          const state = appStore.getState();
-          const t = locales[state.currentLanguage] || locales.en;
-          if (this.otpCooldown > 0) {
-            resendBtn.disabled = true;
-            resendBtn.style.color = 'var(--color-text-muted)';
-            resendBtn.style.cursor = 'not-allowed';
-            resendBtn.innerHTML = `<i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i><span>${t.resendOtpIn || 'Resend in'} ${this.otpCooldown}s</span>`;
-          } else {
-            resendBtn.disabled = false;
-            resendBtn.style.color = 'var(--color-primary)';
-            resendBtn.style.cursor = 'pointer';
-            resendBtn.innerHTML = `<i data-lucide="refresh-cw" style="width: 12px; height: 12px;"></i><span>${t.resendOtpBtn || 'Resend OTP'}</span>`;
-          }
-          if (window.lucide) window.lucide.createIcons();
-        }
-      }
-    }, 1000);
+  openLanguageModal() {
+    this.isLanguageModalOpen = true;
+    this.render();
+  }
+
+  closeLanguageModal() {
+    this.isLanguageModalOpen = false;
+    this.render();
   }
 
   render() {
@@ -156,8 +141,7 @@ class AppRouter {
       state,
       this.currentScreen,
       (screen) => this.navigateTo(screen),
-      () => this.openLanguageModal(),
-      () => this.navigateTo('emergency_sos')
+      () => this.openLanguageModal()
     );
 
     // Render Active Screen inside outlet
@@ -177,19 +161,14 @@ class AppRouter {
       }, 10);
     }
 
-    // Update active nav button
-    const navButtons = document.querySelectorAll('.sidebar-nav-item, .nav-item');
-    navButtons.forEach(btn => {
-      if (btn.dataset.nav === this.currentScreen) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-
     // Hydrate Lucide Icons
     if (window.lucide) {
       window.lucide.createIcons();
+    }
+
+    // Initialize Leaflet Map if on nearby clinics screen
+    if (this.currentScreen === 'nearby_clinics') {
+      setTimeout(() => this.initLeafletMap(state), 50);
     }
 
     // Attach screen-specific interactive listeners
@@ -202,51 +181,75 @@ class AppRouter {
         return renderWelcomeScreen(state);
       case 'otp_verification':
         return renderOTPVerificationScreen(state, this.otpStep, this.currentOtpValue, this.otpErrorMessage);
-      case 'nearby_clinics':
-        return renderNearbyClinicsScreen(state, this.selectedClinicId);
       case 'patient_home':
         return renderPatientHomeScreen(state);
-      case 'appointment_queue':
-        return renderAppointmentQueueScreen(state, this.selectedSlot);
-      case 'triage':
-        return renderTriageScreen(state);
-      case 'network_consultation':
-        return renderNetworkConsultationScreen(state);
-      case 'consultation_chat':
-        return renderConsultationChatScreen(state);
+      case 'appointment_wizard':
+        return renderAppointmentWizardScreen(state, this.wizardState);
+      case 'appointments':
+        return renderAppointmentsScreen(state, this.appointmentsTab);
+      case 'nearby_clinics':
+        return renderNearbyClinicsScreen(state, this.nearbyFilter, this.selectedFacilityModalId);
       case 'health_journey':
         return renderHealthJourneyScreen(state);
-      case 'medicines_diagnostics':
-        return renderMedicinesDiagnosticsScreen(state, this.activeMedDiagTab);
-      case 'followups':
-        return renderFollowUpsScreen(state);
+      case 'how_to_use':
+        return renderHowToUseScreen(state);
       case 'health_worker':
         return renderHealthWorkerScreen(state);
       case 'doctor':
         return renderDoctorScreen(state);
       case 'facility':
         return renderFacilityScreen(state);
-      case 'schemes':
-        return renderSchemesScreen(state);
-      case 'emergency_sos':
-        return renderEmergencyScreen(state);
+      case 'profile':
+        return renderProfileScreen(state);
       default:
         return renderPatientHomeScreen(state);
     }
   }
 
-  openLanguageModal() {
-    this.isLanguageModalOpen = true;
-    this.render();
-  }
+  initLeafletMap(state) {
+    const mapElement = document.getElementById('healer-leaflet-map');
+    if (!mapElement || typeof L === 'undefined') return;
 
-  closeLanguageModal() {
-    this.isLanguageModalOpen = false;
-    this.render();
+    if (this.leafletMapInstance) {
+      this.leafletMapInstance.remove();
+      this.leafletMapInstance = null;
+    }
+
+    const facilities = state.facilities || [];
+    const centerLat = 25.432;
+    const centerLng = 78.567;
+
+    try {
+      const map = L.map('healer-leaflet-map', {
+        zoomControl: true,
+        scrollWheelZoom: false
+      }).setView([centerLat, centerLng], 12);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Add Custom Facility Markers
+      facilities.forEach(fac => {
+        if (fac.lat && fac.lng) {
+          const marker = L.marker([fac.lat, fac.lng]).addTo(map);
+          marker.bindPopup(`
+            <div style="font-family: var(--font-body); padding: 4px;">
+              <strong style="font-size: 13px; color: var(--color-primary);">${fac.name}</strong>
+              <div style="font-size: 11.5px; color: #555; margin-top: 2px;">${fac.type} • ${fac.distance}</div>
+              <div style="font-size: 11.5px; color: #286B4F; font-weight: 700; margin-top: 2px;">${fac.status || 'Open'}</div>
+            </div>
+          `);
+        }
+      });
+
+      this.leafletMapInstance = map;
+    } catch (e) {
+      console.warn('Leaflet map init warning:', e);
+    }
   }
 
   attachGlobalListeners() {
-    // Click delegation for navigation and actions
     document.addEventListener('click', (e) => {
       const state = appStore.getState();
       const t = locales[state.currentLanguage] || locales.en;
@@ -263,7 +266,7 @@ class AppRouter {
         return;
       }
 
-      // Navigation bar / item click delegation
+      // Navigation item click delegation
       const navBtn = e.target.closest('[data-nav]');
       if (navBtn) {
         const targetScreen = navBtn.dataset.nav;
@@ -271,41 +274,37 @@ class AppRouter {
         return;
       }
 
-      // Brand click -> Return to welcome landing
-      if (e.target.closest('#btn-brand-home') || e.target.closest('#btn-brand-text')) {
-        this.navigateTo('welcome');
+      // Brand click -> Return to welcome or home
+      if (e.target.closest('#btn-brand-home')) {
+        if (state.isVerified) {
+          if (state.currentRole === 'health_worker') this.navigateTo('health_worker');
+          else if (state.currentRole === 'doctor') this.navigateTo('doctor');
+          else if (state.currentRole === 'facility') this.navigateTo('facility');
+          else this.navigateTo('patient_home');
+        } else {
+          this.navigateTo('welcome');
+        }
         return;
       }
 
-      // Switch Portal button click in Header or Sidebar
-      if (e.target.closest('#btn-header-switch-portal') || e.target.closest('#btn-switch-portal-sidebar')) {
+      // Switch Portal button click
+      if (e.target.closest('#btn-header-switch-portal') || e.target.closest('#btn-switch-portal-sidebar') || e.target.closest('#btn-profile-switch-portal')) {
         appStore.switchPortal();
         this.navigateTo('welcome');
-        this.showToast(t.choosePortalTitle || 'Choose your portal', 'info');
+        this.showToast(t.choosePortalTitle || 'Select a portal', 'info');
         return;
       }
 
-      // Logout button click in Header or Sidebar
-      if (e.target.closest('#btn-header-logout') || e.target.closest('#btn-logout-sidebar')) {
+      // Logout button click
+      if (e.target.closest('#btn-logout-sidebar') || e.target.closest('#btn-profile-logout')) {
         appStore.logout();
         this.navigateTo('welcome');
-        this.showToast(t.logout || 'Logged out', 'warning');
-        return;
-      }
-
-      // Network indicator pill click -> Cycle network mode
-      if (e.target.closest('#header-network-pill')) {
-        const modes = ['good', 'moderate', 'low'];
-        const currentIdx = modes.indexOf(state.networkMode);
-        const nextMode = modes[(currentIdx + 1) % modes.length];
-        appStore.setNetworkMode(nextMode);
-        const newT = locales[state.currentLanguage] || locales.en;
-        this.showToast(`${newT.networkSwitchedToast || 'Network Mode:'} ${nextMode.toUpperCase()}`, 'warning');
+        this.showToast(t.logout || 'Logged out', 'info');
         return;
       }
 
       // Language modal open button
-      if (e.target.closest('#btn-open-lang') || e.target.closest('#btn-quick-voice')) {
+      if (e.target.closest('#btn-open-lang') || e.target.closest('#btn-profile-change-lang')) {
         this.openLanguageModal();
         return;
       }
@@ -317,91 +316,52 @@ class AppRouter {
       }
 
       // Language option selection
-      const langOption = e.target.closest('.lang-option-card');
+      const langOption = e.target.closest('.lang-modal-card');
       if (langOption) {
         const langCode = langOption.dataset.lang;
         appStore.setLanguage(langCode);
-        const newT = locales[langCode] || locales.en;
-        this.showToast(newT.langSwitchedToast || `Language switched to ${locales[langCode].nativeName}`, 'success');
         this.closeLanguageModal();
         return;
       }
 
-      // Voice Mic simulation in Language Modal
-      const micBtn = e.target.closest('#btn-voice-mic');
-      if (micBtn) {
-        const heading = document.getElementById('voice-status-heading');
-        const sub = document.getElementById('voice-status-sub');
-        micBtn.classList.add('listening');
-        if (heading) heading.textContent = `${t.listening} 🎙️`;
-        if (sub) sub.textContent = t.voiceHelperSub;
-
-        setTimeout(() => {
-          micBtn.classList.remove('listening');
-          this.showToast(t.voiceResolved, 'success');
-          this.closeLanguageModal();
-          this.navigateTo('appointment_queue');
-        }, 1800);
+      // Facility details modal close
+      if (e.target.closest('#btn-close-facility-modal') || e.target.id === 'facility-details-modal-overlay') {
+        this.selectedFacilityModalId = null;
+        this.render();
         return;
       }
     });
-
-    // Toolbar controls (if present)
-    document.querySelectorAll('[data-demo-role]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const role = btn.dataset.demoRole;
-        appStore.setRole(role);
-        const state = appStore.getState();
-        const t = locales[state.currentLanguage] || locales.en;
-        if (role === 'patient') this.navigateTo('patient_home');
-        else if (role === 'health_worker') this.navigateTo('health_worker');
-        else if (role === 'doctor') this.navigateTo('doctor');
-        else if (role === 'facility') this.navigateTo('facility');
-        this.showToast(`${t.roleSwitchedToast} ${role.toUpperCase()}`, 'success');
-      });
-    });
-
-    document.querySelectorAll('[data-demo-net]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const net = btn.dataset.demoNet;
-        appStore.setNetworkMode(net);
-        const state = appStore.getState();
-        const t = locales[state.currentLanguage] || locales.en;
-        this.showToast(`${t.networkSwitchedToast} ${net.toUpperCase()}`, 'warning');
-      });
-    });
-
-    const resetBtn = document.getElementById('btn-reset-demo');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        appStore.resetToInitial();
-        const state = appStore.getState();
-        const t = locales[state.currentLanguage] || locales.en;
-        this.navigateTo('welcome');
-        this.showToast(t.resetStateToast, 'success');
-      });
-    }
   }
 
   attachScreenListeners(state) {
     const t = locales[state.currentLanguage] || locales.en;
 
-    // Back to home button
-    const backBtn = document.getElementById('btn-back-home');
-    if (backBtn) {
-      backBtn.onclick = () => {
-        if (state.currentRole === 'health_worker') this.navigateTo('health_worker');
-        else if (state.currentRole === 'doctor') this.navigateTo('doctor');
-        else if (state.currentRole === 'facility') this.navigateTo('facility');
-        else this.navigateTo('patient_home');
+    // Welcome Screen Buttons
+    const getStartedBtn = document.getElementById('btn-hero-get-started');
+    if (getStartedBtn) {
+      getStartedBtn.onclick = () => {
+        const portalSection = document.getElementById('section-portal-selection');
+        if (portalSection) {
+          portalSection.scrollIntoView({ behavior: 'smooth' });
+        }
       };
     }
 
-    // Portal selection cards & Enter buttons on Landing Page
-    document.querySelectorAll('.portal-card, .btn-enter-portal').forEach(el => {
+    const howItWorksBtn = document.getElementById('btn-hero-how-it-works');
+    if (howItWorksBtn) {
+      howItWorksBtn.onclick = () => {
+        const howSection = document.getElementById('section-how-it-works');
+        if (howSection) {
+          howSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      };
+    }
+
+    // Portal selection cards
+    document.querySelectorAll('.portal-card-clean, .btn-enter-portal').forEach(el => {
       el.onclick = (e) => {
         e.stopPropagation();
-        const portal = el.dataset.portal || el.closest('.portal-card')?.dataset.portal;
+        const portal = el.dataset.portal || el.closest('.portal-card-clean')?.dataset.portal;
         if (portal) {
           appStore.selectPortal(portal);
           this.otpStep = 'identifier';
@@ -412,15 +372,13 @@ class AppRouter {
       };
     });
 
-    // OTP Verification Screen Listeners
+    // OTP Screen Back Button
     const btnOtpBack = document.getElementById('btn-otp-back-portal');
     if (btnOtpBack) {
-      btnOtpBack.onclick = () => {
-        this.navigateTo('welcome');
-      };
+      btnOtpBack.onclick = () => this.navigateTo('welcome');
     }
 
-    // Step 1: Send Mock OTP Form
+    // Step 1: Send OTP Form
     const sendOtpForm = document.getElementById('form-send-otp');
     if (sendOtpForm) {
       sendOtpForm.onsubmit = (e) => {
@@ -429,15 +387,15 @@ class AppRouter {
         const identifier = identifierInput && identifierInput.value.trim() ? identifierInput.value.trim() : '9876543210';
         
         if (identifier.includes('@')) {
-          appStore.setEmail(identifier);
+          state.userEmail = identifier;
         } else {
-          appStore.setMobileNumber('+91 ' + identifier.replace('+91', '').trim());
+          state.userMobile = '+91 ' + identifier.replace('+91', '').trim();
         }
 
         this.otpStep = 'otp';
         this.currentOtpValue = '';
         this.otpErrorMessage = '';
-        this.showToast('Demo OTP: 123456', 'info');
+        this.showToast(t.demoOtpNote || 'Demo mode: use 123456', 'info');
         this.render();
       };
     }
@@ -455,7 +413,7 @@ class AppRouter {
       };
     }
 
-    // OTP input live change
+    // OTP code live input
     const otpInput = document.getElementById('input-otp-code');
     if (otpInput) {
       otpInput.oninput = (e) => {
@@ -463,15 +421,10 @@ class AppRouter {
         if (otpInput.value !== this.currentOtpValue) {
           otpInput.value = this.currentOtpValue;
         }
-        if (this.otpErrorMessage) {
-          this.otpErrorMessage = '';
-          const alertEl = document.getElementById('otp-error-alert');
-          if (alertEl) alertEl.remove();
-        }
       };
     }
 
-    // Step 2: Verify Mock OTP Form
+    // Step 2: Verify OTP Form
     const verifyOtpForm = document.getElementById('form-verify-otp');
     if (verifyOtpForm) {
       verifyOtpForm.onsubmit = (e) => {
@@ -480,7 +433,7 @@ class AppRouter {
         const enteredCode = codeInput ? codeInput.value.trim() : this.currentOtpValue;
 
         if (!enteredCode || enteredCode.length < 6) {
-          this.otpErrorMessage = 'Please enter the 6-digit OTP (Demo: 123456).';
+          this.otpErrorMessage = t.invalidOtp || 'Please enter a valid 6-digit code (Use: 123456).';
           this.render();
           return;
         }
@@ -490,15 +443,15 @@ class AppRouter {
           this.otpErrorMessage = '';
           this.currentOtpValue = '';
 
-          // Authenticate session in store
+          // Authenticate session
           appStore.setAuthenticatedSession('mock_token_' + Date.now(), {
-            identifier: state.userMobile || state.userEmail || 'user@example.com',
+            identifier: state.userMobile || state.userEmail || '9876543210',
             role: selectedPortal
           });
           
-          this.showToast(t.verificationSuccessMsg || 'Verification successful!', 'success');
+          this.showToast(t.loginSuccess || 'Signed in successfully.', 'success');
 
-          // Navigate to category dashboard
+          // Navigate to respective dashboard
           if (selectedPortal === 'health_worker') {
             this.navigateTo('health_worker');
           } else if (selectedPortal === 'doctor') {
@@ -509,13 +462,13 @@ class AppRouter {
             this.navigateTo('patient_home');
           }
         } else {
-          this.otpErrorMessage = 'Incorrect OTP. Use Demo OTP: 123456.';
+          this.otpErrorMessage = t.invalidOtp || 'Please enter a valid 6-digit code (Use: 123456).';
           this.render();
         }
       };
     }
 
-    // Change mobile / email button
+    // Change number button
     const changeMobileBtn = document.getElementById('btn-change-mobile');
     if (changeMobileBtn) {
       changeMobileBtn.onclick = () => {
@@ -525,312 +478,220 @@ class AppRouter {
       };
     }
 
-    // Resend Mock OTP button
+    // Resend OTP button
     const resendOtpBtn = document.getElementById('btn-resend-demo-otp');
     if (resendOtpBtn) {
       resendOtpBtn.onclick = () => {
-        this.showToast('Demo OTP: 123456', 'info');
+        this.showToast(t.demoOtpNote || 'Demo mode: use 123456', 'info');
       };
     }
 
-    // Nearby Clinics & Map Interaction Listeners
-    const nearbyActionTile = document.getElementById('action-nearby-clinics');
-    if (nearbyActionTile) {
-      nearbyActionTile.onclick = () => this.navigateTo('nearby_clinics');
+    // Patient Home: First-time welcome actions
+    const dismissWelcomeBtn = document.getElementById('btn-dismiss-welcome');
+    if (dismissWelcomeBtn) {
+      dismissWelcomeBtn.onclick = () => {
+        appStore.dismissWelcomeBanner();
+      };
     }
 
-    // Map Pin selection
-    document.querySelectorAll('.map-pin-group, .clinic-item-card').forEach(el => {
+    const welcomeBookBtn = document.getElementById('btn-welcome-book');
+    if (welcomeBookBtn) {
+      welcomeBookBtn.onclick = () => this.navigateTo('appointment_wizard');
+    }
+
+    const welcomeNearbyBtn = document.getElementById('btn-welcome-nearby');
+    if (welcomeNearbyBtn) {
+      welcomeNearbyBtn.onclick = () => this.navigateTo('nearby_clinics');
+    }
+
+    const welcomeJourneyBtn = document.getElementById('btn-welcome-journey');
+    if (welcomeJourneyBtn) {
+      welcomeJourneyBtn.onclick = () => this.navigateTo('health_journey');
+    }
+
+    // Patient Home: 4 Main Dashboard Actions
+    const actionBookAppt = document.getElementById('action-book-appointment');
+    if (actionBookAppt) {
+      actionBookAppt.onclick = () => this.navigateTo('appointment_wizard');
+    }
+
+    const actionFindNearby = document.getElementById('action-find-nearby');
+    if (actionFindNearby) {
+      actionFindNearby.onclick = () => this.navigateTo('nearby_clinics');
+    }
+
+    const actionJourney = document.getElementById('action-health-journey');
+    if (actionJourney) {
+      actionJourney.onclick = () => this.navigateTo('health_journey');
+    }
+
+    const actionMyAppts = document.getElementById('action-my-appointments');
+    if (actionMyAppts) {
+      actionMyAppts.onclick = () => this.navigateTo('appointments');
+    }
+
+    const activeTokenCard = document.getElementById('card-patient-active-token');
+    if (activeTokenCard) {
+      activeTokenCard.onclick = () => this.navigateTo('appointments');
+    }
+
+    // Appointment Wizard Steps Navigation & Selections
+    document.querySelectorAll('[data-wizard-select]').forEach(el => {
       el.onclick = () => {
-        const id = el.dataset.id;
-        if (id) {
-          this.selectedClinicId = id;
+        const type = el.dataset.wizardSelect;
+        const val = el.dataset.value;
+        if (type && val) {
+          this.wizardState[type] = val;
           this.render();
         }
       };
     });
 
-    const bookClinicBtn = document.getElementById('btn-book-selected-clinic');
-    if (bookClinicBtn) {
-      bookClinicBtn.onclick = () => {
-        this.navigateTo('appointment_queue');
-      };
+    const wizardCancel = document.getElementById('btn-wizard-cancel');
+    if (wizardCancel) {
+      wizardCancel.onclick = () => this.navigateTo('patient_home');
     }
 
-    const refreshMapBtn = document.getElementById('btn-refresh-map');
-    if (refreshMapBtn) {
-      refreshMapBtn.onclick = () => {
-        this.showToast('Updated live bed and queue metrics for all block clinics.', 'success');
-      };
-    }
+    const nextBtn1 = document.getElementById('btn-wizard-next-1');
+    if (nextBtn1) nextBtn1.onclick = () => { this.wizardState.step = 2; this.render(); };
 
-    // Appointment Time Slot Selection
-    document.querySelectorAll('.slot-pill').forEach(btn => {
-      btn.onclick = () => {
-        const slot = btn.dataset.slot;
-        if (slot) {
-          this.selectedSlot = slot;
-          document.querySelectorAll('.slot-pill').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-        }
-      };
-    });
+    const prevBtn2 = document.getElementById('btn-wizard-prev-2');
+    if (prevBtn2) prevBtn2.onclick = () => { this.wizardState.step = 1; this.render(); };
+    const nextBtn2 = document.getElementById('btn-wizard-next-2');
+    if (nextBtn2) nextBtn2.onclick = () => { this.wizardState.step = 3; this.render(); };
 
-    // Confirm Appointment Booking Button
-    const confirmApptBtn = document.getElementById('btn-confirm-appointment');
-    if (confirmApptBtn) {
-      confirmApptBtn.onclick = async () => {
-        const docSelect = document.getElementById('select-doctor');
-        const facSelect = document.getElementById('select-facility');
-        const doctorName = docSelect ? docSelect.value : 'Dr. Ananya Sharma';
-        const facility = facSelect ? facSelect.value : 'PHC Rampur Community Health Centre';
+    const prevBtn3 = document.getElementById('btn-wizard-prev-3');
+    if (prevBtn3) prevBtn3.onclick = () => { this.wizardState.step = 2; this.render(); };
+    const nextBtn3 = document.getElementById('btn-wizard-next-3');
+    if (nextBtn3) nextBtn3.onclick = () => { this.wizardState.step = 4; this.render(); };
 
-        confirmApptBtn.disabled = true;
-        confirmApptBtn.innerHTML = 'Generating Token...';
+    const prevBtn4 = document.getElementById('btn-wizard-prev-4');
+    if (prevBtn4) prevBtn4.onclick = () => { this.wizardState.step = 3; this.render(); };
+    const nextBtn4 = document.getElementById('btn-wizard-next-4');
+    if (nextBtn4) nextBtn4.onclick = () => { this.wizardState.step = 5; this.render(); };
 
-        try {
-          const token = await appStore.addAppointment(doctorName, this.selectedSlot, facility);
-          this.showToast(`Token #${token} Confirmed for ${this.selectedSlot}!`, 'success');
-          this.navigateTo('appointment_queue');
-        } catch (err) {
-          this.showToast('Appointment confirmed locally.', 'success');
-          this.navigateTo('appointment_queue');
-        }
-      };
-    }
+    const prevBtn5 = document.getElementById('btn-wizard-prev-5');
+    if (prevBtn5) prevBtn5.onclick = () => { this.wizardState.step = 4; this.render(); };
+    const nextBtn5 = document.getElementById('btn-wizard-next-5');
+    if (nextBtn5) nextBtn5.onclick = () => { this.wizardState.step = 6; this.render(); };
 
-    // Patient Home Quick Action Tiles
-    const mapAction = (id, screen) => {
-      const el = document.getElementById(id);
-      if (el) el.onclick = () => this.navigateTo(screen);
-    };
-    mapAction('card-active-token', 'appointment_queue');
-    mapAction('action-book-opd', 'appointment_queue');
-    mapAction('action-triage', 'triage');
-    mapAction('action-teleconsult', 'network_consultation');
-    mapAction('action-health-journey', 'health_journey');
-    mapAction('action-medicines', 'medicines_diagnostics');
-    mapAction('action-diagnostics', 'medicines_diagnostics');
-    mapAction('action-followups', 'followups');
-    mapAction('action-schemes', 'schemes');
-    mapAction('card-asha-contact', 'followups');
+    const prevBtn6 = document.getElementById('btn-wizard-prev-6');
+    if (prevBtn6) prevBtn6.onclick = () => { this.wizardState.step = 5; this.render(); };
 
-    // Triage Screen Actions
-    const triageCalcBtn = document.getElementById('btn-calculate-triage');
-    if (triageCalcBtn) {
-      triageCalcBtn.onclick = () => {
-        const breathingChk = document.getElementById('chk-breathing');
-        const isHigh = breathingChk && breathingChk.checked;
-        const priority = isHigh ? 'High' : 'Medium';
-        
-        const symptoms = [];
-        document.querySelectorAll('.triage-checkbox:checked').forEach(c => symptoms.push(c.value));
-        
-        appStore.submitTriageResult(priority, symptoms);
+    // Confirm Appointment in Wizard
+    const confirmWizardBtn = document.getElementById('btn-wizard-confirm');
+    if (confirmWizardBtn) {
+      confirmWizardBtn.onclick = async () => {
+        confirmWizardBtn.disabled = true;
+        confirmWizardBtn.innerHTML = 'Confirming...';
 
-        const resultCard = document.getElementById('triage-result-card');
-        const resultBadge = document.getElementById('triage-result-badge');
-        const resultTitle = document.getElementById('triage-result-title');
-        const resultDesc = document.getElementById('triage-result-desc');
+        const createdAppt = await appStore.addAppointment(
+          this.wizardState.facility,
+          this.wizardState.service,
+          this.wizardState.doctor,
+          this.wizardState.date,
+          this.wizardState.time
+        );
 
-        if (resultCard) {
-          resultCard.style.display = 'block';
-          if (isHigh) {
-            resultCard.style.borderTopColor = 'var(--color-danger)';
-            if (resultBadge) {
-              resultBadge.className = 'status-badge badge-danger';
-              resultBadge.textContent = t.highPriorityBadge;
-            }
-            if (resultTitle) resultTitle.textContent = t.criticalUrgentAlertTitle;
-            if (resultDesc) resultDesc.innerHTML = `${t.criticalUrgentAlertDesc}`;
-            
-            // Add SOS button
-            const actionsDiv = document.getElementById('triage-result-actions');
-            if (actionsDiv) {
-              actionsDiv.innerHTML = `
-                <button class="btn btn-danger btn-full" id="btn-triage-goto-emergency" style="padding: 11px;">
-                  <i data-lucide="phone-call"></i> ${t.triggerSosBtn}
-                </button>
-              `;
-              const sosBtn = document.getElementById('btn-triage-goto-emergency');
-              if (sosBtn) sosBtn.onclick = () => this.navigateTo('emergency_sos');
-            }
-          } else {
-            resultCard.style.borderTopColor = 'var(--color-warning)';
-            if (resultBadge) {
-              resultBadge.className = 'status-badge badge-warning';
-              resultBadge.textContent = t.mediumPriorityBadge;
-            }
-            if (resultTitle) resultTitle.textContent = t.mediumPriorityAlertTitle;
-            if (resultDesc) resultDesc.textContent = t.mediumPriorityAlertDesc;
-          }
-          this.showToast(`${t.triageUrgencyAssessment}: ${isHigh ? t.highPriority : t.mediumPriority}`, isHigh ? 'danger' : 'warning');
-          if (window.lucide) window.lucide.createIcons();
-        }
-      };
-    }
-
-    mapAction('btn-triage-goto-teleconsult', 'network_consultation');
-    mapAction('btn-triage-goto-journey', 'health_journey');
-
-    // Network Consultation Screen Actions
-    document.querySelectorAll('.net-switch-btn').forEach(btn => {
-      btn.onclick = () => {
-        const mode = btn.dataset.setNet;
-        if (mode) {
-          appStore.setNetworkMode(mode);
-          this.showToast(`${t.networkSwitchedToast} ${mode.toUpperCase()}`, 'warning');
-        }
-      };
-    });
-
-    mapAction('btn-toggle-chat-mode', 'consultation_chat');
-    mapAction('btn-open-rx-drawer', 'consultation_chat');
-    mapAction('btn-open-chat-from-net', 'consultation_chat');
-    mapAction('btn-switch-to-video-call', 'network_consultation');
-
-    const endCallBtn = document.getElementById('btn-end-consult-call');
-    if (endCallBtn) {
-      endCallBtn.onclick = () => {
-        this.showToast(t.docRxDispatchedToast, 'success');
-        this.navigateTo('consultation_chat');
-      };
-    }
-
-    // Consultation Chat Form Submit
-    const chatForm = document.getElementById('form-chat-send');
-    if (chatForm) {
-      chatForm.onsubmit = (e) => {
-        e.preventDefault();
-        const input = document.getElementById('input-chat-text');
-        if (input && input.value.trim()) {
-          const text = input.value.trim();
-          input.value = '';
-          appStore.sendChatMessage(text);
-          
-          // Show typing indicator
-          const typingInd = document.getElementById('chat-typing-indicator');
-          if (typingInd) typingInd.style.display = 'flex';
-          setTimeout(() => {
-            if (typingInd) typingInd.style.display = 'none';
-          }, 1100);
-        }
-      };
-    }
-    mapAction('btn-chat-view-journey', 'health_journey');
-    mapAction('btn-chat-check-pharmacy', 'medicines_diagnostics');
-
-    // Medicines & Diagnostics Screen Actions
-    const tabMedBtn = document.getElementById('tab-btn-medicines');
-    const tabDiagBtn = document.getElementById('tab-btn-diagnostics');
-    if (tabMedBtn) {
-      tabMedBtn.onclick = () => {
-        this.activeMedDiagTab = 'medicines';
-        this.render();
-      };
-    }
-    if (tabDiagBtn) {
-      tabDiagBtn.onclick = () => {
-        this.activeMedDiagTab = 'diagnostics';
+        this.wizardState.confirmedToken = createdAppt.token;
+        this.wizardState.step = 7;
+        this.showToast(t.confirmedTitle || 'Appointment confirmed!', 'success');
         this.render();
       };
     }
 
-    // Medicine Search Filter
-    const medSearchInput = document.getElementById('input-med-search');
-    if (medSearchInput) {
-      medSearchInput.oninput = (e) => {
-        const q = e.target.value.toLowerCase();
-        document.querySelectorAll('.med-item-card').forEach(card => {
-          if (card.dataset.name.includes(q)) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
+    const wizardDoneBtn = document.getElementById('btn-wizard-done');
+    if (wizardDoneBtn) {
+      wizardDoneBtn.onclick = () => {
+        this.wizardState.step = 1;
+        this.navigateTo('patient_home');
       };
     }
 
-    // Diagnostic Booking Buttons
-    document.querySelectorAll('.btn-book-diagnostic').forEach(btn => {
+    const wizardGotoApptsBtn = document.getElementById('btn-wizard-goto-appointments');
+    if (wizardGotoApptsBtn) {
+      wizardGotoApptsBtn.onclick = () => {
+        this.wizardState.step = 1;
+        this.navigateTo('appointments');
+      };
+    }
+
+    // Appointments Screen Actions
+    const bookNewApptBtn = document.getElementById('btn-appointments-book-new') || document.getElementById('btn-empty-book-appt');
+    if (bookNewApptBtn) {
+      bookNewApptBtn.onclick = () => this.navigateTo('appointment_wizard');
+    }
+
+    const tabUpcomingBtn = document.getElementById('tab-btn-upcoming');
+    if (tabUpcomingBtn) {
+      tabUpcomingBtn.onclick = () => {
+        this.appointmentsTab = 'upcoming';
+        this.render();
+      };
+    }
+
+    const tabPastBtn = document.getElementById('tab-btn-past');
+    if (tabPastBtn) {
+      tabPastBtn.onclick = () => {
+        this.appointmentsTab = 'past';
+        this.render();
+      };
+    }
+
+    document.querySelectorAll('.btn-cancel-appointment').forEach(btn => {
       btn.onclick = () => {
-        const test = btn.dataset.test;
-        const fac = btn.dataset.facility;
-        appStore.bookDiagnosticTest(test, fac);
-        this.showToast(`${test} — ${t.appointmentConfirmedToast}`, 'success');
-        this.navigateTo('health_journey');
+        const apptId = btn.dataset.apptId;
+        if (confirm(t.cancelConfirmMsg || 'Are you sure you want to cancel this appointment?')) {
+          appStore.cancelAppointment(apptId);
+          this.showToast(t.statusCancelled || 'Appointment cancelled', 'warning');
+        }
       };
     });
 
-    // Health Worker Screen Actions
-    const syncBtn = document.getElementById('btn-asha-sync-records');
-    if (syncBtn) {
-      syncBtn.onclick = () => {
-        this.showToast(t.recordsSyncedToast, 'success');
+    // Nearby Care Screen Filters & Details Modal
+    document.querySelectorAll('[data-facility-filter]').forEach(chip => {
+      chip.onclick = () => {
+        this.nearbyFilter = chip.dataset.facilityFilter;
+        this.render();
       };
-    }
-
-    const regPtBtn = document.getElementById('btn-asha-register-patient');
-    if (regPtBtn) {
-      regPtBtn.onclick = () => {
-        this.showToast(t.newRegLoadedToast, 'success');
-      };
-    }
-
-    document.querySelectorAll('.btn-asha-start-triage').forEach(btn => {
-      btn.onclick = () => this.navigateTo('triage');
     });
 
-    // Doctor Screen Actions
-    mapAction('btn-doc-start-call', 'network_consultation');
-    mapAction('btn-doc-open-chat', 'consultation_chat');
-    
-    const docIssueRxBtn = document.getElementById('btn-doc-issue-rx');
-    if (docIssueRxBtn) {
-      docIssueRxBtn.onclick = () => {
-        this.showToast(t.docRxDispatchedToast, 'success');
-        this.navigateTo('consultation_chat');
+    const useMyLocationBtn = document.getElementById('btn-use-my-location');
+    if (useMyLocationBtn) {
+      useMyLocationBtn.onclick = () => {
+        this.showToast('Location updated: Showing facilities within 15 km of Rampur', 'success');
       };
     }
 
-    const docReferBtn = document.getElementById('btn-doc-refer-dh');
-    if (docReferBtn) {
-      docReferBtn.onclick = () => {
-        this.showToast(t.docReferralSentToast, 'warning');
-      };
-    }
-
-    document.querySelectorAll('.btn-doc-call-patient').forEach(btn => {
+    document.querySelectorAll('.btn-view-facility-details').forEach(btn => {
       btn.onclick = () => {
-        this.showToast(`${t.docAdmitToast} #${btn.dataset.token}`, 'success');
-        this.navigateTo('network_consultation');
+        this.selectedFacilityModalId = btn.dataset.facilityId;
+        this.render();
       };
     });
 
-    // Emergency Screen Actions
-    const dispatch108Btn = document.getElementById('btn-dispatch-108');
-    if (dispatch108Btn) {
-      dispatch108Btn.onclick = () => {
-        dispatch108Btn.innerHTML = `<i data-lucide="check-circle"></i> ${t.ambulanceEnRoute}`;
-        dispatch108Btn.style.background = '#1E9E5A';
-        const st = document.getElementById('ambulance-dispatch-status');
-        if (st) st.textContent = t.liveGpsTrackingActive;
-        this.showToast(t.ambulanceDispatchedToast, 'danger');
-        if (window.lucide) window.lucide.createIcons();
+    document.querySelectorAll('.btn-quick-book-facility, #btn-modal-book-facility').forEach(btn => {
+      btn.onclick = () => {
+        const facName = btn.dataset.facilityName;
+        if (facName) {
+          this.wizardState.facility = facName;
+          this.wizardState.step = 2;
+        }
+        this.selectedFacilityModalId = null;
+        this.navigateTo('appointment_wizard');
       };
-    }
+    });
 
-    const alertAshaSosBtn = document.getElementById('btn-alert-asha-sos');
-    if (alertAshaSosBtn) {
-      alertAshaSosBtn.onclick = () => {
-        this.showToast(t.ashaSosAlertedToast, 'warning');
-      };
+    // Health Journey First Book Button
+    const journeyBookFirstBtn = document.getElementById('btn-journey-book-first');
+    if (journeyBookFirstBtn) {
+      journeyBookFirstBtn.onclick = () => this.navigateTo('appointment_wizard');
     }
   }
 }
 
-// Instantiate and start app cleanly
-function startApp() {
+// Start HEALER App
+function startHealerApp() {
   if (!window.appRouter) {
     window.appRouter = new AppRouter();
     window.appRouter.init();
@@ -838,7 +699,7 @@ function startApp() {
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', startApp);
+  document.addEventListener('DOMContentLoaded', startHealerApp);
 } else {
-  startApp();
+  startHealerApp();
 }

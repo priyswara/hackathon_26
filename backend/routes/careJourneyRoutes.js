@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
     await dbRun(`
       INSERT INTO care_journey (id, title, provider, facility, date, status, summary)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [eventId, title, provider || 'Healthcare Provider', facility || 'GraminArogya Platform', eventDate, status, summary || '']);
+    `, [eventId, title, provider || 'Healthcare Provider', facility || 'HEALER Platform', eventDate, status, summary || '']);
 
     const newEvent = await dbGet('SELECT * FROM care_journey WHERE id = ?', [eventId]);
 

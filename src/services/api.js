@@ -1,6 +1,6 @@
 /**
  * Frontend API Service Layer
- * Connects GraminArogya frontend to Express backend
+ * Connects HEALER frontend to Express backend
  */
 
 // Same-origin API URL (automatically works on Render, localhost, or any custom domain)
@@ -73,7 +73,7 @@ export async function bookAppointment({ doctorName, slotTime, facility, patientN
       body: JSON.stringify({
         doctorName: doctorName || 'Dr. Ananya Sharma',
         slotTime: slotTime || '10:30 AM',
-        facility: facility || 'PHC Rampur Tele-Hub',
+        facility: facility || 'PHC Rampur Community Health Centre',
         patientName
       })
     });

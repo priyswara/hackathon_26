@@ -1,20 +1,22 @@
 /**
- * Central In-Memory Mock Database & Mutation Helpers
- * Rural Healthcare Access Platform
+ * HEALER Central Data Store & State Management
+ * Pure Vanilla JavaScript ES Module State Store
+ * Connects with backend APIs while maintaining robust offline/mock fallback.
  */
 
 import { fetchPatient, fetchQueue, fetchCareJourney, bookAppointment, addCareJourneyEvent } from '../services/api.js';
 
 export const initialMockDB = {
   currentRole: 'patient', // 'patient' | 'health_worker' | 'doctor' | 'facility'
-  selectedPortal: 'patient', // 'patient' | 'health_worker' | 'doctor' | 'facility'
+  selectedPortal: 'patient',
   isVerified: false,
   userEmail: '',
   userMobile: '+91 98765 43210',
   authToken: null,
   currentLanguage: 'en',
-  networkMode: 'good', // 'good' | 'moderate' | 'low'
-  
+  networkMode: 'good',
+  hasDismissedWelcome: false,
+
   patient: {
     id: 'P-9812',
     name: 'Ramesh Kumar',
@@ -25,453 +27,393 @@ export const initialMockDB = {
     abhaId: '91-4820-1928-44',
     pmjayEligible: true,
     activeToken: 'B-14',
-    queuePosition: 4,
-    estimatedWaitMins: 14,
+    queuePosition: 3,
+    estimatedWaitMins: 12,
     priorityLevel: 'Medium'
   },
-  
-  queue: [
-    { token: 'B-11', patientName: 'Ganga Ram', priorityLevel: 'High', status: 'serving', waitTime: '0 min' },
-    { token: 'B-12', patientName: 'Anita Sharma', priorityLevel: 'High', status: 'waiting', waitTime: '4 min' },
-    { token: 'B-13', patientName: 'Suresh Patel', priorityLevel: 'Medium', status: 'waiting', waitTime: '9 min' },
-    { token: 'B-14', patientName: 'Ramesh Kumar', priorityLevel: 'Medium', status: 'waiting', waitTime: '14 min' },
-    { token: 'B-15', patientName: 'Pooja Devi', priorityLevel: 'Low', status: 'waiting', waitTime: '20 min' },
-    { token: 'B-16', patientName: 'Mohan Lal', priorityLevel: 'Low', status: 'waiting', waitTime: '26 min' }
+
+  services: [
+    {
+      id: 'srv-1',
+      name: 'General OPD Consultation',
+      code: 'serviceGeneralOpd',
+      desc: 'serviceGeneralOpdDesc',
+      icon: 'stethoscope',
+      duration: '15 mins'
+    },
+    {
+      id: 'srv-2',
+      name: 'Maternal & Child Health',
+      code: 'serviceMaternal',
+      desc: 'serviceMaternalDesc',
+      icon: 'baby',
+      duration: '20 mins'
+    },
+    {
+      id: 'srv-3',
+      name: 'Pediatrics Care',
+      code: 'servicePediatrics',
+      desc: 'servicePediatricsDesc',
+      icon: 'heart-pulse',
+      duration: '15 mins'
+    },
+    {
+      id: 'srv-4',
+      name: 'Chronic Care & Diabetes',
+      code: 'serviceChronic',
+      desc: 'serviceChronicDesc',
+      icon: 'activity',
+      duration: '20 mins'
+    },
+    {
+      id: 'srv-5',
+      name: 'Diagnostics & Lab Tests',
+      code: 'serviceDiagnostic',
+      desc: 'serviceDiagnosticDesc',
+      icon: 'flask-conical',
+      duration: '10 mins'
+    }
   ],
-  
+
+  facilities: [
+    {
+      id: 'FAC-01',
+      name: 'PHC Rampur Community Health Centre',
+      type: 'Primary Health Centre',
+      category: 'phc',
+      distance: '2.4 km',
+      doctorsCount: 3,
+      bedsTotal: 12,
+      bedsOccupied: 8,
+      avgWaitMins: 14,
+      status: 'Open',
+      hours: '08:00 AM - 04:00 PM',
+      phone: '+91 751 245 8891',
+      lat: 25.432,
+      lng: 78.567,
+      address: 'Near Block Development Office, Rampur Kalan',
+      services: ['General OPD', 'Maternal & Child', 'Diagnostics & Lab Tests']
+    },
+    {
+      id: 'FAC-02',
+      name: 'CHC Kotra Block Hospital',
+      type: 'Community Health Centre',
+      category: 'chc',
+      distance: '14 km',
+      doctorsCount: 7,
+      bedsTotal: 30,
+      bedsOccupied: 22,
+      avgWaitMins: 25,
+      status: 'Open 24/7',
+      hours: '24 Hours Emergency & OPD',
+      phone: '+91 751 288 3341',
+      lat: 25.489,
+      lng: 78.612,
+      address: 'Main Highway Junction, Kotra Block',
+      services: ['General OPD', 'Pediatrics Care', 'Chronic Care', 'Emergency']
+    },
+    {
+      id: 'FAC-03',
+      name: 'Ayushman Arogya Mandir (Rampur Sub-Centre)',
+      type: 'Health & Wellness Centre',
+      category: 'clinic',
+      distance: '0.8 km',
+      doctorsCount: 1,
+      bedsTotal: 4,
+      bedsOccupied: 1,
+      avgWaitMins: 8,
+      status: 'Open',
+      hours: '09:00 AM - 02:00 PM',
+      phone: '+91 751 211 4452',
+      lat: 25.418,
+      lng: 78.552,
+      address: 'Village Panchayat Bhawan, Rampur',
+      services: ['General OPD', 'Maternal & Child', 'Immunization']
+    },
+    {
+      id: 'FAC-04',
+      name: 'Shivpuri District Hospital',
+      type: 'District Hospital',
+      category: 'hospital',
+      distance: '38 km',
+      doctorsCount: 24,
+      bedsTotal: 150,
+      bedsOccupied: 126,
+      avgWaitMins: 40,
+      status: 'Open 24/7',
+      hours: '24 Hours Multi-Specialty',
+      phone: '+91 751 290 0011',
+      lat: 25.612,
+      lng: 78.789,
+      address: 'Hospital Road, Civil Lines, Shivpuri',
+      services: ['General OPD', 'Pediatrics Care', 'Maternal Health', 'Surgery', 'Chronic Care']
+    },
+    {
+      id: 'FAC-05',
+      name: 'Jan Aushadhi Pharmacy Rampur',
+      type: 'Pharmacy',
+      category: 'pharmacy',
+      distance: '1.2 km',
+      doctorsCount: 0,
+      bedsTotal: 0,
+      bedsOccupied: 0,
+      avgWaitMins: 5,
+      status: 'Open',
+      hours: '08:30 AM - 08:30 PM',
+      phone: '+91 751 245 1199',
+      lat: 25.426,
+      lng: 78.561,
+      address: 'Opposite Bus Stand, Rampur Market',
+      services: ['Essential Medicines', 'Generic Drugs', 'First Aid']
+    },
+    {
+      id: 'FAC-06',
+      name: 'Rampur Diagnostic & Blood Test Centre',
+      type: 'Diagnostic Centre',
+      category: 'diagnostic',
+      distance: '2.1 km',
+      doctorsCount: 2,
+      bedsTotal: 0,
+      bedsOccupied: 0,
+      avgWaitMins: 10,
+      status: 'Open',
+      hours: '07:30 AM - 05:00 PM',
+      phone: '+91 751 245 4488',
+      lat: 25.435,
+      lng: 78.572,
+      address: 'Near PHC Gate, Hospital Road, Rampur',
+      services: ['Blood Tests', 'CBC Panel', 'Malaria Screening', 'X-Ray']
+    }
+  ],
+
   doctors: [
     {
       id: 'DOC-101',
       name: 'Dr. Ananya Sharma',
-      specialty: 'General Medicine',
-      experience: '8 Yrs Exp',
-      location: 'PHC Rampur Tele-Hub',
+      specialty: 'General Medicine & Family Physician',
+      experience: '8 Yrs Experience',
+      location: 'PHC Rampur Community Health Centre',
       rating: 4.9,
       avatarInitials: 'AS',
-      status: 'Online',
       availableSlots: ['10:30 AM', '11:15 AM', '02:00 PM', '03:30 PM']
     },
     {
       id: 'DOC-102',
       name: 'Dr. Rajiv Verma',
       specialty: 'Pediatrics / Child Specialist',
-      experience: '12 Yrs Exp',
-      location: 'CHC Kotra Rural Unit',
+      experience: '12 Yrs Experience',
+      location: 'CHC Kotra Block Hospital',
       rating: 4.8,
       avatarInitials: 'RV',
-      status: 'Online',
       availableSlots: ['11:00 AM', '01:30 PM', '04:00 PM']
     },
     {
       id: 'DOC-103',
       name: 'Dr. Sneha Reddy',
-      specialty: 'Obstetrics & Gynecology (Maternal)',
-      experience: '10 Yrs Exp',
-      location: 'District Tele-OPD',
+      specialty: 'Obstetrics & Maternal Care',
+      experience: '10 Yrs Experience',
+      location: 'PHC Rampur Community Health Centre',
       rating: 4.9,
       avatarInitials: 'SR',
-      status: 'Busy (In Consult)',
-      availableSlots: ['02:30 PM', '04:30 PM']
+      availableSlots: ['10:00 AM', '02:30 PM', '04:30 PM']
     }
   ],
-  
-  facilities: [
+
+  appointments: [
     {
-      id: 'FAC-01',
-      name: 'PHC Rampur Community Health Centre',
-      type: 'Primary Health Centre',
-      distance: '2.4 km',
-      doctorsCount: 3,
-      bedsTotal: 12,
-      bedsOccupied: 8,
-      icuAvailable: 2,
-      todayFootfall: 68,
-      avgWaitMins: 18,
-      medicinesAvailableRate: '88%',
-      status: 'Open • Normal Queue',
-      lat: 25.432,
-      lng: 78.567,
-      phone: '+91 751 245 8891'
+      id: 'APPT-101',
+      token: 'B-14',
+      facility: 'PHC Rampur Community Health Centre',
+      service: 'General OPD Consultation',
+      doctor: 'Dr. Ananya Sharma',
+      date: 'Today',
+      time: '10:30 AM',
+      status: 'confirmed',
+      patientName: 'Ramesh Kumar',
+      isUpcoming: true
     },
     {
-      id: 'FAC-02',
-      name: 'CHC Kotra Block Hospital',
-      type: 'Community Health Centre',
-      distance: '14 km',
-      doctorsCount: 7,
-      bedsTotal: 30,
-      bedsOccupied: 24,
-      icuAvailable: 4,
-      todayFootfall: 142,
-      avgWaitMins: 32,
-      medicinesAvailableRate: '92%',
-      status: 'Open • 24/7 Emergency',
-      lat: 25.489,
-      lng: 78.612,
-      phone: '+91 751 288 3341'
-    },
-    {
-      id: 'FAC-03',
-      name: 'Ayushman Arogya Mandir (Rampur Sub-Centre)',
-      type: 'Health & Wellness Centre',
-      distance: '0.8 km',
-      doctorsCount: 1,
-      bedsTotal: 4,
-      bedsOccupied: 1,
-      icuAvailable: 0,
-      todayFootfall: 26,
-      avgWaitMins: 8,
-      medicinesAvailableRate: '95%',
-      status: 'Open • Low Wait Time',
-      lat: 25.418,
-      lng: 78.552,
-      phone: '+91 751 211 4452'
-    },
-    {
-      id: 'FAC-04',
-      name: 'Shivpuri District Hospital',
-      type: 'Tertiary Referral Centre',
-      distance: '38 km',
-      doctorsCount: 22,
-      bedsTotal: 150,
-      bedsOccupied: 128,
-      icuAvailable: 12,
-      todayFootfall: 480,
-      avgWaitMins: 45,
-      medicinesAvailableRate: '96%',
-      status: 'Open • High Footfall',
-      lat: 25.612,
-      lng: 78.789,
-      phone: '+91 751 290 0011'
+      id: 'APPT-100',
+      token: 'A-08',
+      facility: 'Ayushman Arogya Mandir (Rampur Sub-Centre)',
+      service: 'Diagnostics & Lab Tests',
+      doctor: 'Dr. Ananya Sharma',
+      date: '28 Aug 2026',
+      time: '09:15 AM',
+      status: 'completed',
+      patientName: 'Ramesh Kumar',
+      isUpcoming: false
     }
   ],
-  
+
   careJourney: [
     {
       id: 'STEP-1',
       title: 'Digital Symptom Triage',
-      provider: 'AI Decision Support Assistant',
-      facility: 'GraminArogya App',
+      provider: 'HEALER Assistant',
+      facility: 'HEALER Platform',
       date: 'Today, 09:15 AM',
       status: 'completed',
-      summary: 'Assessed fever (102.2°F), dry cough for 3 days. Classified as Medium Priority.'
+      summary: 'Assessed fever (101.4°F) and seasonal cough. Classified as Routine Consultation.'
     },
     {
       id: 'STEP-2',
-      title: 'Teleconsultation Appointment',
-      provider: 'Dr. Ananya Sharma (General Medicine)',
-      facility: 'PHC Rampur Tele-Hub',
+      title: 'Appointment Booked',
+      provider: 'Dr. Ananya Sharma',
+      facility: 'PHC Rampur Community Health Centre',
       date: 'Today, 10:30 AM',
       status: 'active',
-      summary: 'Network-adaptive consultation scheduled. Token #B-14 generated.'
+      summary: 'General OPD Consultation booked. Token #B-14 issued.'
     },
     {
       id: 'STEP-3',
       title: 'Prescription & Diagnostic Order',
       provider: 'Dr. Ananya Sharma',
-      facility: 'PHC Rampur Lab',
-      date: 'Pending Consult',
+      facility: 'PHC Rampur Pharmacy',
+      date: 'Upcoming',
       status: 'upcoming',
-      summary: 'Complete Blood Count (CBC) and Paracetamol 650mg + Azithromycin.'
+      summary: 'Routine health panel and prescribed medication follow-up.'
     },
     {
       id: 'STEP-4',
-      title: 'ASHA Home Follow-up Visit',
-      provider: 'Sunita Devi (ASHA Worker)',
-      facility: 'Rampur Village Sub-centre',
+      title: 'Health Follow-up',
+      provider: 'Sunita Devi (Health Worker)',
+      facility: 'Rampur Sub-Centre',
       date: 'Tomorrow, 11:00 AM',
       status: 'upcoming',
-      summary: 'Field health worker vitals check & medication adherence review.'
+      summary: 'Vitals verification and recovery check.'
     }
   ],
-  
-  medicines: [
-    {
-      id: 'MED-1',
-      name: 'Paracetamol 650mg Tablets',
-      category: 'Analgesic / Antipyretic',
-      dosage: '1 Tab TDS after meals',
-      stockStatus: 'Available',
-      stockUnits: '420 strips',
-      facility: 'PHC Rampur Pharmacy',
-      updatedMinsAgo: 15
-    },
-    {
-      id: 'MED-2',
-      name: 'Azithromycin 500mg',
-      category: 'Broad-spectrum Antibiotic',
-      dosage: '1 Tab OD for 3 days',
-      stockStatus: 'Low Stock',
-      stockUnits: '18 strips remaining',
-      facility: 'PHC Rampur Pharmacy',
-      updatedMinsAgo: 8
-    },
-    {
-      id: 'MED-3',
-      name: 'ORS Sachets (WHO Formula)',
-      category: 'Oral Rehydration Salts',
-      dosage: 'Mix in 1L clean water',
-      stockStatus: 'Available',
-      stockUnits: '850 packs',
-      facility: 'PHC Rampur Pharmacy',
-      updatedMinsAgo: 30
-    },
-    {
-      id: 'MED-4',
-      name: 'Metformin 500mg SR',
-      category: 'Anti-Diabetic',
-      dosage: '1 Tab BD with meals',
-      stockStatus: 'Available',
-      stockUnits: '240 strips',
-      facility: 'PHC Rampur Pharmacy',
-      updatedMinsAgo: 45
-    },
-    {
-      id: 'MED-5',
-      name: 'Iron & Folic Acid (IFA) Tablets',
-      category: 'Maternal Nutrition',
-      dosage: '1 Tab daily',
-      stockStatus: 'Available',
-      stockUnits: '600 strips',
-      facility: 'PHC Rampur Pharmacy',
-      updatedMinsAgo: 12
-    },
-    {
-      id: 'MED-6',
-      name: 'Amoxicillin + Clavulanic Acid 625mg',
-      category: 'Antibiotic',
-      dosage: '1 Tab BD',
-      stockStatus: 'Unavailable',
-      stockUnits: '0 strips (Restocking)',
-      facility: 'PHC Rampur Pharmacy',
-      updatedMinsAgo: 5
-    }
-  ],
-  
-  diagnostics: [
-    {
-      id: 'DIAG-1',
-      testName: 'Complete Blood Count (CBC)',
-      purpose: 'Fever, infection, hemoglobin levels',
-      facility: 'PHC Rampur Diagnostic Lab',
-      slotTime: 'Today, 11:30 AM',
-      reportTurnaround: '2 Hours',
-      cost: '₹0 (Free under PM-JAY)',
-      status: 'Available'
-    },
-    {
-      id: 'DIAG-2',
-      testName: 'Rapid Malaria Antigen Test',
-      purpose: 'Malarial parasite detection in 15 mins',
-      facility: 'PHC Rampur Diagnostic Lab',
-      slotTime: 'Today, 12:00 PM',
-      reportTurnaround: '15 Mins',
-      cost: '₹0 (Free under NVBDCP)',
-      status: 'Available'
-    },
-    {
-      id: 'DIAG-3',
-      testName: 'Sputum Smear Microscopy (TB Check)',
-      purpose: 'Tuberculosis diagnostic screening',
-      facility: 'CHC Kotra Block Lab',
-      slotTime: 'Today, 02:00 PM',
-      reportTurnaround: '24 Hours',
-      cost: '₹0 (Free under NTEP)',
-      status: 'Available'
-    },
-    {
-      id: 'DIAG-4',
-      testName: 'Digital Chest X-Ray',
-      purpose: 'Pneumonia / Respiratory imaging',
-      facility: 'CHC Kotra Block Lab',
-      slotTime: 'Tomorrow, 10:00 AM',
-      reportTurnaround: '1 Hour',
-      cost: '₹0 (Free under PM-JAY)',
-      status: 'Available'
-    }
-  ],
-  
-  followUps: [
-    {
-      id: 'FU-01',
-      title: 'ASHA Home Check-up & Vitals',
-      workerName: 'Sunita Devi (ASHA)',
-      workerPhone: '+91 94250 88219',
-      dueDate: 'Tomorrow, 11:00 AM',
-      purpose: 'Blood Pressure & Post-Consult adherence review',
-      status: 'Confirmed'
-    },
-    {
-      id: 'FU-02',
-      title: 'Maternal ANC Second Trimester Check',
-      workerName: 'Meena ANM Worker',
-      workerPhone: '+91 98261 77310',
-      dueDate: 'Friday, 10:00 AM',
-      purpose: 'Ultrasound screening at CHC Kotra',
-      status: 'Scheduled'
-    },
-    {
-      id: 'FU-03',
-      title: 'Diabetes HbA1c Quarterly Follow-up',
-      workerName: 'Dr. Ananya Sharma',
-      workerPhone: '+91 98765 11223',
-      dueDate: 'Next Month, 15th Sep',
-      purpose: 'Blood sugar stability review',
-      status: 'Upcoming'
-    }
-  ],
-  
-  healthWorkerRoster: [
-    {
-      id: 'HW-P1',
-      name: 'Kavita Bai',
-      age: 26,
-      category: 'High-Risk Maternal (32 Weeks)',
-      vitals: 'BP 142/96 (Elevated)',
-      village: 'Rampur Sub-centre',
-      lastVisit: '2 days ago',
-      urgency: 'high',
-      status: 'Visit Required'
-    },
-    {
-      id: 'HW-P2',
-      name: 'Ramesh Kumar',
-      age: 42,
-      category: 'Acute Viral Fever & Cough',
-      vitals: 'Temp 102.2°F, SpO2 97%',
-      village: 'Rampur Kalan',
-      lastVisit: 'Triage Today',
-      urgency: 'medium',
-      status: 'Teleconsult Active'
-    },
-    {
-      id: 'HW-P3',
-      name: 'Devki Nandan',
-      age: 68,
-      category: 'Hypertension & Chronic Care',
-      vitals: 'BP 130/84, Adherence 95%',
-      village: 'Kotra Tola',
-      lastVisit: '1 week ago',
-      urgency: 'low',
-      status: 'Routine Sync'
-    }
-  ],
-  
-  schemes: [
-    {
-      id: 'SCH-1',
-      name: 'Ayushman Bharat PM-JAY',
-      coverage: '₹5,00,000 / Family / Year',
-      status: 'Active & Verified',
-      color: '#6C3CE9',
-      benefits: ['Free cashless hospitalization', 'Covers secondary & tertiary care', 'Over 1,949 medical procedures']
-    },
-    {
-      id: 'SCH-2',
-      name: 'Janani Suraksha Yojana (JSY)',
-      coverage: '₹1,400 Cash Incentive for Institutional Delivery',
-      status: 'Eligible (Maternal)',
-      color: '#00D2A0',
-      benefits: ['Free transport by Janani Express', 'Free diet during hospital stay', 'Free drugs and consumables']
-    },
-    {
-      id: 'SCH-3',
-      name: 'Pradhan Mantri National Dialysis Program',
-      coverage: '100% Free Hemodialysis at CHC/District Level',
-      status: 'Active',
-      color: '#E88C1F',
-      benefits: ['Eliminates out-of-pocket travel expenses', 'Nearest center at CHC Kotra']
-    }
-  ],
-  
-  chatMessages: [
-    {
-      sender: 'doctor',
-      text: 'Namaste Ramesh ji. I am Dr. Ananya. I see you reported a 102°F fever with cough in the triage system.',
-      time: '10:31 AM'
-    },
-    {
-      sender: 'patient',
-      text: 'Yes doctor. It started 2 days ago with body ache and mild shivering.',
-      time: '10:32 AM'
-    },
-    {
-      sender: 'doctor',
-      text: 'Understood. Are you experiencing any chest heaviness or breathing difficulty?',
-      time: '10:33 AM'
-    },
-    {
-      sender: 'patient',
-      text: 'No breathing difficulty doctor, just weakness and fever.',
-      time: '10:33 AM'
-    }
+
+  queue: [
+    { token: 'B-11', patientName: 'Ganga Ram', priorityLevel: 'High', status: 'serving', waitTime: '0 min' },
+    { token: 'B-12', patientName: 'Anita Sharma', priorityLevel: 'High', status: 'waiting', waitTime: '4 min' },
+    { token: 'B-13', patientName: 'Suresh Patel', priorityLevel: 'Medium', status: 'waiting', waitTime: '8 min' },
+    { token: 'B-14', patientName: 'Ramesh Kumar', priorityLevel: 'Medium', status: 'waiting', waitTime: '12 min' }
   ]
 };
 
-// Global Store holding application state
-export class MockStore {
+class MockStore {
   constructor() {
-    this.state = JSON.parse(JSON.stringify(initialMockDB));
+    // Load persisted state if exists in localStorage
+    let saved = null;
+    if (typeof localStorage !== 'undefined') {
+      saved = localStorage.getItem('healer_state');
+    }
+    if (saved) {
+      try {
+        this.state = JSON.parse(saved);
+      } catch (e) {
+        this.state = JSON.parse(JSON.stringify(initialMockDB));
+      }
+    } else {
+      this.state = JSON.parse(JSON.stringify(initialMockDB));
+    }
     this.listeners = [];
   }
-  
+
+  save() {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem('healer_state', JSON.stringify(this.state));
+      } catch (e) {
+        // Ignore quota errors
+      }
+    }
+  }
+
   getState() {
     return this.state;
   }
-  
-  subscribe(listener) {
-    this.listeners.push(listener);
+
+  subscribe(fn) {
+    this.listeners.push(fn);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      this.listeners = this.listeners.filter(cb => cb !== fn);
     };
   }
-  
+
   notify() {
-    this.listeners.forEach(l => l(this.state));
+    this.save();
+    this.listeners.forEach(fn => fn(this.state));
   }
-  
+
+  async initFromBackend() {
+    try {
+      const patientData = await fetchPatient();
+      if (patientData && patientData.data) {
+        this.state.patient = {
+          ...this.state.patient,
+          ...patientData.data
+        };
+      }
+
+      const queueData = await fetchQueue();
+      if (queueData && queueData.data && queueData.data.length > 0) {
+        this.state.queue = queueData.data;
+      }
+
+      const journeyData = await fetchCareJourney();
+      if (journeyData && journeyData.data && journeyData.data.length > 0) {
+        this.state.careJourney = journeyData.data;
+      }
+
+      this.notify();
+    } catch (err) {
+      // Backend not running or offline, fallback to in-memory state
+    }
+  }
+
   setRole(role) {
     this.state.currentRole = role;
-    this.state.selectedPortal = role;
-    this.notify();
-  }
-  
-  selectPortal(portalId) {
-    this.state.selectedPortal = portalId;
     this.notify();
   }
 
-  setMobileNumber(mobile) {
-    this.state.userMobile = mobile;
+  selectPortal(portal) {
+    this.state.selectedPortal = portal;
+    this.state.currentRole = portal;
     this.notify();
   }
 
-  setEmail(email) {
-    this.state.userEmail = email;
+  setLanguage(langCode) {
+    this.state.currentLanguage = langCode;
     this.notify();
   }
 
-  setAuthenticatedSession(token, user = {}) {
+  dismissWelcomeBanner() {
+    this.state.hasDismissedWelcome = true;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('healer_welcome_dismissed', 'true');
+    }
+    this.notify();
+  }
+
+  isWelcomeDismissed() {
+    return this.state.hasDismissedWelcome || (typeof localStorage !== 'undefined' && localStorage.getItem('healer_welcome_dismissed') === 'true');
+  }
+
+  setAuthenticatedSession(token, userDetails = {}) {
     this.state.isVerified = true;
     this.state.authToken = token;
-    if (user.email) this.state.userEmail = user.email;
-    this.state.currentRole = this.state.selectedPortal;
-    this.notify();
-  }
-
-  verifyOTP(code) {
-    if (code === '123456') {
-      this.state.isVerified = true;
-      this.state.currentRole = this.state.selectedPortal;
-      this.notify();
-      return true;
+    if (userDetails.identifier) {
+      if (userDetails.identifier.includes('@')) {
+        this.state.userEmail = userDetails.identifier;
+      } else {
+        this.state.userMobile = userDetails.identifier;
+      }
     }
-    return false;
+    if (userDetails.role) {
+      this.state.currentRole = userDetails.role;
+      this.state.selectedPortal = userDetails.role;
+    }
+    this.notify();
   }
 
   logout() {
     this.state.isVerified = false;
     this.state.authToken = null;
+    this.state.selectedPortal = 'patient';
+    this.state.currentRole = 'patient';
     this.notify();
   }
 
@@ -480,213 +422,85 @@ export class MockStore {
     this.state.authToken = null;
     this.notify();
   }
-  
-  setLanguage(langCode) {
-    this.state.currentLanguage = langCode;
-    this.notify();
-  }
-  
-  setNetworkMode(mode) {
-    this.state.networkMode = mode;
-    this.notify();
-  }
 
-  // Load latest state from backend SQLite database
-  async initFromBackend() {
-    try {
-      const [patientData, queueData, journeyData] = await Promise.all([
-        fetchPatient(),
-        fetchQueue(),
-        fetchCareJourney()
-      ]);
+  async addAppointment(facilityName, serviceName, doctorName, dateStr, timeSlot) {
+    const newTokenNumber = `B-${Math.floor(Math.random() * 30) + 15}`;
+    const newAppointment = {
+      id: `APPT-${Date.now()}`,
+      token: newTokenNumber,
+      facility: facilityName || 'PHC Rampur Community Health Centre',
+      service: serviceName || 'General OPD Consultation',
+      doctor: doctorName || 'Dr. Ananya Sharma',
+      date: dateStr || 'Today',
+      time: timeSlot || '10:30 AM',
+      status: 'confirmed',
+      patientName: this.state.patient.name || 'Ramesh Kumar',
+      isUpcoming: true
+    };
 
-      let updated = false;
+    // Add to local appointments
+    this.state.appointments.unshift(newAppointment);
 
-      if (patientData) {
-        this.state.patient = {
-          ...this.state.patient,
-          ...patientData
-        };
-        updated = true;
-      }
-
-      if (queueData && Array.isArray(queueData) && queueData.length > 0) {
-        this.state.queue = queueData;
-        updated = true;
-      }
-
-      if (journeyData && Array.isArray(journeyData) && journeyData.length > 0) {
-        this.state.careJourney = journeyData;
-        updated = true;
-      }
-
-      if (updated) {
-        console.log('✅ Loaded application state from backend database');
-        this.notify();
-      }
-    } catch (error) {
-      console.warn('⚠️ [Store] Using local mock state as fallback:', error.message);
-    }
-  }
-  
-  async addAppointment(doctorName, slotTime, facility) {
-    try {
-      // 1. Send appointment to backend API
-      const response = await bookAppointment({
-        doctorName,
-        slotTime,
-        facility: facility || 'PHC Rampur Tele-Hub',
-        patientName: this.state.patient.name
-      });
-
-      if (response && response.success && response.data) {
-        const { token, patient } = response.data;
-        
-        // Update patient info from backend
-        if (patient) {
-          this.state.patient = {
-            ...this.state.patient,
-            ...patient
-          };
-        } else {
-          this.state.patient.activeToken = token;
-          this.state.patient.queuePosition = 3;
-          this.state.patient.estimatedWaitMins = 10;
-        }
-
-        // Fetch refreshed queue & care journey from backend
-        const [freshQueue, freshJourney] = await Promise.all([
-          fetchQueue(),
-          fetchCareJourney()
-        ]);
-
-        if (freshQueue) this.state.queue = freshQueue;
-        if (freshJourney) this.state.careJourney = freshJourney;
-
-        this.notify();
-        return token;
-      }
-    } catch (apiError) {
-      console.warn('⚠️ [Store] Backend API call failed, falling back to local memory:', apiError.message);
-    }
-
-    // Fallback in-memory logic if backend is unavailable
-    const newTokenNumber = `B-${Math.floor(Math.random() * 20) + 20}`;
+    // Update patient active token
     this.state.patient.activeToken = newTokenNumber;
     this.state.patient.queuePosition = 3;
-    this.state.patient.estimatedWaitMins = 10;
-    
-    // Add to care journey
+    this.state.patient.estimatedWaitMins = 12;
+
+    // Add to Care Journey
     this.state.careJourney.unshift({
       id: `STEP-${Date.now()}`,
-      title: `Teleconsultation Booked (${doctorName})`,
+      title: 'Appointment Booked',
       provider: doctorName,
-      facility: facility || 'PHC Rampur Tele-Hub',
-      date: `Today, ${slotTime}`,
+      facility: facilityName,
+      date: `${dateStr}, ${timeSlot}`,
       status: 'active',
-      summary: `Confirmed slot at ${slotTime}. Token #${newTokenNumber} generated.`
+      summary: `${serviceName} confirmed. Token #${newTokenNumber} issued.`
     });
-    
-    // Push into queue
+
+    // Add to Queue
     this.state.queue.push({
       token: newTokenNumber,
-      patientName: `${this.state.patient.name}`,
-      priorityLevel: this.state.patient.priorityLevel || 'Medium',
+      patientName: this.state.patient.name,
+      priorityLevel: 'Medium',
       status: 'waiting',
-      waitTime: '10 min'
+      waitTime: '12 min'
     });
-    
-    this.notify();
-    return newTokenNumber;
-  }
-  
-  async submitTriageResult(priority, symptomsList) {
-    this.state.patient.priorityLevel = priority;
-    const summaryText = `Symptoms: ${symptomsList.join(', ')}. Urgency Score: ${priority} Priority.`;
-    
-    const localStepId = `STEP-${Date.now()}`;
-    this.state.careJourney.unshift({
-      id: localStepId,
-      title: 'Digital Smart Triage Completed',
-      provider: 'AI Decision Engine',
-      facility: 'GraminArogya App',
-      date: 'Just now',
-      status: 'completed',
-      summary: summaryText
-    });
+
     this.notify();
 
-    // Persist to backend asynchronously
+    // Persist to backend if accessible
     try {
-      await addCareJourneyEvent({
-        id: localStepId,
-        title: 'Digital Smart Triage Completed',
-        provider: 'AI Decision Engine',
-        facility: 'GraminArogya App',
-        date: 'Just now',
-        status: 'completed',
-        summary: summaryText
+      await bookAppointment({
+        doctorName: doctorName,
+        slotTime: timeSlot,
+        facility: facilityName,
+        patientName: this.state.patient.name
       });
     } catch (err) {
-      console.warn('⚠️ [Store] Could not persist triage event to backend:', err.message);
+      // Backend request fallback is fine
     }
+
+    return newAppointment;
   }
-  
-  sendChatMessage(text) {
-    const now = new Date();
-    const timeStr = `${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')} ${now.getHours() >= 12 ? 'PM' : 'AM'}`;
-    
-    this.state.chatMessages.push({
-      sender: 'patient',
-      text: text,
-      time: timeStr
-    });
-    this.notify();
-    
-    // Auto mock doctor response after 1.2s
-    setTimeout(() => {
-      this.state.chatMessages.push({
-        sender: 'doctor',
-        text: 'I have reviewed your symptoms. I am ordering a Complete Blood Count (CBC) test at PHC Rampur and prescribing Paracetamol 650mg. Our ASHA worker Sunita will visit tomorrow for a follow-up.',
-        time: timeStr
-      });
+
+  cancelAppointment(apptId) {
+    const appt = this.state.appointments.find(a => a.id === apptId);
+    if (appt) {
+      appt.status = 'cancelled';
+      appt.isUpcoming = false;
+      if (this.state.patient.activeToken === appt.token) {
+        this.state.patient.activeToken = null;
+      }
       this.notify();
-    }, 1200);
-  }
-  
-  async bookDiagnosticTest(testName, facility) {
-    const localStepId = `STEP-${Date.now()}`;
-    const summaryText = `Token confirmed for ${testName}. Results will sync with your ABHA ID.`;
-
-    this.state.careJourney.unshift({
-      id: localStepId,
-      title: `Diagnostic Booked: ${testName}`,
-      provider: 'PHC Diagnostic Unit',
-      facility: facility,
-      date: 'Today, 11:30 AM',
-      status: 'active',
-      summary: summaryText
-    });
-    this.notify();
-
-    // Persist to backend asynchronously
-    try {
-      await addCareJourneyEvent({
-        id: localStepId,
-        title: `Diagnostic Booked: ${testName}`,
-        provider: 'PHC Diagnostic Unit',
-        facility: facility,
-        date: 'Today, 11:30 AM',
-        status: 'active',
-        summary: summaryText
-      });
-    } catch (err) {
-      console.warn('⚠️ [Store] Could not persist diagnostic event to backend:', err.message);
     }
   }
-  
+
   resetToInitial() {
     this.state = JSON.parse(JSON.stringify(initialMockDB));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('healer_state');
+      localStorage.removeItem('healer_welcome_dismissed');
+    }
     this.notify();
   }
 }

@@ -1,123 +1,98 @@
 /**
- * Screen 10: Frontline Health Worker (ASHA) Dashboard
- * Professional Responsive Web Layout with 4 Stat Cards and Village Patient Roster
+ * Screen: HEALER Health Worker Dashboard
+ * Clean, focused dashboard for frontline health workers (ASHA / ANM).
+ * Primary actions: [Patients], [Appointments], [Field Activities], [Reports].
  */
 
 import { locales } from '../data/locales.js';
 
 export function renderHealthWorkerScreen(state) {
   const t = locales[state.currentLanguage] || locales.en;
-  const roster = state.healthWorkerRoster || [];
 
-  const categoryMap = {
-    'HW-P1': t.rosterPt1Category,
-    'HW-P2': t.rosterPt2Category,
-    'HW-P3': t.rosterPt3Category
-  };
-
-  const statusMap = {
-    'Visit Required': t.urgencyVisitRequired,
-    'Teleconsult Active': t.urgencyTeleconsultActive,
-    'Routine Sync': t.urgencyRoutineSync
-  };
+  const actions = [
+    {
+      id: 'hw-action-patients',
+      title: t.hwActionPatients || 'Patients',
+      desc: t.hwActionPatientsDesc || 'View and manage registered village patients',
+      icon: 'users'
+    },
+    {
+      id: 'hw-action-appointments',
+      title: t.hwActionAppointments || 'Appointments',
+      desc: t.hwActionAppointmentsDesc || 'Community OPD bookings and schedules',
+      icon: 'calendar'
+    },
+    {
+      id: 'hw-action-field',
+      title: t.hwActionFieldActivities || 'Field Activities',
+      desc: t.hwActionFieldActivitiesDesc || 'Maternal care visits and immunization',
+      icon: 'heart-handshake'
+    },
+    {
+      id: 'hw-action-reports',
+      title: t.hwActionReports || 'Reports',
+      desc: t.hwActionReportsDesc || 'Monthly health summaries and survey logs',
+      icon: 'file-text'
+    }
+  ];
 
   return `
-    <div class="screen" id="screen-health-worker">
-      <!-- Screen Header with Sync Action -->
-      <div class="flex-between">
-        <div>
-          <h2 style="font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--color-text-primary);">${t.ashaTitle}</h2>
-          <span style="font-size: 12px; color: var(--color-text-secondary);">${t.ashaSubtitle} • Village Subcentre Rampur</span>
+    <div class="screen" id="screen-health-worker" style="max-width: 900px; margin: 0 auto; width: 100%;">
+      
+      <!-- Top Header -->
+      <div style="margin-bottom: 24px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
+          ${t.portalHealthWorkerTitle || 'Health Worker Portal'}
         </div>
-        <div style="display: flex; gap: 10px;">
-          <button class="btn btn-outline" id="btn-asha-sync-records" title="${t.syncRecordsBtn}">
-            <i data-lucide="refresh-cw" style="width: 15px; height: 15px;"></i> ${t.syncRecordsBtn}
-          </button>
-          <button class="btn btn-primary" id="btn-asha-register-patient">
-            <i data-lucide="user-plus"></i> ${t.registerPatientBtn}
-          </button>
+        <h1 style="font-size: 24px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 4px;">
+          ${t.hwDashboardTitle || 'Health Worker Dashboard'}
+        </h1>
+        <p style="font-size: 14px; color: var(--color-text-secondary);">
+          ${t.hwDashboardSub || 'Field operations, patient registers, and community care.'}
+        </p>
+      </div>
+
+      <!-- 4 Primary Action Cards Grid -->
+      <div class="dashboard-actions-grid">
+        ${actions.map(act => `
+          <div class="dashboard-action-card" id="${act.id}">
+            <div class="dashboard-action-icon">
+              <i data-lucide="${act.icon}"></i>
+            </div>
+            <div>
+              <h3 class="dashboard-action-title">${act.title}</h3>
+              <p class="dashboard-action-desc">${act.desc}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Quick Summary List -->
+      <div class="card" style="padding: 22px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <i data-lucide="bell" style="width: 18px; height: 18px; color: var(--color-primary);"></i>
+          <span>Today's Priority Highlights</span>
+        </h3>
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--color-surface-muted); border-radius: var(--radius-sm);">
+            <div>
+              <strong>Anita Sharma (ANC Visit)</strong>
+              <div style="font-size: 12px; color: var(--color-text-secondary);">3rd Trimester checkup • Rampur Kalan</div>
+            </div>
+            <span class="status-badge badge-warning">Due Today</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--color-surface-muted); border-radius: var(--radius-sm);">
+            <div>
+              <strong>Infant Immunization Drive</strong>
+              <div style="font-size: 12px; color: var(--color-text-secondary);">Sub-centre session • 8 Children scheduled</div>
+            </div>
+            <span class="status-badge badge-primary">11:00 AM</span>
+          </div>
         </div>
       </div>
 
-      <!-- 4 Stat Cards Grid on Desktop -->
-      <div class="grid-4">
-        <div class="stat-card" style="border-bottom: 4px solid var(--color-danger);">
-          <div class="stat-number" style="color: var(--color-danger);">04</div>
-          <div class="stat-label">${t.statHighRiskAnc}</div>
-        </div>
-
-        <div class="stat-card" style="border-bottom: 4px solid var(--color-primary);">
-          <div class="stat-number" style="color: var(--color-primary);">08</div>
-          <div class="stat-label">${t.statVisitsToday}</div>
-        </div>
-
-        <div class="stat-card" style="border-bottom: 4px solid var(--color-success);">
-          <div class="stat-number" style="color: var(--color-success);">100%</div>
-          <div class="stat-label">${t.statOfflineSynced}</div>
-        </div>
-
-        <div class="stat-card" style="border-bottom: 4px solid var(--color-warning);">
-          <div class="stat-number" style="color: var(--color-warning);">142</div>
-          <div class="stat-label">Assigned Households</div>
-        </div>
-      </div>
-
-      <!-- Village Priority Patient Roster -->
-      <div class="card" style="padding: 24px;">
-        <div class="section-header" style="margin-bottom: 16px;">
-          <h3 class="section-title">
-            <i data-lucide="users" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
-            ${t.villageRosterTitle}
-          </h3>
-          <span class="status-badge badge-primary" style="font-size: 11px;">${t.sortedByUrgency}</span>
-        </div>
-
-        <div class="grid-2">
-          ${roster.map(pt => {
-            const isHigh = pt.urgency === 'high';
-            const isMedium = pt.urgency === 'medium';
-            const borderClr = isHigh ? 'var(--color-danger)' : (isMedium ? 'var(--color-warning)' : 'var(--color-primary)');
-            const categoryText = categoryMap[pt.id] || pt.category;
-            const statusText = statusMap[pt.status] || pt.status;
-
-            return `
-              <div class="card" style="padding: 18px 20px; border-left: 5px solid ${borderClr}; background: #FAF9FD; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                  <div class="flex-between" style="margin-bottom: 6px;">
-                    <div style="font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--color-text-primary);">
-                      ${pt.name} <span style="font-size: 12px; font-weight: 500; color: var(--color-text-muted);">(${pt.age} yrs, ${pt.village})</span>
-                    </div>
-                    <span class="status-badge ${isHigh ? 'badge-danger' : (isMedium ? 'badge-warning' : 'badge-primary')}" style="font-size: 10px;">
-                      ${statusText}
-                    </span>
-                  </div>
-
-                  <div style="font-size: 13px; font-weight: 700; color: ${isHigh ? 'var(--color-danger)' : 'var(--color-text-secondary)'}; margin-bottom: 4px;">
-                    ${categoryText}
-                  </div>
-
-                  <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 12px;">
-                    ${t.vitalsPrefix} <strong>${pt.vitals}</strong> • ${t.lastVisitPrefix} ${pt.lastVisit}
-                  </div>
-                </div>
-
-                <div style="display: flex; gap: 8px; border-top: 1px solid var(--color-border); padding-top: 12px;">
-                  <button class="btn btn-secondary flex-1 btn-asha-log-vitals" data-patient="${pt.name}" style="font-size: 12px; padding: 8px;">
-                    <i data-lucide="clipboard"></i> ${t.logVitalsBtn}
-                  </button>
-                  <button class="btn btn-outline flex-1 btn-asha-start-triage" data-patient="${pt.name}" style="font-size: 12px; padding: 8px;">
-                    <i data-lucide="activity"></i> ${t.triageCheckBtn}
-                  </button>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-
-      <div class="compliance-disclaimer" style="margin-top: 10px;">
-        ${t.meshSyncDisclaimer}
-      </div>
     </div>
   `;
 }

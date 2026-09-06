@@ -1,7 +1,13 @@
 /**
- * Screen 1: GraminArogya Landing & Portal Selection (Palette 3)
- * Professional, clean web landing page introducing the platform and 4 role categories.
- * Fully localized across English, Hindi, Tamil, Telugu, and Malayalam.
+ * Screen: HEALER Landing & Portal Selection
+ * Clean, calm, trustworthy healthcare landing page.
+ * Features:
+ * - Clear brand identity: HEALER
+ * - Tagline: "Healthcare made easier."
+ * - Short supporting text
+ * - Primary [Get Started] & Secondary [How it works]
+ * - 4-step "How HEALER Works" section
+ * - 4 Accessible Portals: Patient, Health Worker, Doctor, Facility
  */
 
 import { locales } from '../data/locales.js';
@@ -10,150 +16,171 @@ export function renderWelcomeScreen(state) {
   const t = locales[state.currentLanguage] || locales.en;
 
   return `
-    <div class="screen" id="screen-welcome" style="max-width: 1100px; margin: 0 auto; width: 100%;">
+    <div class="screen" id="screen-welcome" style="max-width: 1060px; margin: 0 auto; width: 100%;">
       
-      <!-- Top Hero Section (Forest Green Gradient) -->
-      <div class="card card-hero" style="padding: 34px 28px; margin-bottom: 28px; text-align: center;">
-        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.16); padding: 5px 14px; border-radius: var(--radius-full); font-size: 11.5px; font-weight: 700; margin-bottom: 14px;">
-          <i data-lucide="plus-circle" style="width: 14px; height: 14px; color: var(--color-secondary);"></i>
-          <span>${t.appTitle} — Rural Health Link</span>
+      <!-- Clean Hero Section -->
+      <section class="hero-clean-section">
+        <h1 class="hero-app-title">${t.appTitle}</h1>
+        <div class="hero-tagline">${t.tagline}</div>
+        <p class="hero-supporting">${t.landingSupporting}</p>
+        
+        <div class="hero-buttons-row">
+          <button class="btn btn-primary btn-lg" id="btn-hero-get-started">
+            <span>${t.getStarted}</span>
+            <i data-lucide="arrow-right" style="width: 18px; height: 18px;"></i>
+          </button>
+          
+          <button class="btn btn-outline btn-lg" id="btn-hero-how-it-works">
+            <i data-lucide="info" style="width: 18px; height: 18px; color: var(--color-primary);"></i>
+            <span>${t.howItWorks}</span>
+          </button>
         </div>
-        
-        <h1 style="font-size: clamp(22px, 4vw, 32px); line-height: 1.25; margin-bottom: 12px; max-width: 820px; margin-left: auto; margin-right: auto; color: #FFFFFF;">
-          ${t.landingTagline || 'Healthcare access, closer to home.'}
-        </h1>
-        
-        <p style="font-size: 14px; line-height: 1.6; max-width: 700px; margin-left: auto; margin-right: auto; color: rgba(255, 255, 255, 0.92);">
-          ${t.landingHeroSub || 'Bridging gaps in rural healthcare access through network-aware tele-OPD, intelligent triage, and integrated care journeys.'}
-        </p>
-      </div>
+      </section>
 
-      <!-- Portal Selection Section -->
-      <div style="margin-bottom: 24px;">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <h2 style="font-family: var(--font-heading); font-size: 22px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px; display: inline-flex; align-items: center; gap: 8px;">
-            <i data-lucide="grid" style="color: var(--color-primary); width: 20px; height: 20px;"></i>
-            ${t.choosePortalTitle || 'Choose your portal'}
+      <!-- How HEALER Works Section -->
+      <section id="section-how-it-works" style="margin-bottom: 48px; padding-top: 10px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="font-size: 22px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
+            ${t.howItWorksTitle}
           </h2>
-          <p style="font-size: 13.5px; color: var(--color-text-secondary); max-width: 520px; margin: 0 auto;">
-            ${t.choosePortalSub || 'Select your role category to access customized clinical tools and services.'}
+          <p style="font-size: 14px; color: var(--color-text-secondary);">
+            ${t.howItWorksSub}
           </p>
         </div>
 
-        <!-- 4 Responsive Portal Cards Grid -->
-        <div class="portal-selection-grid">
-          
-          <!-- Card 1: Patient Portal -->
-          <div class="card card-clickable portal-card" data-portal="patient" style="border-top: 4px solid var(--color-primary);">
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="user" style="width: 22px; height: 22px;"></i>
-                </div>
-                <span class="status-badge badge-primary">
-                  ${t.roleCitizen || 'Citizen'}
-                </span>
-              </div>
+        <div class="how-it-works-grid">
+          <!-- Step 1 -->
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <i data-lucide="map-pin"></i>
+            </div>
+            <h3 class="how-step-title">${t.howStep1Title}</h3>
+            <p class="how-step-desc">${t.howStep1Desc}</p>
+          </div>
 
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
-                ${t.portalPatientTitle || 'Patient Portal'}
-              </h3>
-              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
-                ${t.portalPatientDesc || 'Access appointments, triage, teleconsultation, medicine stock, and care journey.'}
-              </p>
+          <!-- Step 2 -->
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <i data-lucide="stethoscope"></i>
+            </div>
+            <h3 class="how-step-title">${t.howStep2Title}</h3>
+            <p class="how-step-desc">${t.howStep2Desc}</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <i data-lucide="calendar"></i>
+            </div>
+            <h3 class="how-step-title">${t.howStep3Title}</h3>
+            <p class="how-step-desc">${t.howStep3Desc}</p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="how-step-card">
+            <div class="how-step-icon">
+              <i data-lucide="git-commit"></i>
+            </div>
+            <h3 class="how-step-title">${t.howStep4Title}</h3>
+            <p class="how-step-desc">${t.howStep4Desc}</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Portal Selection Section -->
+      <section id="section-portal-selection" style="margin-bottom: 40px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <h2 style="font-size: 22px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
+            ${t.choosePortalTitle}
+          </h2>
+          <p style="font-size: 14px; color: var(--color-text-secondary);">
+            ${t.choosePortalSub}
+          </p>
+        </div>
+
+        <div class="portal-grid-clean">
+          <!-- 1. Patient Portal -->
+          <div class="portal-card-clean" data-portal="patient" id="portal-card-patient">
+            <div>
+              <div class="portal-card-top" style="margin-bottom: 12px;">
+                <div class="portal-card-icon">
+                  <i data-lucide="user"></i>
+                </div>
+                <div>
+                  <h3 class="portal-card-title">${t.portalPatientTitle}</h3>
+                </div>
+              </div>
+              <p class="portal-card-desc">${t.portalPatientDesc}</p>
             </div>
 
             <button class="btn btn-primary btn-full btn-enter-portal" data-portal="patient">
-              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <span>${t.enterPortal}</span>
               <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
-          <!-- Card 2: Health Worker Portal -->
-          <div class="card card-clickable portal-card" data-portal="health_worker" style="border-top: 4px solid #286B4F;">
+          <!-- 2. Health Worker Portal -->
+          <div class="portal-card-clean" data-portal="health_worker" id="portal-card-health-worker">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="users" style="width: 22px; height: 22px;"></i>
+              <div class="portal-card-top" style="margin-bottom: 12px;">
+                <div class="portal-card-icon">
+                  <i data-lucide="users"></i>
                 </div>
-                <span class="status-badge badge-success">
-                  ${t.roleAsha || 'ASHA Worker'}
-                </span>
+                <div>
+                  <h3 class="portal-card-title">${t.portalHealthWorkerTitle}</h3>
+                </div>
               </div>
-
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
-                ${t.portalHealthWorkerTitle || 'Health Worker Portal'}
-              </h3>
-              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
-                ${t.portalHealthWorkerDesc || 'Manage village roster, high-risk maternal alerts, offline logs, and home visits.'}
-              </p>
+              <p class="portal-card-desc">${t.portalHealthWorkerDesc}</p>
             </div>
 
             <button class="btn btn-primary btn-full btn-enter-portal" data-portal="health_worker">
-              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <span>${t.enterPortal}</span>
               <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
-          <!-- Card 3: Doctor Portal -->
-          <div class="card card-clickable portal-card" data-portal="doctor" style="border-top: 4px solid var(--color-primary-dark);">
+          <!-- 3. Doctor Portal -->
+          <div class="portal-card-clean" data-portal="doctor" id="portal-card-doctor">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary-dark); display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="stethoscope" style="width: 22px; height: 22px;"></i>
+              <div class="portal-card-top" style="margin-bottom: 12px;">
+                <div class="portal-card-icon">
+                  <i data-lucide="stethoscope"></i>
                 </div>
-                <span class="status-badge badge-primary">
-                  ${t.roleDocConsole || 'Dr. Console'}
-                </span>
+                <div>
+                  <h3 class="portal-card-title">${t.portalDoctorTitle}</h3>
+                </div>
               </div>
-
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
-                ${t.portalDoctorTitle || 'Doctor Portal'}
-              </h3>
-              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
-                ${t.portalDoctorDesc || 'View priority OPD queue, conduct video/audio consults, and write e-Prescriptions.'}
-              </p>
+              <p class="portal-card-desc">${t.portalDoctorDesc}</p>
             </div>
 
             <button class="btn btn-primary btn-full btn-enter-portal" data-portal="doctor">
-              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+              <span>${t.enterPortal}</span>
               <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
 
-          <!-- Card 4: Facility Portal -->
-          <div class="card card-clickable portal-card" data-portal="facility" style="border-top: 4px solid var(--color-accent);">
+          <!-- 4. Facility Portal -->
+          <div class="portal-card-clean" data-portal="facility" id="portal-card-facility">
             <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <div style="width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--color-accent-light); color: var(--color-accent); display: flex; align-items: center; justify-content: center;">
-                  <i data-lucide="building" style="width: 22px; height: 22px;"></i>
+              <div class="portal-card-top" style="margin-bottom: 12px;">
+                <div class="portal-card-icon">
+                  <i data-lucide="building"></i>
                 </div>
-                <span class="status-badge badge-accent">
-                  ${t.rolePhcAdmin || 'PHC Admin'}
-                </span>
+                <div>
+                  <h3 class="portal-card-title">${t.portalFacilityTitle}</h3>
+                </div>
               </div>
-
-              <h3 style="font-family: var(--font-heading); font-size: 17px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 6px;">
-                ${t.portalFacilityTitle || 'Facility Portal'}
-              </h3>
-              <p style="font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 16px;">
-                ${t.portalFacilityDesc || 'Monitor live beds, critical medicine stock, footfall trends, and referral logs.'}
-              </p>
+              <p class="portal-card-desc">${t.portalFacilityDesc}</p>
             </div>
 
-            <button class="btn btn-accent btn-full btn-enter-portal" data-portal="facility">
-              <span>${t.enterPortalBtn || 'Enter Portal'}</span>
+            <button class="btn btn-primary btn-full btn-enter-portal" data-portal="facility">
+              <span>${t.enterPortal}</span>
               <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
             </button>
           </div>
-
         </div>
-      </div>
+      </section>
 
-      <!-- Prototype Disclaimer -->
-      <div style="margin-top: 20px; text-align: center; font-size: 11.5px; color: var(--color-text-muted);">
-        ${t.prototypeNotice || 'National Rural Health Mission Concept • Prototype Healthcare Access System'}
-      </div>
     </div>
   `;
 }

@@ -1,6 +1,6 @@
 async function runAuthTests() {
   const base = 'http://localhost:8080';
-  console.log('🧪 Starting GraminArogya Mock Auth Tests...\n');
+  console.log('🧪 Starting HEALER Mock Auth Tests...\n');
 
   async function postJson(endpoint, body) {
     const res = await fetch(`${base}${endpoint}`, {

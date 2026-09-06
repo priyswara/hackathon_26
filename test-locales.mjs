@@ -1,24 +1,20 @@
 import { locales } from './src/data/locales.js';
-import { initialMockDB, MockStore } from './src/data/mockData.js';
+import { initialMockDB, appStore } from './src/data/mockData.js';
 import { renderAppShell } from './src/components/AppShell.js';
 import { renderLanguageModal } from './src/components/LanguageModal.js';
-import { renderFootfallChart, renderReferralDonut } from './src/components/Charts.js';
 
 import { renderWelcomeScreen } from './src/screens/WelcomeScreen.js';
 import { renderOTPVerificationScreen } from './src/screens/OTPVerificationScreen.js';
 import { renderPatientHomeScreen } from './src/screens/PatientHomeScreen.js';
-import { renderAppointmentQueueScreen } from './src/screens/AppointmentQueueScreen.js';
-import { renderTriageScreen } from './src/screens/TriageScreen.js';
-import { renderNetworkConsultationScreen } from './src/screens/NetworkConsultationScreen.js';
-import { renderConsultationChatScreen } from './src/screens/ConsultationChatScreen.js';
+import { renderAppointmentWizardScreen } from './src/screens/AppointmentWizardScreen.js';
+import { renderAppointmentsScreen } from './src/screens/AppointmentsScreen.js';
+import { renderNearbyClinicsScreen } from './src/screens/NearbyClinicsScreen.js';
 import { renderHealthJourneyScreen } from './src/screens/HealthJourneyScreen.js';
-import { renderMedicinesDiagnosticsScreen } from './src/screens/MedicinesDiagnosticsScreen.js';
-import { renderFollowUpsScreen } from './src/screens/FollowUpsScreen.js';
+import { renderHowToUseScreen } from './src/screens/HowToUseScreen.js';
 import { renderHealthWorkerScreen } from './src/screens/HealthWorkerScreen.js';
 import { renderDoctorScreen } from './src/screens/DoctorScreen.js';
 import { renderFacilityScreen } from './src/screens/FacilityScreen.js';
-import { renderSchemesScreen } from './src/screens/SchemesScreen.js';
-import { renderEmergencyScreen } from './src/screens/EmergencyScreen.js';
+import { renderProfileScreen } from './src/screens/ProfileScreen.js';
 
 const langs = ['en', 'hi', 'ta', 'te', 'ml'];
 const enKeys = Object.keys(locales.en);
@@ -44,37 +40,37 @@ langs.forEach(lang => {
 
 console.log('\n=== 2. CHECKING SCREEN RENDERING FOR ALL 5 LANGUAGES ===');
 const screens = [
-  { name: 'WelcomeScreen', fn: renderWelcomeScreen },
-  { name: 'OTPVerificationScreen (Mobile Step)', fn: (state) => renderOTPVerificationScreen(state, 'mobile') },
+  { name: 'WelcomeScreen', fn: (state) => renderWelcomeScreen(state) },
+  { name: 'OTPVerificationScreen (Mobile Step)', fn: (state) => renderOTPVerificationScreen(state, 'identifier') },
   { name: 'OTPVerificationScreen (OTP Step)', fn: (state) => renderOTPVerificationScreen(state, 'otp', '123456') },
   { name: 'OTPVerificationScreen (Error State)', fn: (state) => renderOTPVerificationScreen(state, 'otp', '000000', 'Incorrect OTP') },
-  { name: 'PatientHomeScreen', fn: renderPatientHomeScreen },
-  { name: 'AppointmentQueueScreen', fn: renderAppointmentQueueScreen },
-  { name: 'TriageScreen', fn: renderTriageScreen },
-  { name: 'NetworkConsultationScreen', fn: (state) => renderNetworkConsultationScreen({ ...state, networkMode: 'good' }) },
-  { name: 'NetworkConsultationScreen (Moderate)', fn: (state) => renderNetworkConsultationScreen({ ...state, networkMode: 'moderate' }) },
-  { name: 'NetworkConsultationScreen (Low)', fn: (state) => renderNetworkConsultationScreen({ ...state, networkMode: 'low' }) },
-  { name: 'ConsultationChatScreen', fn: renderConsultationChatScreen },
-  { name: 'HealthJourneyScreen', fn: renderHealthJourneyScreen },
-  { name: 'MedicinesDiagnosticsScreen (Meds)', fn: (state) => renderMedicinesDiagnosticsScreen(state, 'medicines') },
-  { name: 'MedicinesDiagnosticsScreen (Diag)', fn: (state) => renderMedicinesDiagnosticsScreen(state, 'diagnostics') },
-  { name: 'FollowUpsScreen', fn: renderFollowUpsScreen },
-  { name: 'HealthWorkerScreen', fn: renderHealthWorkerScreen },
-  { name: 'DoctorScreen', fn: renderDoctorScreen },
-  { name: 'FacilityScreen', fn: renderFacilityScreen },
-  { name: 'SchemesScreen', fn: renderSchemesScreen },
-  { name: 'EmergencyScreen', fn: renderEmergencyScreen }
+  { name: 'PatientHomeScreen', fn: (state) => renderPatientHomeScreen(state) },
+  { name: 'AppointmentWizardScreen (Step 1)', fn: (state) => renderAppointmentWizardScreen(state, { step: 1 }) },
+  { name: 'AppointmentWizardScreen (Step 2)', fn: (state) => renderAppointmentWizardScreen(state, { step: 2 }) },
+  { name: 'AppointmentWizardScreen (Step 3)', fn: (state) => renderAppointmentWizardScreen(state, { step: 3 }) },
+  { name: 'AppointmentWizardScreen (Step 4)', fn: (state) => renderAppointmentWizardScreen(state, { step: 4 }) },
+  { name: 'AppointmentWizardScreen (Step 5)', fn: (state) => renderAppointmentWizardScreen(state, { step: 5 }) },
+  { name: 'AppointmentWizardScreen (Step 6)', fn: (state) => renderAppointmentWizardScreen(state, { step: 6 }) },
+  { name: 'AppointmentWizardScreen (Step 7)', fn: (state) => renderAppointmentWizardScreen(state, { step: 7, confirmedToken: 'B-15' }) },
+  { name: 'AppointmentsScreen (Upcoming)', fn: (state) => renderAppointmentsScreen(state, 'upcoming') },
+  { name: 'AppointmentsScreen (Past)', fn: (state) => renderAppointmentsScreen(state, 'past') },
+  { name: 'NearbyClinicsScreen', fn: (state) => renderNearbyClinicsScreen(state, 'all') },
+  { name: 'HealthJourneyScreen', fn: (state) => renderHealthJourneyScreen(state) },
+  { name: 'HowToUseScreen', fn: (state) => renderHowToUseScreen(state) },
+  { name: 'HealthWorkerScreen', fn: (state) => renderHealthWorkerScreen(state) },
+  { name: 'DoctorScreen', fn: (state) => renderDoctorScreen(state) },
+  { name: 'FacilityScreen', fn: (state) => renderFacilityScreen(state) },
+  { name: 'ProfileScreen', fn: (state) => renderProfileScreen(state) }
 ];
 
 langs.forEach(lang => {
-  const store = new MockStore();
-  store.setLanguage(lang);
-  const state = store.getState();
+  appStore.setLanguage(lang);
+  const state = appStore.getState();
 
   // Test AppShell for each role
   ['patient', 'health_worker', 'doctor', 'facility'].forEach(role => {
     state.currentRole = role;
-    const shellHtml = renderAppShell(null, state);
+    const shellHtml = renderAppShell(null, state, 'patient_home');
     if (shellHtml.includes('undefined')) {
       console.error(`[${lang}] AppShell for role ${role} contains "undefined"!`);
       errors++;
@@ -95,8 +91,8 @@ langs.forEach(lang => {
       console.error(`[${lang}] ${name} contains "undefined"!`);
       errors++;
     }
-    if (/smart india hackathon|sih 2024/i.test(html)) {
-      console.error(`[${lang}] ${name} contains Hackathon reference!`);
+    if (/smart india hackathon|sih 2024|graminarogya/i.test(html)) {
+      console.error(`[${lang}] ${name} contains legacy references!`);
       errors++;
     }
   });

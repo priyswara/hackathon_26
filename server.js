@@ -1,5 +1,5 @@
 /**
- * GraminArogya — Rural Healthcare Platform Backend & Static Server
+ * HEALER — Healthcare Made Easier Backend & Static Server
  */
 
 import express from 'express';
@@ -60,7 +60,8 @@ app.use((req, res) => {
 // Start Server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
-  console.log(`🏥 GraminArogya Server running at: http://0.0.0.0:${PORT}/`);
+  console.log(`🏥 HEALER Server running at: http://0.0.0.0:${PORT}/`);
   console.log(`📡 REST API active on: http://0.0.0.0:${PORT}/api/`);
   console.log(`====================================================`);
 });
+

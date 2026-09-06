@@ -1,200 +1,164 @@
 /**
- * Screen: Patient / Citizen Home Dashboard (Palette 3)
- * Clean, modern rural health home with OPD token tracker, Nearby Clinics Map tile, and quick clinical actions.
+ * Screen: HEALER Patient Dashboard
+ * Clean, calm, human dashboard focusing on the 4 primary actions:
+ * 1. [Book an Appointment]
+ * 2. [Find Nearby Care]
+ * 3. [My Health Journey]
+ * 4. [My Appointments]
+ * Plus: First-time user welcome section (dismissable) and Active Token status card.
  */
 
 import { locales } from '../data/locales.js';
+import { appStore } from '../data/mockData.js';
 
 export function renderPatientHomeScreen(state) {
   const t = locales[state.currentLanguage] || locales.en;
-  const p = state.patient;
+  const p = state.patient || {};
+  const isDismissed = appStore.isWelcomeDismissed();
+
+  // Time-based friendly greeting
+  const hour = new Date().getHours();
+  let greeting = t.greetingGeneral || 'Welcome';
+  if (hour < 12) greeting = t.greetingMorning || 'Good morning';
+  else if (hour < 17) greeting = t.greetingAfternoon || 'Good afternoon';
+  else greeting = t.greetingEvening || 'Good evening';
+
+  const patientName = p.name || 'Ramesh Kumar';
+  const activeAppt = (state.appointments || []).find(a => a.isUpcoming && a.status === 'confirmed');
 
   return `
     <div class="screen" id="screen-patient-home" style="width: 100%;">
       
-      <!-- Top Row: Welcome Banner + Live Token Card -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 22px;">
-        
-        <!-- Patient Profile Summary Card -->
-        <div class="card" style="padding: 20px 22px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 52px; height: 52px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-weight: 800; font-size: 18px; flex-shrink: 0; border: 2px solid var(--color-secondary);">
-              ${p.name ? p.name.split(' ').map(n => n[0]).join('') : 'RK'}
+      <!-- Greeting Header -->
+      <div style="margin-bottom: 22px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
+          ${t.portalPatientTitle || 'Patient Portal'}
+        </div>
+        <h1 style="font-size: clamp(22px, 3.5vw, 28px); font-weight: 800; color: var(--color-text-primary); margin-bottom: 4px;">
+          ${greeting}, ${patientName}
+        </h1>
+        <p style="font-size: 14.5px; color: var(--color-text-secondary);">
+          ${t.whatWouldYouDo || 'What would you like to do today?'}
+        </p>
+      </div>
+
+      <!-- First-Time User Welcome Banner (Dismissable) -->
+      ${!isDismissed ? `
+        <div class="welcome-dismissable-card" id="welcome-dismissable-card">
+          <div style="display: flex; align-items: flex-start; gap: 14px;">
+            <div style="width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <i data-lucide="sparkles" style="width: 20px; height: 20px;"></i>
             </div>
             <div>
-              <div style="font-size: 11.5px; color: var(--color-text-muted); font-weight: 700; text-transform: uppercase;">
-                ${t.patientRole || 'Citizen Portal'}
-              </div>
-              <h2 style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--color-text-primary); line-height: 1.2;">
-                ${p.name || 'Ramesh Kumar'}
-              </h2>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--color-text-secondary); margin-top: 3px;">
-                <span>ABHA: ${p.abhaId || '91-4820-1928-44'}</span>
-                <span class="status-badge badge-primary" style="padding: 1px 6px; font-size: 9.5px;">Linked</span>
+              <h3 style="font-size: 15.5px; font-weight: 800; color: var(--color-text-primary); margin-bottom: 4px;">
+                ${t.welcomeBannerTitle || 'Welcome to HEALER'}
+              </h3>
+              <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 10px;">
+                ${t.welcomeBannerDesc || 'Here are a few things you can do:'}
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-outline btn-sm" id="btn-welcome-book">
+                  <i data-lucide="calendar-plus" style="width: 13px; height: 13px;"></i>
+                  <span>${t.actionBookAppointment}</span>
+                </button>
+                <button class="btn btn-outline btn-sm" id="btn-welcome-nearby">
+                  <i data-lucide="map-pin" style="width: 13px; height: 13px;"></i>
+                  <span>${t.actionNearbyCare}</span>
+                </button>
+                <button class="btn btn-outline btn-sm" id="btn-welcome-journey">
+                  <i data-lucide="git-commit" style="width: 13px; height: 13px;"></i>
+                  <span>${t.actionHealthJourney}</span>
+                </button>
               </div>
             </div>
           </div>
 
-          <button class="btn btn-outline" id="btn-quick-voice" style="padding: 8px; border-radius: 50%; width: 40px; height: 40px; min-height: 40px;" title="${t.tapToSpeak || 'Voice'}">
-            <i data-lucide="mic" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
+          <button class="btn btn-primary btn-sm" id="btn-dismiss-welcome" style="align-self: flex-start;">
+            <i data-lucide="check" style="width: 14px; height: 14px;"></i>
+            <span>${t.welcomeGotIt || 'Got it'}</span>
           </button>
         </div>
+      ` : ''}
 
-        <!-- Live OPD Token Banner (Forest Green Hero Card) -->
-        <div class="card card-hero card-clickable" id="card-active-token" style="padding: 20px 22px; cursor: pointer;" title="Tap to view live queue">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <!-- Active Token Card (If present) -->
+      ${activeAppt ? `
+        <div class="card card-hero" id="card-patient-active-token" style="padding: 22px 24px; margin-bottom: 24px; cursor: pointer;" title="${t.viewQueueDetails}">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <span class="status-badge" style="background: rgba(255,255,255,0.22); color: #FFFFFF; font-size: 11px;">
-                ● Live Token
+              <span class="status-badge" style="background: rgba(255,255,255,0.22); color: #FFFFFF; font-size: 11.5px;">
+                ● ${t.activeTokenTitle}
               </span>
-              <span style="font-size: 12px; opacity: 0.9;">PHC Rampur</span>
+              <span style="font-size: 12.5px; opacity: 0.9;">${activeAppt.facility}</span>
             </div>
-            <i data-lucide="arrow-right" style="width: 16px; height: 16px; opacity: 0.9;"></i>
+            <i data-lucide="chevron-right" style="width: 18px; height: 18px; opacity: 0.9;"></i>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
             <div>
-              <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">Your Active Token</span>
-              <div style="font-family: var(--font-heading); font-size: 32px; font-weight: 800; line-height: 1;">
-                ${p.activeToken || 'B-14'}
+              <span style="font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.85;">${t.tokenBadge}</span>
+              <div style="font-family: var(--font-heading); font-size: 34px; font-weight: 800; line-height: 1;">
+                #${activeAppt.token}
+              </div>
+              <div style="font-size: 12.5px; opacity: 0.9; margin-top: 4px;">
+                ${activeAppt.doctor} • ${activeAppt.time} (${activeAppt.date})
               </div>
             </div>
+
             <div style="text-align: right;">
-              <div style="font-size: 13px; font-weight: 700;">Serving #B-11</div>
-              <div style="font-size: 11.5px; color: #FFFFFF; opacity: 0.9; margin-top: 2px;">
-                ~${p.estimatedWaitMins || 14} min wait
+              <div style="font-size: 13px; font-weight: 700;">${t.tokenServing}: #B-11</div>
+              <div style="font-size: 11.5px; opacity: 0.9; margin-top: 2px;">
+                ~${p.estimatedWaitMins || 12} min wait
               </div>
             </div>
           </div>
         </div>
+      ` : ''}
 
-      </div>
-
-      <!-- Quick Actions Header -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <h3 style="font-family: var(--font-heading); font-size: 16px; font-weight: 800; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px;">
-          <i data-lucide="layout-grid" style="color: var(--color-primary); width: 18px; height: 18px;"></i>
-          ${t.quickActions || 'Healthcare Services'}
-        </h3>
-      </div>
-
-      <!-- 8 Responsive Action Tiles -->
-      <div class="action-tiles-grid">
+      <!-- 4 Primary Action Cards Grid -->
+      <div class="dashboard-actions-grid">
         
-        <!-- Tile 1: Nearby Clinics / Map (NEW PROMINENT FEATURE) -->
-        <div class="action-tile" id="action-nearby-clinics" style="border: 1.5px solid var(--color-secondary); background: var(--color-surface);">
-          <div class="action-tile-icon" style="background: var(--color-primary); color: #FFFFFF;">
-            <i data-lucide="map-pin"></i>
-          </div>
-          <div class="action-tile-title" style="color: var(--color-primary);">Nearby Clinics & Map</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">Find PHCs & Sub-Centres</span>
-        </div>
-
-        <!-- Tile 2: Book OPD Appointment -->
-        <div class="action-tile" id="action-book-opd">
-          <div class="action-tile-icon">
+        <!-- Action 1: Book an Appointment -->
+        <div class="dashboard-action-card" id="action-book-appointment">
+          <div class="dashboard-action-icon">
             <i data-lucide="calendar-plus"></i>
           </div>
-          <div class="action-tile-title">${t.bookAppointment || 'Book Appointment'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.phcDoctorsDesc || 'PHC Doctors & Tokens'}</span>
-        </div>
-
-        <!-- Tile 3: Digital Smart Triage -->
-        <div class="action-tile" id="action-triage">
-          <div class="action-tile-icon">
-            <i data-lucide="activity"></i>
+          <div>
+            <h3 class="dashboard-action-title">${t.actionBookAppointment}</h3>
+            <p class="dashboard-action-desc">${t.actionBookAppointmentDesc}</p>
           </div>
-          <div class="action-tile-title">${t.digitalTriage || 'Symptom Triage'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.triageDesc || 'AI Symptom Checker'}</span>
         </div>
 
-        <!-- Tile 4: Network-Adaptive Teleconsult -->
-        <div class="action-tile" id="action-teleconsult">
-          <div class="action-tile-icon">
-            <i data-lucide="video"></i>
+        <!-- Action 2: Find Nearby Care -->
+        <div class="dashboard-action-card" id="action-find-nearby">
+          <div class="dashboard-action-icon">
+            <i data-lucide="map-pin"></i>
           </div>
-          <div class="action-tile-title">${t.consultDoctor || 'Teleconsultation'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.adaptiveTeleconsultDesc || 'Video / Low-Bandwidth'}</span>
+          <div>
+            <h3 class="dashboard-action-title">${t.actionNearbyCare}</h3>
+            <p class="dashboard-action-desc">${t.actionNearbyCareDesc}</p>
+          </div>
         </div>
 
-        <!-- Tile 5: Health Journey Timeline -->
-        <div class="action-tile" id="action-health-journey">
-          <div class="action-tile-icon">
+        <!-- Action 3: My Health Journey -->
+        <div class="dashboard-action-card" id="action-health-journey">
+          <div class="dashboard-action-icon">
             <i data-lucide="git-commit"></i>
           </div>
-          <div class="action-tile-title">${t.careJourney || 'Health Journey'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.unifiedJourneyDesc || 'Synchronized History'}</span>
+          <div>
+            <h3 class="dashboard-action-title">${t.actionHealthJourney}</h3>
+            <p class="dashboard-action-desc">${t.actionHealthJourneyDesc}</p>
+          </div>
         </div>
 
-        <!-- Tile 6: Pharmacy & Medicines -->
-        <div class="action-tile" id="action-medicines">
-          <div class="action-tile-icon">
-            <i data-lucide="pill"></i>
+        <!-- Action 4: My Appointments -->
+        <div class="dashboard-action-card" id="action-my-appointments">
+          <div class="dashboard-action-icon">
+            <i data-lucide="calendar"></i>
           </div>
-          <div class="action-tile-title">${t.medicineStock || 'Medicine Stock'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.livePharmacyDesc || 'PHC Pharmacy Stock'}</span>
-        </div>
-
-        <!-- Tile 7: Follow-ups & ASHA -->
-        <div class="action-tile" id="action-followups">
-          <div class="action-tile-icon">
-            <i data-lucide="heart-handshake"></i>
+          <div>
+            <h3 class="dashboard-action-title">${t.actionMyAppointments}</h3>
+            <p class="dashboard-action-desc">${t.actionMyAppointmentsDesc}</p>
           </div>
-          <div class="action-tile-title">${t.followUps || 'Follow-ups'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.homeVisitsDesc || 'ASHA Home Care'}</span>
-        </div>
-
-        <!-- Tile 8: Health Schemes (PM-JAY) -->
-        <div class="action-tile" id="action-schemes">
-          <div class="action-tile-icon">
-            <i data-lucide="shield"></i>
-          </div>
-          <div class="action-tile-title">${t.schemes || 'Schemes & PM-JAY'}</div>
-          <span style="font-size: 11px; color: var(--color-text-secondary);">${t.pmjayDesc || '₹5 Lakh Free Cover'}</span>
-        </div>
-
-      </div>
-
-      <!-- Bottom Row: Assigned ASHA & Active Episode -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
-        
-        <!-- ASHA Contact Card -->
-        <div class="card" style="padding: 16px 18px; display: flex; align-items: center; justify-content: space-between;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-              <i data-lucide="user-check" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div>
-              <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--color-text-primary);">
-                ${t.assignedAsha || 'Assigned ASHA: Sunita Devi'}
-              </div>
-              <div style="font-size: 12px; color: var(--color-text-secondary);">
-                ${t.nextHomeVisitTomorrow || 'Next Home Visit: Tomorrow 11 AM'}
-              </div>
-            </div>
-          </div>
-          <button class="btn btn-outline" id="btn-call-asha" style="padding: 6px 12px; font-size: 12px; min-height: 32px;">
-            <i data-lucide="phone" style="width: 13px; height: 13px;"></i>
-            <span>${t.callBtn || 'Call'}</span>
-          </button>
-        </div>
-
-        <!-- Active Care Episode Alert -->
-        <div class="card" style="padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; border-left: 4px solid var(--color-primary);">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-              <i data-lucide="stethoscope" style="width: 20px; height: 20px;"></i>
-            </div>
-            <div>
-              <div style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; color: var(--color-text-primary);">
-                Active Tele-Consult Episode
-              </div>
-              <div style="font-size: 12px; color: var(--color-text-secondary);">
-                Dr. Ananya Sharma • Paracetamol 650mg Active
-              </div>
-            </div>
-          </div>
-          <span class="status-badge badge-primary" style="font-size: 10.5px;">Active</span>
         </div>
 
       </div>

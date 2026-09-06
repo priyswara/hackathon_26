@@ -55,7 +55,7 @@ router.post('/verify-otp', (req, res) => {
         token,
         user: {
           identifier,
-          email: identifier.includes('@') ? identifier : `${identifier}@graminarogya.in`,
+          email: identifier.includes('@') ? identifier : `${identifier}@healer.in`,
           verified: true,
           role: portal || 'patient',
           verifiedAt: new Date().toISOString()
