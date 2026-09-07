@@ -88,9 +88,15 @@ export function renderDoctorScreen(state) {
                   <div style="font-size: 11.5px; color: var(--color-text-secondary);">Wait time: ~${item.waitTime}</div>
                 </div>
               </div>
-              <span class="status-badge ${item.priorityLevel === 'High' ? 'badge-danger' : 'badge-primary'}">
-                ${item.priorityLevel || 'Medium'}
-              </span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="status-badge ${item.priorityLevel === 'High' ? 'badge-danger' : 'badge-primary'}">
+                  ${item.priorityLevel || 'Medium'}
+                </span>
+                <button class="btn btn-primary btn-sm btn-doctor-start-consult" data-token="${item.token}" style="padding: 6px 12px; font-size: 11.5px;">
+                  <i data-lucide="video" style="width: 13px; height: 13px;"></i>
+                  <span>${t.startTeleconsult || 'Start Consultation'}</span>
+                </button>
+              </div>
             </div>
           `).join('')}
         </div>

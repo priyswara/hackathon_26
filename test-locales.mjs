@@ -15,6 +15,8 @@ import { renderHealthWorkerScreen } from './src/screens/HealthWorkerScreen.js';
 import { renderDoctorScreen } from './src/screens/DoctorScreen.js';
 import { renderFacilityScreen } from './src/screens/FacilityScreen.js';
 import { renderProfileScreen } from './src/screens/ProfileScreen.js';
+import { renderNetworkConsultationScreen } from './src/screens/NetworkConsultationScreen.js';
+import { networkMonitorService } from './src/services/NetworkMonitorService.js';
 
 const langs = ['en', 'hi', 'ta', 'te', 'ml'];
 const enKeys = Object.keys(locales.en);
@@ -60,7 +62,10 @@ const screens = [
   { name: 'HealthWorkerScreen', fn: (state) => renderHealthWorkerScreen(state) },
   { name: 'DoctorScreen', fn: (state) => renderDoctorScreen(state) },
   { name: 'FacilityScreen', fn: (state) => renderFacilityScreen(state) },
-  { name: 'ProfileScreen', fn: (state) => renderProfileScreen(state) }
+  { name: 'ProfileScreen', fn: (state) => renderProfileScreen(state) },
+  { name: 'NetworkConsultationScreen (Good/Video)', fn: (state) => { networkMonitorService.setNetworkQuality('good', true); return renderNetworkConsultationScreen(state); } },
+  { name: 'NetworkConsultationScreen (Moderate/Audio)', fn: (state) => { networkMonitorService.setNetworkQuality('moderate', true); return renderNetworkConsultationScreen(state); } },
+  { name: 'NetworkConsultationScreen (Low/SMS)', fn: (state) => { networkMonitorService.setNetworkQuality('low', true); return renderNetworkConsultationScreen(state, { isRxModalOpen: true }); } }
 ];
 
 langs.forEach(lang => {

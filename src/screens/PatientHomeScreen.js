@@ -111,6 +111,13 @@ export function renderPatientHomeScreen(state) {
               </div>
             </div>
           </div>
+
+          <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; justify-content: flex-end;">
+            <button class="btn btn-secondary btn-sm" id="btn-home-join-teleconsult" style="background: #FFFFFF; color: var(--color-primary); font-weight: 800; border: none; box-shadow: var(--shadow-sm);">
+              <i data-lucide="video" style="width: 14px; height: 14px; color: var(--color-primary);"></i>
+              <span>${t.joinTeleconsult || 'Join Teleconsultation'}</span>
+            </button>
+          </div>
         </div>
       ` : ''}
 

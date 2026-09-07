@@ -105,10 +105,14 @@ export function renderAppointmentsScreen(state, activeTab = 'upcoming') {
                 </div>
 
                 ${isConfirmed && appt.isUpcoming ? `
-                  <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                  <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                     <button class="btn btn-outline btn-sm btn-cancel-appointment" data-appt-id="${appt.id}" style="color: var(--color-danger); border-color: rgba(214, 69, 69, 0.3);">
                       <i data-lucide="x" style="width: 14px; height: 14px;"></i>
                       <span>${t.btnCancel || 'Cancel'}</span>
+                    </button>
+                    <button class="btn btn-primary btn-sm btn-join-teleconsult" data-appt-id="${appt.id}">
+                      <i data-lucide="video" style="width: 14px; height: 14px;"></i>
+                      <span>${t.joinTeleconsult || 'Join Teleconsultation'}</span>
                     </button>
                   </div>
                 ` : ''}

@@ -21,6 +21,8 @@ import { renderHealthWorkerScreen } from './src/screens/HealthWorkerScreen.js';
 import { renderDoctorScreen } from './src/screens/DoctorScreen.js';
 import { renderFacilityScreen } from './src/screens/FacilityScreen.js';
 import { renderProfileScreen } from './src/screens/ProfileScreen.js';
+import { renderNetworkConsultationScreen } from './src/screens/NetworkConsultationScreen.js';
+import { networkMonitorService } from './src/services/NetworkMonitorService.js';
 
 class AppRouter {
   constructor() {
@@ -52,9 +54,24 @@ class AppRouter {
     this.selectedFacilityModalId = null;
     this.leafletMapInstance = null;
 
+    // Adaptive Teleconsultation state
+    this.isConsultRxModalOpen = false;
+    this.consultSmsMessages = [
+      { sender: 'doctor', text: 'Hello Ramesh ji, I have reviewed your vitals. How has the fever been since yesterday?', time: '10:31 AM', status: 'delivered' },
+      { sender: 'patient', text: 'Doctor, body temperature reached 101.4°F in the night. Mild shivering.', time: '10:32 AM', status: 'delivered' },
+      { sender: 'doctor', text: 'Understood. Please start Paracetamol 500mg TDS and keep yourself hydrated with ORS.', time: '10:33 AM', status: 'delivered' }
+    ];
+
     // Subscribe to store updates
     appStore.subscribe(() => {
       this.render();
+    });
+
+    // Subscribe to Network Monitor Service updates for real-time teleconsultation changes
+    networkMonitorService.subscribe(() => {
+      if (this.currentScreen === 'network_consultation') {
+        this.render();
+      }
     });
   }
 
@@ -201,6 +218,11 @@ class AppRouter {
         return renderFacilityScreen(state);
       case 'profile':
         return renderProfileScreen(state);
+      case 'network_consultation':
+        return renderNetworkConsultationScreen(state, {
+          isRxModalOpen: this.isConsultRxModalOpen,
+          smsChatMessages: this.consultSmsMessages
+        });
       default:
         return renderPatientHomeScreen(state);
     }
@@ -687,6 +709,209 @@ class AppRouter {
     if (journeyBookFirstBtn) {
       journeyBookFirstBtn.onclick = () => this.navigateTo('appointment_wizard');
     }
+
+    // =========================================================================
+    // Adaptive Teleconsultation Interactive Handlers
+    // =========================================================================
+
+    // Launch Teleconsultation from Home Active Token / Appointments / Doctor Queue
+    document.querySelectorAll('#btn-home-join-teleconsult, .btn-join-teleconsult, .btn-doctor-start-consult').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        this.navigateTo('network_consultation');
+        this.showToast('Connecting to teleconsultation session...', 'info');
+      };
+    });
+
+    // Doctor Dashboard: Today's Appointments action card opens Teleconsultation
+    const docTodayAppts = document.getElementById('doc-action-today-appts');
+    if (docTodayAppts) {
+      docTodayAppts.onclick = () => this.navigateTo('network_consultation');
+    }
+
+    // Back button from Teleconsultation
+    const backFromConsultBtn = document.getElementById('btn-back-from-consult');
+    if (backFromConsultBtn) {
+      backFromConsultBtn.onclick = () => {
+        if (state.currentRole === 'doctor') this.navigateTo('doctor');
+        else this.navigateTo('patient_home');
+      };
+    }
+
+    // End Consultation Call
+    const endConsultBtn = document.getElementById('btn-end-consult-call');
+    if (endConsultBtn) {
+      endConsultBtn.onclick = () => {
+        this.showToast('Consultation ended safely. e-Prescription saved to Health Journey.', 'success');
+        if (state.currentRole === 'doctor') this.navigateTo('doctor');
+        else this.navigateTo('appointments');
+      };
+    }
+
+    // Network Simulation Manual Preset Buttons (Good / Moderate / Low)
+    const netGoodBtn = document.getElementById('btn-net-good');
+    if (netGoodBtn) {
+      netGoodBtn.onclick = () => {
+        networkMonitorService.setNetworkQuality('good');
+      };
+    }
+
+    const netModBtn = document.getElementById('btn-net-moderate');
+    if (netModBtn) {
+      netModBtn.onclick = () => {
+        networkMonitorService.setNetworkQuality('moderate');
+      };
+    }
+
+    const netLowBtn = document.getElementById('btn-net-low');
+    if (netLowBtn) {
+      netLowBtn.onclick = () => {
+        networkMonitorService.setNetworkQuality('low');
+      };
+    }
+
+    // Auto-Simulation Demo Cycle Toggle
+    const autoSimBtn = document.getElementById('btn-toggle-auto-sim');
+    if (autoSimBtn) {
+      autoSimBtn.onclick = () => {
+        networkMonitorService.toggleAutoSimulation();
+        const active = networkMonitorService.isAutoSimulating;
+        this.showToast(active ? 'Auto Network Simulation started: Cycling Good -> Audio -> SMS...' : 'Auto Simulation stopped.', 'info');
+      };
+    }
+
+    // Call Controls: Mic Mute / Unmute
+    const muteAudioBtn = document.getElementById('btn-mute-audio');
+    if (muteAudioBtn) {
+      muteAudioBtn.onclick = () => {
+        const isMuted = networkMonitorService.toggleMic();
+        this.showToast(isMuted ? 'Microphone muted' : 'Microphone unmuted', 'info');
+      };
+    }
+
+    // Call Controls: Camera On / Off
+    const toggleCamBtn = document.getElementById('btn-toggle-cam');
+    if (toggleCamBtn) {
+      toggleCamBtn.onclick = () => {
+        const isCamOff = networkMonitorService.toggleCamera();
+        this.showToast(isCamOff ? 'Camera turned off' : 'Camera turned on', 'info');
+      };
+    }
+
+    // Call Controls: Switch / Flip Camera
+    const switchCamBtn = document.getElementById('btn-switch-cam');
+    if (switchCamBtn) {
+      switchCamBtn.onclick = () => {
+        const facing = networkMonitorService.switchCamera();
+        this.showToast(facing === 'user' ? 'Front camera active' : 'Rear camera active', 'info');
+      };
+    }
+
+    // Prescription Modal Controls
+    const openRxBtn = document.getElementById('btn-open-rx-drawer');
+    const quickViewRxBtn = document.getElementById('btn-quick-view-rx');
+    if (openRxBtn) openRxBtn.onclick = () => { this.isConsultRxModalOpen = true; this.render(); };
+    if (quickViewRxBtn) quickViewRxBtn.onclick = () => { this.isConsultRxModalOpen = true; this.render(); };
+
+    const closeRxBtn = document.getElementById('btn-close-rx-modal');
+    const closeRxOnlyBtn = document.getElementById('btn-modal-close-only');
+    if (closeRxBtn) closeRxBtn.onclick = () => { this.isConsultRxModalOpen = false; this.render(); };
+    if (closeRxOnlyBtn) closeRxOnlyBtn.onclick = () => { this.isConsultRxModalOpen = false; this.render(); };
+
+    const modalJourneyBtn = document.getElementById('btn-modal-journey');
+    if (modalJourneyBtn) {
+      modalJourneyBtn.onclick = () => {
+        this.isConsultRxModalOpen = false;
+        this.navigateTo('health_journey');
+      };
+    }
+
+    // SMS Chat Form Handler (Mode 3)
+    const smsForm = document.getElementById('form-sms-chat');
+    if (smsForm) {
+      smsForm.onsubmit = (e) => {
+        e.preventDefault();
+        const input = document.getElementById('input-sms-text');
+        const text = input ? input.value.trim() : '';
+        if (!text) return;
+
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        this.consultSmsMessages.push({
+          sender: 'patient',
+          text: text,
+          time: timeStr,
+          status: 'delivered'
+        });
+
+        input.value = '';
+        this.render();
+
+        // Auto-scroll chat container to bottom
+        const container = document.getElementById('sms-messages-container');
+        if (container) container.scrollTop = container.scrollHeight;
+
+        // Simulated Doctor Automatic Reply after 1.2 seconds
+        setTimeout(() => {
+          const replies = [
+            'I have noted that. Please continue the prescribed dosage and take plenty of rest.',
+            'Temperature is in normal recovery range. If cough persists for 2 more days, we will order an X-Ray.',
+            'Prescription has been recorded in your Health Journey. You can collect medicines from Rampur PHC Pharmacy.'
+          ];
+          const replyText = replies[Math.floor(Math.random() * replies.length)];
+          const replyTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          this.consultSmsMessages.push({
+            sender: 'doctor',
+            text: replyText,
+            time: replyTime,
+            status: 'delivered'
+          });
+
+          if (this.currentScreen === 'network_consultation') {
+            this.render();
+            const c = document.getElementById('sms-messages-container');
+            if (c) c.scrollTop = c.scrollHeight;
+          }
+        }, 1200);
+      };
+    }
+
+    // Quick SMS Reply Chips
+    document.querySelectorAll('.quick-sms-chip').forEach(chip => {
+      chip.onclick = () => {
+        const text = chip.dataset.quickSms;
+        if (!text) return;
+
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        this.consultSmsMessages.push({
+          sender: 'patient',
+          text: text,
+          time: timeStr,
+          status: 'delivered'
+        });
+
+        this.render();
+        const container = document.getElementById('sms-messages-container');
+        if (container) container.scrollTop = container.scrollHeight;
+
+        // Doctor auto response
+        setTimeout(() => {
+          this.consultSmsMessages.push({
+            sender: 'doctor',
+            text: 'Thank you for the update. Continue the oral fluids and medications as advised.',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            status: 'delivered'
+          });
+          if (this.currentScreen === 'network_consultation') {
+            this.render();
+            const c = document.getElementById('sms-messages-container');
+            if (c) c.scrollTop = c.scrollHeight;
+          }
+        }, 1200);
+      };
+    });
   }
 }
 

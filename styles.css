@@ -1275,3 +1275,154 @@ button, input, select, textarea {
     display: none !important;
   }
 }
+
+/* ==========================================================================
+   Adaptive Teleconsultation Component Styles
+   ========================================================================== */
+.video-consult-container {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  background: linear-gradient(135deg, #111A16 0%, #0D1411 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(40, 107, 79, 0.2);
+}
+
+.video-self-pip {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  width: 90px;
+  height: 115px;
+  background: rgba(15, 23, 20, 0.85);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+}
+
+.network-switch-control {
+  width: 100%;
+}
+
+.net-switch-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+}
+
+.net-switch-btn:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-secondary);
+}
+
+.net-switch-btn.active {
+  background: #FFFFFF;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.btn-active-danger {
+  background: var(--color-danger-light) !important;
+  border-color: var(--color-danger) !important;
+}
+
+/* Audio Waveform Animation */
+.audio-waveform-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 48px;
+}
+
+.wave-bar {
+  width: 5px;
+  height: 12px;
+  background: linear-gradient(to top, #D99A2B, #F4D086);
+  border-radius: 3px;
+  animation: waveMotion 1.2s infinite ease-in-out;
+}
+
+.wave-bar:nth-child(1) { animation-delay: 0.1s; }
+.wave-bar:nth-child(2) { animation-delay: 0.4s; }
+.wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { animation-delay: 0.6s; }
+.wave-bar:nth-child(5) { animation-delay: 0.3s; }
+.wave-bar:nth-child(6) { animation-delay: 0.7s; }
+.wave-bar:nth-child(7) { animation-delay: 0.2s; }
+.wave-bar:nth-child(8) { animation-delay: 0.5s; }
+.wave-bar:nth-child(9) { animation-delay: 0.1s; }
+
+@keyframes waveMotion {
+  0%, 100% { height: 10px; opacity: 0.4; }
+  50% { height: 42px; opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-animation {
+  animation: spin 1.5s linear infinite;
+}
+
+/* SMS Messenger Elements */
+.sms-bubble {
+  max-width: 82%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.sms-bubble-doctor {
+  background: var(--color-surface-muted);
+  color: var(--color-text-primary);
+  align-self: flex-start;
+  border-bottom-left-radius: 3px;
+}
+
+.sms-bubble-patient {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  align-self: flex-end;
+  border-bottom-right-radius: 3px;
+}
+
+.quick-sms-chip {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: 1px solid rgba(40, 107, 79, 0.2);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.quick-sms-chip:hover {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+
